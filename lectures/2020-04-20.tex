@@ -34,8 +34,7 @@ From the system we get
 Thus, the transfer function is
 \[ W(z) = H(zI - F) ^ {-1} G \]
 
-\todo{example env}
-Example:
+\begin{example}
 \begin{align*}
     F = \begin{bmatrix}
         1 & 0\\
@@ -108,13 +107,14 @@ W(z) &=
 \end{align*}
 Notice that in this case we only have one pole, but the system is of order two; this comes from the fact that part of the system is non observable.
 
+\end{example}
+
 \subsection{Transfer function to State Space}
 This conversion is not very used in practice and it is called the \emph{realization} of a transfer function into a state space model.
 
 Note that the state space representation is not unique, so from a single transfer function we can get infinite different equivalent state space models.
 
-\todo{example env}
-Example: Control realization
+\begin{example}[Control realization]
 
 We assume that the system is strictly proper and that the denominator is monic.
 \[ W(z) = \frac{b_0 z^{n-1} + b_1 z^{n-2} + \dots + b_{n-1}}{z^n + a_1 z^{n-1} + a_2 z^{n-2} + \dots + a_n} \]
@@ -143,3 +143,4 @@ The formula for the control realization of $W(z)$ is
     &&
     D = 0
 \end{align*}
+\end{example}
