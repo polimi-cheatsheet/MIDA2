@@ -27,7 +27,36 @@ Models used in MIDA1:
     \item ARMAX models for I/O systems
 \end{itemize}
 
-\missingfigure{Block diagrams of ARMA/ARMAX}
+\begin{figure}[H]
+    \begin{minipage}[t]{0.4\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [int] (a) {$\frac{C(z)}{A(z)}$};
+            \node (b) [left of=a, node distance=2cm] {};
+            \node (end) [right of=a, node distance=2cm]{};
+            \draw[->] (b) edge node {$e(t)$} (a);
+            \draw[->] (a) edge node {$y(t)$} (end);
+        \end{tikzpicture}
+        \caption*{ARMA model}
+    \end{minipage}
+    \begin{minipage}[t]{0.4\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [int] (a) {$z^{-k}\frac{B(z)}{A(z)}$};
+            \node (b) [left of=a, node distance=2cm] {};
+            \node [sum] (c) [right of=a, node distance=2cm] {};
+            \node [int] (d) [above of=c, node distance=1.5cm] {$\frac{C(z)}{A(z)}$};
+            \node (e) [left of=d, node distance=2cm] {};
+            \node (end) [right of=c, node distance=2cm]{};
+            \draw[->] (b) edge node {$u(t)$} (a);
+            \draw[->] (e) edge node {$e(t)$} (d);
+            \draw[->] (a) edge node[pos=0.8] {$+$} (c);
+            \draw[->] (d) edge node[pos=0.8] {$+$} (c);
+            \draw[->] (c) edge node {$y(t)$} (end);
+        \end{tikzpicture}
+        \caption*{ARMAX model}
+    \end{minipage}
+\end{figure}
 
 The model is indicated as $\mathcal{M}(\theta)$ where $\theta$ is the parameter vector, the coefficients of $A(z)$, $B(z)$, $C(z)$.
 
@@ -59,8 +88,32 @@ The focus is on I/O systems (more close to real applications than T.S.).
 \end{definition}
 
 During a break $0 \le \lambda \le 1$ (from free rolling wheel to locked wheel).
-\missingfigure{$\lambda graph$}
-\missingfigure{Block diagram of the ABS system}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{lectures/2020-04-16/lambda-graph.png}
+    \caption*{Relation between $\lambda$ and the breaking force.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [int] (abs) {ABS algo};
+        \node [sum] (sum) [left of=abs, node distance=2cm] {};
+        \node (in) [left of=sum, node distance=2cm] {};
+        \node [int] (sys) [right of=abs, node distance=3cm]{System};
+        \node [coordinate] (split) [right of=sys, node distance=2cm]{};
+        \node (end) [right of=sys, node distance=4cm]{};
+        \node [int] (sws) [below of=sys, node distance=1cm]{SW-sensing};
+
+        \draw[->] (in) edge node {$\overline{\lambda}$} (sum);
+        \draw[->] (sum) edge node {} (abs);
+        \draw[->] (abs) edge node {$u(t)$} (sys);
+        \draw[->] (sys) edge node[pos=0.8] {$\lambda$} (end);
+        \draw[->] (split) |- node {} (sws);
+        \draw[->] (sws) -| node[pos=0.9] {$-$} (sum);
+    \end{tikzpicture}
+    \caption*{ABS system}
+\end{figure}
 
 The problem can be divided into subproblems:
 \begin{itemize}
@@ -88,7 +141,19 @@ Using only I/O measured data we can \emph{learn} a mathematical model of the I/O
 
 \chapter{Black-box non-parametric identification of I/O systems using state-space models}
 
-\missingfigure{Block diagram of the system}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [int, ellipse] (sys) {system};
+        \node (in) [left of=sys, node distance=2cm] {};
+        \node (noise) [above of=sys, node distance=1.5cm] {};
+        \node (end) [right of=sys, node distance=2cm]{};
+
+        \draw[->] (in) edge node {$u(t)$} (sys);
+        \draw[->,dotted] (noise) edge node {$d(t)$ \emph{(not measured disturbance)}} (sys);
+        \draw[->] (sys) edge node {$y(t)$} (end);
+    \end{tikzpicture}
+\end{figure}
 
 \textbf{Measured data}
 \begin{align*}
