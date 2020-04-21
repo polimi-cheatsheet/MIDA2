@@ -226,3 +226,11 @@ frametitleaboveskip=\dimexpr-\ht\strutbox\relax
     Instructor: #1
     \end{flushright}
 }
+
+\newcommand{\newlecture}[2]{
+    \vspace{-3cm}
+    \begin{flushright}
+    #1 -- #2
+    \end{flushright}
+    \vspace{1.5cm}
+}
