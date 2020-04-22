@@ -242,7 +242,7 @@ frametitleaboveskip=\dimexpr-\ht\strutbox\relax
 %=================================
 % draw pictures
 \RequirePackage{tikz}
-\usetikzlibrary{arrows,arrows.meta,positioning,calc,shapes}
+\usetikzlibrary{arrows,arrows.meta,decorations.pathreplacing,matrix,positioning,calc,shapes}
 \tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
    execute at end node=$]
 \RequirePackage{graphicx}

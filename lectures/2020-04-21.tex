@@ -254,6 +254,7 @@ Using $O_{n+1}$ and $R_{n+1}$ we can easily find:
 
 Define $O_1$ as $O_{n+1}$ without the last row, and $O_2$ as $O_{n+1}$ without the first row.
 $O_1$ and $O_2$ are $n\times n$ matrices.
+This is called \emph{shift-invariance} property.
 
 \textbf{Note} that $O_1$ is invertible since it's an observability matrix and the subsystem is fully observable.
 Moreover $O_1F = O_2$, so $\hat{F} = O_1^{-1}O_2$.
@@ -272,25 +273,21 @@ The measurements of IR are noisy: $\tilde{\omega}(t) = \omega(t) + \eta(t)$.
     \begin{minipage}[t]{0.5\textwidth}
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-            \begin{tikzpicture}
-                \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
-                \draw[->] (0,-1) -- (0,2) node[left] {$u(t)$};
-                \draw[domain=-0.3:0,smooth,variable=\x,red] plot ({\x},{0});
-                \draw[domain=0:0.2,smooth,variable=\x,red] plot ({\x},{1.5});
-                \draw[domain=0.2:2.5,smooth,variable=\x,red] plot ({\x},{0});
-            \end{tikzpicture}
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-1) -- (0,2) node[left] {$u(t)$};
+            \draw[domain=-0.3:0,smooth,variable=\x,red] plot ({\x},{0});
+            \draw[domain=0:0.2,smooth,variable=\x,red] plot ({\x},{1.5});
+            \draw[domain=0.2:2.5,smooth,variable=\x,red] plot ({\x},{0});
         \end{tikzpicture}
         \caption*{Input}
     \end{minipage}
     \begin{minipage}[t]{0.5\textwidth}
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-            \begin{tikzpicture}
-                \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
-                \draw[->] (0,-1) -- (0,2) node[left] {$y(t)$};
-                \draw[domain=0:2.5,smooth,variable=\x,red] plot ({\x},{cos(\x*180/3.14*5)*e^(-\x)});
-                \draw[samples=100, domain=0:2.5,smooth,variable=\x,blue] plot ({\x},{cos(\x*180/3.14*5)*e^(-\x)+rand/4});
-            \end{tikzpicture}
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-1) -- (0,2) node[left] {$y(t)$};
+            \draw[domain=0:2.5,smooth,variable=\x,red] plot ({\x},{cos(\x*180/3.14*5)*e^(-\x)});
+            \draw[samples=100, domain=0:2.5,smooth,variable=\x,blue] plot ({\x},{cos(\x*180/3.14*5)*e^(-\x)+rand/4});
         \end{tikzpicture}
         \caption*{Output}
     \end{minipage}
@@ -316,22 +313,20 @@ $\tilde{H}_{qd}$ is a $q\times d$ matrix. \textbf{Note} that $q+d-1$ must equal 
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-            \begin{tikzpicture}
-                \draw[->] (-0.5,0) -- (3,0) node[right] {$d$};
-                \draw[->] (0,-0.5) -- (0,3) node[left] {$q$};
-                \draw[domain=0.3:2.7,smooth,variable=\x,black] plot ({\x},{3-\x});
-                \draw[line width=0.6mm,domain=1.5:1.8,smooth,variable=\x,green] plot ({\x},{3-\x});
-                \draw[line width=0.6mm,domain=2.3:2.7,smooth,variable=\x,blue] plot ({\x},{3-\x});
-                \draw[dotted] (0,0) -- (1.5,1.5);
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$d$};
+            \draw[->] (0,-0.5) -- (0,3) node[left] {$q$};
+            \draw[domain=0.3:2.7,smooth,variable=\x,black] plot ({\x},{3-\x});
+            \draw[line width=0.6mm,domain=1.5:1.8,smooth,variable=\x,green] plot ({\x},{3-\x});
+            \draw[line width=0.6mm,domain=2.3:2.7,smooth,variable=\x,blue] plot ({\x},{3-\x});
+            \draw[dotted] (0,0) -- (1.5,1.5);
 
-                \node at (2.3,1.5) {$q \approx d$};
-                \node at (3.1,0.7) {$q \ll d$};
+            \node at (2.3,1.5) {$q \approx d$};
+            \node at (3.1,0.7) {$q \ll d$};
 
-                \node[below] at (0.3,0) {$1$};
-                \node[below] at (2.7,0) {$N$};
-                \node[left] at (0,0.3) {$1$};
-                \node[left] at (0,2.7) {$N$};
-            \end{tikzpicture}
+            \node[below] at (0.3,0) {$1$};
+            \node[below] at (2.7,0) {$N$};
+            \node[left] at (0,0.3) {$1$};
+            \node[left] at (0,2.7) {$N$};
         \end{tikzpicture}
     \end{figure}
 
