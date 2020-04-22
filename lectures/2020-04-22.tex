@@ -1,0 +1,167 @@
+\newpage
+\newlecture{Sergio Savaresi}{21/04/2020}
+
+\paragraph{Step 2} Singular Value Decomposition (SVD) of $\tilde{H}_{qd}$
+
+\[
+    \underbrace{\tilde{H}_{qd}}_{n\times n} = \underbrace{\tilde{U}}_{q\times q} \underbrace{\tilde{S}}_{q\times d} \underbrace{\tilde{V}^T}_{d\times d}
+\]
+
+$\tilde{U}$ and $\tilde{V}$ are unitary matrices. A matrix $M$ is unitary if:
+\begin{itemize}
+    \item $\det M = 1$ (so it's invertible)
+    \item $M^{-1} = M^T$
+\end{itemize}
+
+\[
+    \tilde{S} = \begin{bmatrix}
+        \sigma_1 & & & \\
+        & \sigma_2 & & \\
+        & & \ddots & \\
+        & &  & \sigma_d \\
+    \end{bmatrix}
+\]
+
+Where $\sigma_1$, $\sigma_2$, $\ldots$, $\sigma_q$ are the singular values of $\tilde{H}_{qd}$.
+Those are real, positive numbers, sorted in decreasing order ($\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_q$).
+
+\begin{remark}
+    The singular values of a rectangular matrix are a \emph{sort of} eigenvalues of a square matrix.
+\end{remark}
+
+SVD is a \emph{sort of} diagonalization of a rectangular matrix.
+
+\begin{remark}
+    For a square matrix, $\text{eig} A = \text{roots} \det A-\lambda I$. If $M$ is rectangular $SV(M) = \sqrt{\text{eig}(MM^T)}$ (if non zero eigenvalues).
+\end{remark}
+
+\begin{remark}[How can we compute SVD]
+    The optimal numerical computation is not trivial. Use \texttt{svd(M)} in Matlab.
+
+    Theoretical method for SVD computation is to make 2 diagonalization steps:
+    \[
+        \underbrace{\tilde{H}_{qd} \tilde{H}_{qd}^T}_{q\times q} = \tilde{U}\tilde{S}\tilde{S}^T\tilde{U}^T
+    \]
+    \[
+        \underbrace{\tilde{H}_{qd}^T \tilde{H}_{qd}}_{d\times d} = \tilde{V}\tilde{S}^T\tilde{S}\tilde{V}^T
+    \]
+\end{remark}
+
+\paragraph{Step 3} Plot the singular values and cut-off the 3 matrices
+
+\missingfigure{plot 1}
+
+In the ideal case there is a perfect/clear separation between the signal and the noise S.V. (a jump). $n$ is the order of the system.
+
+\missingfigure{plot 2}
+
+In the real case there is no clear distinction between signal and noise singular values, the order of the system can assume values in an interval.
+With some empirical test we can select a good compromise between complexity, precision and overfitting (see \emph{cross-validation}).
+
+After the decision on the value of $n$ we split $\tilde{U}$, $\tilde{S}$ and $\tilde{V}^T$:
+\todo[inline]{formula 1}
+
+\[
+    \tilde{H}_{qd} = \underbrace{\hat{U} \hat{S} \hat{V}^T}_{\hat{H}_{qd}} + H_{res,qd} \qquad \rank \tilde{H}_{qd} = q \quad \rank \hat{H}_{qd} = n \quad \rank H_{res,qd} = q
+\]
+
+From $\tilde{H}_{qd}$ to $\hat{H}_{qd}$ the rank is hugely reduced.
+
+\paragraph{Step 4} Estimation of $\hat{F}$, $\hat{G}$ and $\hat{H}$ using the cleaned matrix $\hat{H}_{qd}$
+
+\[
+    \hat{H}_{qd} = \hat{U} \hat{S} \hat{V}^T = \hat{U} \hat{S}^{\frac{1}{2}} \hat{S}^{\frac{1}{2}} \hat{V}^T
+\]
+
+Where $\hat{S}^{\frac{1}{2}}$ is the matrix with as elements the square roots of the original elements.
+
+\[
+    \hat{O} = \hat{U} \hat{S}^{\frac{1}{2}} \qquad \hat{R} = \hat{S}^{\frac{1}{2}} \hat{V}^T \qquad \implies \qquad \hat{H}_{qd} = \hat{O} \hat{R}
+\]
+
+We can view $\hat{O}$ as the extended observability matrix and the $\hat{R}$ the extended reachability matrix of the system.
+
+\todo[inline]{formula 2}
+
+What about the estimation of $\hat{F}$? Consider for example $\hat{O}$ and use the \emph{shift-invariance} property.
+
+\todo[inline]{formula 3}
+
+Therefore $\hat{O}_1\cdot \hat{F} = \hat{O}_2$, but $\hat{O}_1$ is not a square matrix so it's not invertible.
+In this case we can use the approximate \emph{least-square} solution of this linear system.
+
+\[ Ax = B \qquad \implies \qquad \text{3 different cases} \]
+
+\begin{enumerate}
+    \item $(h\times n) \cdot (n \times 1) = (h \times 1)$ with $h < n$. We have less equations than variables, the system is called \emph{under determined} and we have infinite solutions.
+    \item $h = n$, we have one and only one solution if $A$ is invertible.
+    \item $h > n$, we have more equations than variables, the system is \emph{over determined} and it's impossible (no solutions).
+\end{enumerate}
+
+In the third case using an approximate least-squares solution, the trick is:
+\begin{align*}
+    Ax = B \\
+    A^TAx = A^TB & \implies \hat{X} = \underbrace{(A^TA)^{-1}A^T}_{A^+} B
+\end{align*}
+
+$A^+$ is called pseudo-inverse, a surrogate when $A$ is rectangular.
+
+Using the pseudo-inverse method:
+\[
+    \hat{O}_1\hat{F} = \hat{O}_2 \qquad \hat{O}_1^T\hat{O}_2\hat{F} = O_1^TO_2 \qquad \hat{F} = \left(\hat{O}_1^T\hat{O}_1\right)^{-1} \hat{O}_1^T\hat{O}_2
+\]
+
+\paragraph{Conclusion} Starting from a noisy I.R. $\{\omega(1), \omega(2), \ldots, \omega(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non parametric/constructive way.
+
+\begin{remark}
+    It can be done something similar also if the measured input is generic (i.e. not an impulse).
+\end{remark}
+
+\begin{remark}[optimality of 4SID]
+    The method is optimal in the sense that it makes the best possible rank reduction of $\tilde{H}_{qd}$.
+\end{remark}
+
+\begin{example}[there are infinite ways to make a rank reduction]
+    \[
+        \underbrace{\begin{bmatrix}
+            2 & 5 & 3 & 6 & 5 \\
+            5 & 3 & 6 & 5 & 7 \\
+            3 & 6 & 5 & 7 & 1
+        \end{bmatrix}}_{\rank = 3}
+        =
+        \underbrace{\begin{bmatrix}
+            1 & 0 & 0 & 0 & 0 \\
+            0 & 1 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0
+        \end{bmatrix}}_{\rank = 2}
+        +
+        \begin{bmatrix}
+            1 & 5 & 3 & 6 & 5 \\
+            5 & 2 & 6 & 5 & 7 \\
+            3 & 6 & 5 & 7 & 1
+        \end{bmatrix}
+    \]
+    It's not the optimal rank reduction matrix, but it factors out a matrix with lower rank.
+
+    \textbf{Goal} obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
+    SVD makes exactly this: $\tilde{H}_{red,qd}$ is the minimum possible (in the sense of the \emph{Frobenius norm}).
+    \[
+        \left|\tilde{H}_{res,qd}\right| = \sqrt{\sum_{ij} \left(\tilde{H}_{res,qd}^{(ij)} \right)^2}
+    \]
+\end{example}
+
+\begin{remark}
+    4SID is a constructive method that can be implemented in a fully-automatic way, except:
+    \begin{itemize}
+        \item $q$ and $d$ selection (not critical)
+        \item Choice of $n$ (typically supervised by the designer). It can be made automatic using a cross-validation method.
+    \end{itemize}
+\end{remark}
+
+\begin{remark}
+    SVD was an historical turning point in machine learning algorithms because it allows:
+    \begin{itemize}
+        \item Very efficient compression of information.
+        \item Very efficient separation of \emph{important} information from noise.
+    \end{itemize}
+\end{remark}

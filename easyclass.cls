@@ -160,6 +160,29 @@ frametitleaboveskip=\dimexpr-\ht\strutbox\relax
 }
 \begin{mdframed}[]\relax%
 }{\end{mdframed}}
+%Exercise
+\newcounter{exercise}[theo]%\setcounter{exercise}{0}
+\newenvironment{exercise}[1][]{%
+\refstepcounter{exercise}%
+\ifstrempty{#1}%
+{\mdfsetup{%
+frametitle={%
+\tikz[baseline=(current bounding box.east),outer sep=0pt]
+\node[anchor=east,rectangle,fill=red!40]
+{\strut Exercise};}}
+}%
+{\mdfsetup{%
+frametitle={%
+\tikz[baseline=(current bounding box.east),outer sep=0pt]
+\node[anchor=east,rectangle,fill=red!40]
+{\strut Exercise:~#1};}}%
+}%
+\mdfsetup{innertopmargin=10pt,linecolor=red!40,%
+linewidth=2pt,topline=true,%
+frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+}
+\begin{mdframed}[]\relax%
+}{\end{mdframed}}
 
 
 %=================================
