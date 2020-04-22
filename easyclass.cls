@@ -40,7 +40,7 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{definition}{Definition}
-\newtheorem*{remark}{Remark}
+%\newtheorem*{remark}{Remark}
 \newtheorem*{assumption}{Assumption}
 %Theorem
 \newcounter{theo}[chapter] \setcounter{theo}{0}
@@ -116,7 +116,6 @@ frametitleaboveskip=\dimexpr-\ht\strutbox\relax
 \label{#2}}{\qed\end{mdframed}}
 %Example
 \newcounter{example}[theo]%\setcounter{example}{0}
-\renewcommand{\theexample}{\arabic{chapter}.\arabic{theo}}
 \newenvironment{example}[1][]{%
 \refstepcounter{example}%
 \ifstrempty{#1}%
@@ -133,6 +132,29 @@ frametitle={%
 {\strut Example:~#1};}}%
 }%
 \mdfsetup{innertopmargin=10pt,linecolor=orange!20,%
+linewidth=2pt,topline=true,%
+frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+}
+\begin{mdframed}[]\relax%
+}{\end{mdframed}}
+%Remark
+\newcounter{remark}[theo]%\setcounter{remark}{0}
+\newenvironment{remark}[1][]{%
+\refstepcounter{remark}%
+\ifstrempty{#1}%
+{\mdfsetup{%
+frametitle={%
+\tikz[baseline=(current bounding box.east),outer sep=0pt]
+\node[anchor=east,rectangle,fill=purple!20]
+{\strut Remark};}}
+}%
+{\mdfsetup{%
+frametitle={%
+\tikz[baseline=(current bounding box.east),outer sep=0pt]
+\node[anchor=east,rectangle,fill=purple!20]
+{\strut Remark:~#1};}}%
+}%
+\mdfsetup{innertopmargin=10pt,linecolor=purple!20,%
 linewidth=2pt,topline=true,%
 frametitleaboveskip=\dimexpr-\ht\strutbox\relax
 }
