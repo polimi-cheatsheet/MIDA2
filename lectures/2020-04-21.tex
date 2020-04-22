@@ -1,0 +1,243 @@
+\newpage
+\newlecture{Sergio Savaresi}{21/04/2020}
+\missingfigure{\#1, \#2, \#3 graph}
+
+\section{Fundamental concepts of observability and controllability}
+
+\[
+    \begin{cases}
+        x(t+1) = Fx(t) + Gu(t) \\
+        y(t) = Hx(t)
+    \end{cases}
+\]
+
+\subsection{Fully Observable}
+The system is fully observable (from the output) if and only if the observability matrix is full rank:
+\[
+    O = \begin{bmatrix}
+        H \\
+        HF \\
+        \vdots \\
+        HF^{n-1}
+    \end{bmatrix}
+    \qquad
+    \rank O = n
+\]
+
+\subsection{Fully Controllable}
+The system is fully controllable (from the input) if and only if the controllability matrix is full rank:
+\[
+    R = \begin{bmatrix}
+        G & FG & \cdots & F^{n-1}G
+    \end{bmatrix}
+    \qquad
+    \rank R = n
+\]
+
+$R$ is also called \emph{reachability} matrix.
+
+\begin{remark}
+    \begin{description}
+        \item[Observability] we can observe the state from the output sensors.
+        \item[Controllability] we can control/move/influence the state using the input signal.
+    \end{description}
+\end{remark}
+
+\begin{example}
+    \begin{align*}
+        \begin{cases}
+            x_1(t+1) = \frac{1}{2} x_1(t) + u(t) \\
+            x_2(t+1) = \frac{1}{3}x_2(t) \\
+            y(t) = \frac{1}{4}x_1(t)
+        \end{cases}
+        \qquad
+        F = \begin{bmatrix}
+            \frac{1}{2} & 0 \\
+            0 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        H = \begin{bmatrix}
+            \frac{1}{4} & 0
+        \end{bmatrix}
+        \qquad
+        G = \begin{bmatrix}
+            0 \\
+            1
+        \end{bmatrix}
+    \end{align*}
+
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF
+        \end{bmatrix} = \begin{bmatrix}
+            \frac{1}{4} & 0 \\
+            \frac{1}{8} & 0
+        \end{bmatrix}
+        \qquad
+        \rank O = 1 < n = 2
+        \quad\implies\quad \text{not fully observable}
+    \]
+
+    \[
+        R = \begin{bmatrix}
+            G & FG
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 0 \\
+            1 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        \rank R = 1 < n = 2
+        \quad\implies\quad \text{not fully controllable}
+    \]
+\end{example}
+
+\begin{remark}[4 sub-systems]
+    Each system can be internally seen as 4 sub-systems as follows:
+    \missingfigure{4 sub-systems}
+
+    Which externally is equivalent to a systems like this:
+    \missingfigure{OC system}
+\end{remark}
+
+\section{Hankel matrix of order n}
+
+Starting from $IR = \{\omega(1), \omega(2), \ldots, \omega(N)\}$ we can build the Hankel matrix of order $n$.
+
+\[
+    H_n = \begin{bmatrix}
+        \omega(1) & \omega(2) & \omega(3) & \cdots & \omega(n) \\
+        \omega(2) & \omega(3) & \omega(4) & \cdots & \omega(n+1) \\
+        \omega(3) & \omega(4) & \omega(5) & \cdots & \omega(n+2) \\
+        \vdots    & \vdots    & \vdots    & \ddots & \vdots \\
+        \omega(n) & \omega(n+1) & \omega(n+2) & \ldots & \omega(2n-1)
+    \end{bmatrix}
+\]
+
+\textbf{Note} that we need IR up to time $2n-1$.
+
+\textbf{Note} it starts from $\omega(1)$ and not $\omega(0)$.
+
+\textbf{Note} the anti-diagonals all have the same element repeated.
+
+We know that $\omega(t) = \begin{cases}
+    0 &\quad \text{if } t = 0 \\
+    HF^{t-1}G &\quad \text{if } t > 0
+\end{cases}$ therefore $H_n$ can be rewritten as
+
+\[
+    H_n = \begin{bmatrix}
+        HG     & HFG    & HF^2G  & \cdots & HF^{n-1}G \\
+        \vdots & \ddots &        &        & \vdots \\
+        \vdots &        & \ddots &        & \vdots \\
+        \vdots &        &        & \ddots & \vdots \\
+        HF^{n-1}G & \cdots & \cdots & \cdots & HF^{2n-2}G
+    \end{bmatrix} = \begin{bmatrix}
+        H \\
+        HF \\
+        \vdots \\
+        HF^{n-1}
+    \end{bmatrix} \cdot \begin{bmatrix}
+        G & FG & \cdots & F^{n-1}G
+    \end{bmatrix} = O \cdot R
+\]
+
+Where $O$ is the observability matrix and $R$ is the reachability matrix.
+
+\section{Algorithm to obtain $\hat{F}$, $\hat{G}$, $\hat{H}$ from a noise-free measured IR}
+
+\paragraph{Step 1} Build the Hankel matrix in increasing order and each time compute the rank of the matrix.
+
+\[
+    H_1 = \begin{bmatrix}
+        \omega(1)
+    \end{bmatrix}
+    \qquad
+    H_2 = \begin{bmatrix}
+        \omega(1) & \omega(2) \\
+        \omega(2) & \omega(3)
+    \end{bmatrix}
+    \qquad
+    H_3 = \ldots
+    \qquad
+    \cdots
+    \qquad
+    H_n = \ldots
+\]
+
+Suppose that $\rank H_n = n$ and $\rank H_{n+1} = n$.
+With this procedure we know the order of the system.
+
+\paragraph{Step 2} Take $H_{n+1}$ (with $\rank H_{n+1} = n$), factorize it in two rectangular matrices of size $(n+1) \times n$ and $n \times (n+1)$.
+
+\[
+    H_{n+1} = \begin{bmatrix}
+        \text{extended} \\
+        \text{observability} \\
+        \text{matrix} \\
+        O_{n+1}
+    \end{bmatrix} \cdot \begin{bmatrix}
+        \text{extended} \\
+        \text{controllability} \\
+        \text{matrix} \\
+        R_{n+1}
+    \end{bmatrix}
+\]
+
+Where $O_{n+1} = \begin{bmatrix}
+    H \\ HF \\ \vdots \\ HF^n
+\end{bmatrix}$ of size $(n+1)\times n$ and $R_{n+1} = \begin{bmatrix}
+    G & FG & \cdots & F^nG
+\end{bmatrix}$ of size $n\times (n+1)$.
+
+\paragraph{Step 3} $H$, $F$, $G$ estimation.
+
+Using $O_{n+1}$ and $R_{n+1}$ we can easily find:
+\begin{align*}
+    \hat{G} = R_{n+1}(\texttt{:;1}) & \quad\text{first column} \\
+    \hat{H} = O_{n+1}(\texttt{1;:}) & \quad\text{first row} \\
+\end{align*}
+
+Define $O_1$ as $O_{n+1}$ without the last row, and $O_2$ as $O_{n+1}$ without the first row.
+$O_1$ and $O_2$ are $n\times n$ matrices.
+
+\textbf{Note} that $O_1$ is invertible since it's an observability matrix and the subsystem is fully observable.
+Moreover $O_1F = O_2$, so $\hat{F} = O_1^{-1}O_2$.
+
+In conclusion in a simple and constructive way we have estimated a State Space model of the system $\{\hat{H}, \hat{G}, \hat{F}\}$ starting from measured IR, using only $2n+1$ samples of IR.
+
+\begin{remark}
+    If the measurement is noisy all this process is useless.
+\end{remark}
+
+\section{Real problem}
+
+The measurements of IR are noisy: $\tilde{\omega}(t) = \omega(t) + \eta(t)$.
+
+\missingfigure{stimulation of a noisy system}
+
+
+\section{4SID procedure (with noise)}
+
+\paragraph{Step 1} Build the Hankel matrix from data using ``one-shot'' all the available $N$ data points.
+
+\[
+    \tilde{H}_{qd} = \begin{bmatrix}
+        \tilde{\omega}(1) & \tilde{\omega}(2) & \cdots & \tilde{\omega}(d) \\
+        \tilde{\omega}(2) & \tilde{\omega}(3) & \cdots & \tilde{\omega}(d+1) \\
+        \vdots            & \vdots            & \ddots & \vdots \\
+        \tilde{\omega}(q) & \tilde{\omega}(q+1) & \cdots & \tilde{\omega}(q+d-1) \\
+    \end{bmatrix}
+\]
+
+$\tilde{H}_{qd}$ is a $q\times d$ matrix. \textbf{Note} that $q+d-1$ must equal to $N$ so that we use all the data set.
+
+\begin{remark}[Choice of $q$ and $d$]
+    Hypothesis: $q<d$ so that $q+d-1=N$, so $q=N+1-d$.
+    \missingfigure{q/d plot}
+
+    If $q \approx d$ the method has better accuracy.
+    If $q \ll d$ it's computationally less intensive.
+
+    If $0.6d < q < d$ we get to a good enough result.
+\end{remark}
