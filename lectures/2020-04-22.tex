@@ -15,10 +15,10 @@ $\tilde{U}$ and $\tilde{V}$ are unitary matrices. A matrix $M$ is unitary if:
 
 \[
     \tilde{S} = \begin{bmatrix}
-        \sigma_1 & & & \\
-        & \sigma_2 & & \\
-        & & \ddots & \\
-        & &  & \sigma_d \\
+        \sigma_1 & & & & &\\
+        & \sigma_2 & & & &\\
+        & & \ddots & & &\\
+        & &  & \sigma_d & &\\
     \end{bmatrix}
 \]
 
@@ -26,16 +26,15 @@ Where $\sigma_1$, $\sigma_2$, $\ldots$, $\sigma_q$ are the singular values of $\
 Those are real, positive numbers, sorted in decreasing order ($\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_q$).
 
 \begin{remark}
-    The singular values of a rectangular matrix are a \emph{sort of} eigenvalues of a square matrix.
+    The singular values of a rectangular matrix are a \emph{sort of} eigenvalues of a square matrix.\\
+    SVD is a \emph{sort of} diagonalization of a rectangular matrix.
 \end{remark}
-
-SVD is a \emph{sort of} diagonalization of a rectangular matrix.
 
 \begin{remark}
-    For a square matrix, $\text{eig} A = \text{roots} \det A-\lambda I$. If $M$ is rectangular $SV(M) = \sqrt{\text{eig}(MM^T)}$ (if non zero eigenvalues).
+    For a square matrix, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. If $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM^T)}$ (for non zero eigenvalues).
 \end{remark}
 
-\begin{remark}[How can we compute SVD]
+\begin{remark}[How to compute SVD]
     The optimal numerical computation is not trivial. Use \texttt{svd(M)} in Matlab.
 
     Theoretical method for SVD computation is to make 2 diagonalization steps:
@@ -47,7 +46,7 @@ SVD is a \emph{sort of} diagonalization of a rectangular matrix.
     \]
 \end{remark}
 
-\paragraph{Step 3} Plot the singular values and cut-off the 3 matrices
+\paragraph{Step 3} Plot the singular values and cut-off the 3 matrices.
 
 \begin{figure}[H]
     \begin{minipage}[t]{0.5\textwidth}
@@ -99,7 +98,8 @@ SVD is a \emph{sort of} diagonalization of a rectangular matrix.
     \end{minipage}
 \end{figure}
 
-In the ideal case there is a perfect/clear separation between the signal and the noise S.V. (a jump). $n$ is the order of the system.
+In the ideal case there is a perfect/clear separation between the signal and the noise S.V. (a jump).
+The index of the jump is $n$, that is the order of the system.
 
 In the real case there is no clear distinction between signal and noise singular values, the order of the system can assume values in an interval.
 With some empirical test we can select a good compromise between complexity, precision and overfitting (see \emph{cross-validation}).
@@ -162,53 +162,56 @@ From $\tilde{H}_{qd}$ to $\hat{H}_{qd}$ the rank is hugely reduced.
     \hat{H}_{qd} = \hat{U} \hat{S} \hat{V}^T = \hat{U} \hat{S}^{\frac{1}{2}} \hat{S}^{\frac{1}{2}} \hat{V}^T
 \]
 
-Where $\hat{S}^{\frac{1}{2}}$ is the matrix with as elements the square roots of the original elements.
+Where $\hat{S}^{\frac{1}{2}}$ is the matrix with elements the square roots of the elements of $\hat{S}$.
 
 \[
     \hat{O} = \hat{U} \hat{S}^{\frac{1}{2}} \qquad \hat{R} = \hat{S}^{\frac{1}{2}} \hat{V}^T \qquad \implies \qquad \hat{H}_{qd} = \hat{O} \hat{R}
 \]
 
-We can view $\hat{O}$ as the extended observability matrix and the $\hat{R}$ the extended reachability matrix of the system. $\hat{H}$ is the first row of $\hat{O}$, $\hat{G}$ is the first column of $\hat{R}$.
+We can view $\hat{O}$ as the extended observability matrix and the $\hat{R}$ the extended reachability matrix of the system. We can estimate $\hat{H}$ with the first row of $\hat{O}$ and $\hat{G}$ with the first column of $\hat{R}$.
 
 What about the estimation of $\hat{F}$?
 Consider for example $\hat{O}$ and use the \emph{shift-invariance} property.
-Define $O_1$ as $O_{n+1}$ without the last row, and $O_2$ as $O_{n+1}$ without the first row.
+Define $\hat{O}_1$ as $\hat{O}$ without the last row, and $\hat{O}_2$ as $\hat{O}$ without the first row.
 
 Therefore $\hat{O}_1\cdot \hat{F} = \hat{O}_2$, but $\hat{O}_1$ is not a square matrix so it's not invertible.
 In this case we can use the approximate \emph{least-square} solution of this linear system.
 
-\[ Ax = B \qquad \implies \qquad \text{3 different cases} \]
-
+Consider a generic system $Ax = B$ with dimension  $(h\times n) \cdot (n \times 1) = (h \times 1)$, we have 3 different cases:
 \begin{enumerate}
-    \item $(h\times n) \cdot (n \times 1) = (h \times 1)$ with $h < n$. We have less equations than variables, the system is called \emph{under determined} and we have infinite solutions.
+    \item $h < n$. We have less equations than variables, the system is \emph{under determined} and we have infinite solutions.
     \item $h = n$, we have one and only one solution if $A$ is invertible.
     \item $h > n$, we have more equations than variables, the system is \emph{over determined} and it's impossible (no solutions).
 \end{enumerate}
 
-In the third case using an approximate least-squares solution, the trick is:
+In the third case we can use an approximate solution using the least-squares method, which for a generic system is as follows:
 \begin{align*}
-    Ax = B \\
-    A^TAx = A^TB & \implies \hat{X} = \underbrace{(A^TA)^{-1}A^T}_{A^+} B
+    Ax &= B \\
+    A^TAx &= A^TB \implies \hat{X} = \underbrace{(A^TA)^{-1}A^T}_{A^+} B
 \end{align*}
 
-$A^+$ is called pseudo-inverse, a surrogate when $A$ is rectangular.
+$A^+$ is called \emph{pseudo-inverse}, which is ``surrogate inverse'' when $A$ is rectangular.
 
-Using the pseudo-inverse method:
-\[
-    \hat{O}_1\hat{F} = \hat{O}_2 \qquad \hat{O}_1^T\hat{O}_2\hat{F} = O_1^TO_2 \qquad \hat{F} = \left(\hat{O}_1^T\hat{O}_1\right)^{-1} \hat{O}_1^T\hat{O}_2
-\]
+Using the pseudo-inverse matrix:
+\begin{align*}
+    \hat{O}_1\hat{F} = \hat{O}_2 &&
+    \hat{O}_1^T\hat{O}_1\hat{F} = \hat{O}_1^T\hat{O}_2 &&
+    \hat{F} = \left(\hat{O}_1^T\hat{O}_1\right)^{-1} \hat{O}_1^T\hat{O}_2
+\end{align*}
 
-\paragraph{Conclusion} Starting from a noisy I.R. $\{\omega(1), \omega(2), \ldots, \omega(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non parametric/constructive way.
+
+\paragraph{Conclusion} Starting from a noisy I.R. $\{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non parametric and constructive way.
 
 \begin{remark}
-    It can be done something similar also if the measured input is generic (i.e. not an impulse).
+    This method can be extended also to the case where the input signal is generic (i.e. not an impulse).
 \end{remark}
 
-\begin{remark}[optimality of 4SID]
+\begin{remark}[Optimality of 4SID]
     The method is optimal in the sense that it makes the best possible rank reduction of $\tilde{H}_{qd}$.
 \end{remark}
 
-\begin{example}[there are infinite ways to make a rank reduction]
+\begin{example}[Rank reduction]
+    In general there are infinite ways to make a rank reduction.
     \[
         \underbrace{\begin{bmatrix}
             2 & 5 & 3 & 6 & 5 \\
@@ -229,16 +232,16 @@ Using the pseudo-inverse method:
         \end{bmatrix}
     \]
     It's not the optimal rank reduction matrix, but it factors out a matrix with lower rank.
-
-    \textbf{Goal} obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
-    SVD makes exactly this: $\tilde{H}_{red,qd}$ is the minimum possible (in the sense of the \emph{Frobenius norm}).
-    \[
-        \left|\tilde{H}_{res,qd}\right| = \sqrt{\sum_{ij} \left(\tilde{H}_{res,qd}^{(ij)} \right)^2}
-    \]
 \end{example}
 
+Our goal is to obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
+SVD makes exactly this: $\tilde{H}_{res,qd}$ is the minimum possible (in the sense of the \emph{Frobenius norm}).
+\[
+    \left|\tilde{H}_{res,qd}\right|_F = \sqrt{\sum_{ij} \left(\tilde{H}_{res,qd}^{(ij)} \right)^2}
+\]
+
 \begin{remark}
-    4SID is a constructive method that can be implemented in a fully-automatic way, except:
+    4SID is a constructive method that can be implemented in a fully-automatic way, except for these steps:
     \begin{itemize}
         \item $q$ and $d$ selection (not critical)
         \item Choice of $n$ (typically supervised by the designer). It can be made automatic using a cross-validation method.
