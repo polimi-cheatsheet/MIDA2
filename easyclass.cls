@@ -40,156 +40,55 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{definition}{Definition}
-%\newtheorem*{remark}{Remark}
 \newtheorem*{assumption}{Assumption}
-%Theorem
-\newcounter{theo}[chapter] \setcounter{theo}{0}
-\renewcommand{\thetheo}{\arabic{chapter}.\arabic{theo}}
-\newenvironment{theo}[2][]{%
-\refstepcounter{theo}%
-\ifstrempty{#1}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=blue!20]
-{\strut Theorem~\thetheo};}}
-}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=blue!20]
-{\strut Theorem~\thetheo:~#1};}}%
-}%
-\mdfsetup{innertopmargin=10pt,linecolor=blue!20,%
-linewidth=2pt,topline=true,%
-frametitleaboveskip=\dimexpr-\ht\strutbox\relax
-}
-\begin{mdframed}[]\relax%
-\label{#2}}{\end{mdframed}}
-%Lemma
-\newcounter{lem}[theo] %\setcounter{lem}{0}
-\renewcommand{\thelem}{\arabic{chapter}.\arabic{theo}}
-\newenvironment{lem}[2][]{%
-\refstepcounter{theo}%
-\ifstrempty{#1}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=green!20]
-{\strut Lemma~\thelem};}}
-}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=green!20]
-{\strut Lemma~\thelem:~#1};}}%
-}%
-\mdfsetup{innertopmargin=10pt,linecolor=green!20,%
-linewidth=2pt,topline=true,%
-frametitleaboveskip=\dimexpr-\ht\strutbox\relax
-}
-\begin{mdframed}[]\relax%
-\label{#2}}{\end{mdframed}}
-%Proof
-\newcounter{prf}[theo]%\setcounter{prf}{0}
-\renewcommand{\theprf}{\arabic{chapter}.\arabic{theo}}
-\newenvironment{prf}[2][]{%
-\refstepcounter{prf}%
-\ifstrempty{#1}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=red!20]
-{\strut Proof~\theprf};}}
-}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=red!20]
-{\strut Proof~\theprf:~#1};}}%
-}%
-\mdfsetup{innertopmargin=10pt,linecolor=red!20,%
-linewidth=2pt,topline=true,%
-frametitleaboveskip=\dimexpr-\ht\strutbox\relax
-}
-\begin{mdframed}[]\relax%
-\label{#2}}{\qed\end{mdframed}}
-%Example
-\newcounter{example}[theo]%\setcounter{example}{0}
-\newenvironment{example}[1][]{%
-\refstepcounter{example}%
-\ifstrempty{#1}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=orange!20]
-{\strut Example};}}
-}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=orange!20]
-{\strut Example:~#1};}}%
-}%
-\mdfsetup{innertopmargin=10pt,linecolor=orange!20,%
-linewidth=2pt,topline=true,%
-frametitleaboveskip=\dimexpr-\ht\strutbox\relax
-}
-\begin{mdframed}[]\relax%
-}{\end{mdframed}}
-%Remark
-\newcounter{remark}[theo]%\setcounter{remark}{0}
-\newenvironment{remark}[1][]{%
-\refstepcounter{remark}%
-\ifstrempty{#1}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=purple!20]
-{\strut Remark};}}
-}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=purple!20]
-{\strut Remark:~#1};}}%
-}%
-\mdfsetup{innertopmargin=10pt,linecolor=purple!20,%
-linewidth=2pt,topline=true,%
-frametitleaboveskip=\dimexpr-\ht\strutbox\relax
-}
-\begin{mdframed}[]\relax%
-}{\end{mdframed}}
-%Exercise
-\newcounter{exercise}[theo]%\setcounter{exercise}{0}
-\newenvironment{exercise}[1][]{%
-\refstepcounter{exercise}%
-\ifstrempty{#1}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=red!40]
-{\strut Exercise};}}
-}%
-{\mdfsetup{%
-frametitle={%
-\tikz[baseline=(current bounding box.east),outer sep=0pt]
-\node[anchor=east,rectangle,fill=red!40]
-{\strut Exercise:~#1};}}%
-}%
-\mdfsetup{innertopmargin=10pt,linecolor=red!40,%
-linewidth=2pt,topline=true,%
-frametitleaboveskip=\dimexpr-\ht\strutbox\relax
-}
-\begin{mdframed}[]\relax%
-}{\end{mdframed}}
 
+%=================================
+% generic definition of the colored boxes
+\newcommand{\defineblock}[3]{%
+  \newenvironment{#1}[1][]{%
+    \ifstrempty{##1}%
+    {%
+      \mdfsetup{%
+        frametitle={%
+          \tikz[baseline=(current bounding box.east),outer sep=0pt]%
+          \node[anchor=east,rectangle,fill=#3]%
+          {\strut #2};%
+        }%
+      }%
+    }%
+    {%
+      \mdfsetup{%
+        frametitle={%
+          \tikz[baseline=(current bounding box.east),outer sep=0pt]%
+          \node[anchor=east,rectangle,fill=#3]%
+          {\strut #2:~##1};%
+        }%
+      }%
+    }%
+    \mdfsetup{%
+      innertopmargin=10pt,%
+      linecolor=#3,%
+      linewidth=2pt,%
+      topline=true,%
+      frametitleaboveskip=\dimexpr-\ht\strutbox\relax%
+    }%
+    \begin{mdframed}[]\relax%
+  }%
+  {%
+    \end{mdframed}%
+  }%
+}
+
+\defineblock{exercise}{Excercise}{red!40}
+\defineblock{remark}{Remark}{purple!20}
+\defineblock{example}{Example}{orange!20}
 
 %=================================
 % useful commands
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\supp}{supp}
+\DeclareMathOperator*{\rank}{rank}
 
 \def\vec#1{{\ensuremath{\bm{{#1}}}}}
 \def\mat#1{\vec{#1}}
@@ -246,6 +145,10 @@ frametitleaboveskip=\dimexpr-\ht\strutbox\relax
 \tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
    execute at end node=$]
 \RequirePackage{graphicx}
+% tikz styles for the block diagrams
+\tikzstyle{int}  = [draw, fill=blue!20, minimum size=2em]
+\tikzstyle{init} = [pin edge={to-,thin,black}]
+\tikzstyle{sum}  = [draw, fill=blue!20, circle, node distance=1cm]
 
 %=================================
 % title page
@@ -288,18 +191,13 @@ frametitleaboveskip=\dimexpr-\ht\strutbox\relax
 %=================================
 % add current instructor info
 % on the right
-\newcommand{\curinstructor}[1]{
-    % instructor info
-    \vfill
-    \begin{flushright}
-    Instructor: #1
-    \end{flushright}
-}
-
-\newcommand{\newlecture}[2]{
-    \vspace{-3cm}
-    \begin{flushright}
-    #1 -- #2
-    \end{flushright}
-    \vspace{1.5cm}
+\RequirePackage{marginnote}
+\newcommand{\newlecture}[2]{%
+  % \marginpar{#1\\#2}%
+  \marginpar{\noindent\fbox{%
+    \parbox{1.5cm}{%
+      \footnotesize
+      #1\\#2
+    }%
+  }}
 }
