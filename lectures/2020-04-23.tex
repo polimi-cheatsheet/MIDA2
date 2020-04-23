@@ -1,0 +1,199 @@
+\newpage
+\newlecture{Sergio Savaresi}{23/04/2020}
+
+\begin{exercise}[similar to an exam exercise]
+    Consider the following S.S. model
+    \[
+    F = \begin{bmatrix}
+        \frac{1}{2} & 0 \\
+        1   & \frac{1}{4}
+    \end{bmatrix}
+    \qquad
+    G = \begin{bmatrix}
+        1 \\ 0
+    \end{bmatrix}
+    \qquad
+    H = \begin{bmatrix}
+        0 & 1
+    \end{bmatrix}
+    \qquad
+    D = 0
+    \]
+    The system has grade $n=2$ and is single-input single-output.
+
+    \paragraph{Question} Write the time domain equations of the system in the state space representation.
+    \begin{align*}
+        x_1(t+1) &= \frac{1}{2}x_1(t) + u(t) \\
+        x_2(t+1) &= x_1(t) + \frac{1}{4}x_2(t) \\
+        y(t) &= x_2(t)
+    \end{align*}
+
+    \paragraph{Question} Write the block scheme of the S.S. representation of the system.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node [int] (in1) {$1$};
+            \node [left of=in1] (u) {$u(t)$};
+            \node [sum, right of=in1, node distance=1.5cm] (sum1) {};
+            \node [int, right of=sum1, node distance=2.5cm] (n1) {$z^{-1}$};
+            \node [int, below of=n1, node distance=1.5cm] (fb1) {$\frac{1}{2}$};
+            \node [coordinate, right of=n1] (exit1) {};
+            \node [int, below of=fb1, node distance=1.5cm] (in2) {$1$};
+            \node [int, below of=in2, node distance=1.5cm] (n2) {$z^{-1}$};
+            \node [sum, left of=n2, node distance=2.5cm] (sum2) {};
+            \node [coordinate, right of=n2] (exit2) {};
+            \node [int, below of=n2, node distance=1.5cm] (fb2) {$\frac{1}{4}$};
+            \node [int, right of=exit2, node distance=1.5cm] (out2) {$1$};
+            \node [right of=out2, node distance=1.5cm] (y) {$y(t)$};
+
+            \draw[->] (u) -- (in1);
+            \draw[->] (in1) -- (sum1);
+            \draw[->] (sum1) edge node {$x_1(t+1)$} (n1);
+            \draw (n1) edge node {$x_1(t)$} (exit1);
+            \draw[->] (exit1) |- (fb1);
+            \draw[->] (exit1) |- (in2);
+            \draw[->] (fb1) -| (sum1);
+            \draw[->] (in2) -| (sum2);
+            \draw[->] (sum2) edge node {$x_2(t+1)$} (n2);
+            \draw (n2) edge node {$x_2(t)$} (exit2);
+            \draw[->] (exit2) |- (fb2);
+            \draw[->] (fb2) -| (sum2);
+            \draw[->] (exit2) -- (out2);
+            \draw[->] (out2) -- (y);
+        \end{tikzpicture}
+    \end{figure}
+
+
+    By visual inspection the system is fully observable and fully controllable.
+
+    \paragraph{Question} Make a formal verification that the system is fully observable and controllable.
+    \[
+        O = \begin{bmatrix}
+            H \\ HF
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 1 \\
+            1 & \frac{1}{4}
+        \end{bmatrix}
+        \qquad
+        \rank O = 2 = n
+    \]
+    \[
+        R = \begin{bmatrix}
+            G & FG
+        \end{bmatrix} = \begin{bmatrix}
+            1 & \frac{1}{2} \\
+            0 & 1
+        \end{bmatrix}
+        \qquad
+        \rank R = 2 = n
+    \]
+    The extended ($n+1$) $O_3$ and $R_3$:
+    \[
+        O_3 = \begin{bmatrix}
+            H \\ HF \\ HF^2
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 1 \\
+            1 & \frac{1}{4} \\
+            \frac{3}{4} & \frac{1}{16}
+        \end{bmatrix}
+    \]
+    \[
+        R_3 = \begin{bmatrix}
+            G & F & F^2G
+        \end{bmatrix} = \begin{bmatrix}
+            1 & \frac{1}{2} & \frac{1}{4} \\
+            0 & 1 & \frac{3}{4} \\
+        \end{bmatrix}
+    \]
+
+    \paragraph{Question} Compute the transfer function representation.
+
+    First method: direct manipulation of S.S. equations
+    \begin{align*}
+        x_1(t+1) &= \frac{1}{2}x_1(t) + u(t) \\
+        x_2(t+1) &= x_1(t) + \frac{1}{4}x_2(t) \\
+        y(t) &= x_2(t)
+    \end{align*}
+    \begin{align*}
+        zx_1(t+1) - \frac{1}{2}x_1(t) = u(t) \qquad &\implies \qquad x_1(t) = \frac{1}{z-\frac{1}{2}}u(t) \\
+        zx_2(t) - \frac{1}{4}x_2(t) = \frac{1}{z-\frac{1}{2}}u(t) \qquad &\implies \qquad x_2(t) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}u(t) \\
+        y(t) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}u(t)
+    \end{align*}
+    \[
+        W(z) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}
+    \]
+
+    There are 2 poles: $z=\frac{1}{4}$ and $z=\frac{1}{2}$. Since the system is fully observable and controllable the poles correspond to the eigenvalues of $F$.
+
+    Second method: use the formula
+    \[
+        W(z) = H(zI-F)^{-1}G = \begin{bmatrix}
+            0 & 1
+        \end{bmatrix} \begin{bmatrix}
+            z-\frac{1}{2} & 0 \\
+            -1 & z-\frac{1}{4}
+        \end{bmatrix}^{-1} \begin{bmatrix}
+            1 \\ 0
+        \end{bmatrix} = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}
+    \]
+
+    \paragraph{Question} Write I/O time-domain representation
+
+    \[
+        y(t) = \frac{1}{z^2-\frac{3}{4}z+\frac{1}{8}}u(t) = \frac{z^{-2}}{1-\frac{3}{4}z^{-1}+\frac{1}{8}z^{-2}}u(t) = \frac{3}{4}y(t-1) - \frac{1}{8}y(t-2) + u(t-2)
+    \]
+
+    \paragraph{Question} Compute the first 6 values (including $\omega(0)$) of I.R.
+
+    We decide to compute from the T.F. $\frac{z^{-2}}{1-\frac{3}{4}z^{-1}+\frac{1}{8}z^{-2}}$.
+    Performing the long division of $W(z)$ the result is $z^{-2}+\frac{3}{4}z^{-3}+\frac{7}{16}z^{-4}+\frac{15}{64}z^{-5}$.
+
+    \begin{align*}
+        \omega(0) &= 0 &
+        \omega(1) &= 0 &
+        \omega(2) &= 1 \\
+        \omega(3) &= \frac{3}{4} &
+        \omega(4) &= \frac{7}{16} &
+        \omega(5) &= \frac{15}{64}
+    \end{align*}
+
+    \paragraph{Question} Build the Hankel matrix and stop when the rank is not full.
+
+    \[
+        H_1 = \begin{bmatrix}
+            0
+        \end{bmatrix}
+        \qquad
+        H_2 = \begin{bmatrix}
+            0 & 1 \\
+            1 & \frac{3}{4}
+        \end{bmatrix}
+        \qquad
+        H_3 = \begin{bmatrix}
+            0 & 1 & \frac{3}{4} \\
+            1 & \frac{3}{4} & \frac{7}{16} \\
+            \frac{3}{4} & \frac{7}{16} & \frac{15}{64}
+        \end{bmatrix}
+        \qquad
+        \rank H_3 = 2
+    \]
+    $H_3$ is not full rank so the order of the system is 2. Notice that $O_3R_3 = H_3$.
+\end{exercise}
+
+\chapter{Parametric black-box system identification of I/O system using a frequency domain approach}
+
+So far we have seen:
+\begin{itemize}
+    \item In MIDA1 parametric black-box identification of I/O systems (ARMAX) and time series (ARMA)
+    \item In Chapter 1 non-parametric black-box identification of I/O systems (4SID)
+\end{itemize}
+
+The frequency domain approach is a black-box and parametric, and it's very used in practice since it's very robust and reliable.
+
+Since it's parametric it uses the 4 usual steps:
+\begin{enumerate}
+    \item Experiment design and data pre-processing. A special type of experiment and data pre-processing is needed.
+    \item Selection of parametric model class ($\mathcal{M}(\theta)$)
+    \item Definition of a performance index ($J(\theta)$). A new special performance index is needed.
+    \item Optimization ($\hat{\theta} = \argmin_\theta J(\theta)$)
+\end{enumerate}
