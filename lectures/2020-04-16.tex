@@ -91,7 +91,26 @@ The focus is on I/O systems (more close to real applications than T.S.).
 During a break $0 \le \lambda \le 1$ (from free rolling wheel to locked wheel).
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{lectures/2020-04-16/lambda-graph.png}
+    \resizebox{8cm}{!}{%
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex',scale=1.5]
+        \draw[->] (-0.5,0) -- (2.5,0) node[right] {$\lambda$};
+        \draw[->] (0,-0.5) -- (0,2.3) node[left] {$F_x$};
+        \begin{scope}[scale=2]
+            \draw[dotted] (0.23, 1) -- (0.23, 0) node[below] {$\bar{\lambda}$};
+            \draw[dotted] (1, 0.75) -- (1, 0) node[below] {$1$};
+            \node[red,rotate=-23] at (0.65,1) {unstable};
+            \node[green!60!black,rotate=77] at (0.13,0.5) {stable};
+            \begin{scope}
+                \clip (0,0) rectangle (0.23, 2);
+                \draw [green!60!black,line width=0.4mm] plot [smooth] coordinates {(0,0) (0.2, 1) (1, 0.75)};
+            \end{scope}
+            \begin{scope}
+                \clip (0.23, 0) rectangle (1, 2);
+                \draw [red,line width=0.4mm] plot [smooth] coordinates {(0,0) (0.2, 1) (1, 0.75)};
+            \end{scope}
+        \end{scope}
+    \end{tikzpicture}
+    }
     \caption*{Relation between $\lambda$ and the breaking force.}
 \end{figure}
 
