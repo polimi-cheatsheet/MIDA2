@@ -1,0 +1,177 @@
+\newlecture{Sergio Savaresi}{27/04/2020}
+
+The general ideal of the method is:
+\begin{itemize}
+    \item Make a set of ``single sinusoid'' (``single-tune'') excitation experiments
+    \item From each experiment estimate a single point of the frequency response of the system
+    \item Fit the estimated and modeled frequency response to obtain the optimal model
+\end{itemize}
+
+\begin{example}
+    \missingfigure{car drawing}
+
+    This is the dynamic relationship linking the input (steer) to the output (yaw-rate).
+    This kind of relationship is very important for stability control design and autonomous car.
+
+    There are 3 possible situations:
+    \missingfigure{3 situations}
+
+    \begin{enumerate}
+        \item The control variable is the front steer: application is autonomous car
+        \item The driver controls $\delta_F$ which is a measurable disturbance, the system controls the rear steer
+        \item Both $\delta_R$ and $\delta_F$ are control variables: application high performance autonomous car
+    \end{enumerate}
+\end{example}
+
+\paragraph{Step 1} In the experiment design step we first have to select a set of excitation frequencies.
+
+\missingfigure{Fig3}
+
+The maximum frequency is $\omega_H$.
+We have $\{\omega_1, \omega_2, \cdots, \omega_H\}$ usually evenly spaced ($\Delta \omega$ is constant).
+$\omega_H$ must be selected according to the bandwidth of the control system.
+
+We make $H$ independent experiments.
+
+\paragraph{Experiment \#1} $\omega_1$
+\missingfigure{First experiment}
+
+\paragraph{Experiment \#2} $\omega_2$
+\missingfigure{Second experiment}
+
+\paragraph{Experiment \#$H$} $\omega_H$
+\missingfigure{Last experiment}
+
+
+\begin{remark}
+    The amplitudes $A_1$, $A_2$, \ldots, $A_H$ can be equal (constant) or, more frequently, they decrease as the frequency increases to fulfill the power constraint on the input.
+
+    \paragraph{Example} $\delta(t)$ is the steering angle (moved by an actuator).
+    The requested steer torque is proportional to $\delta$: $T(t) = K \delta(t)$.
+    Therefore the steer power is proportional to $T(t) \dot{\delta}(t) = K \delta(t)\dot{\delta}(t)$.
+    If $\delta(t) = A_i\sin(\omega_it)$ the steering power is $KA_i\sin(\omega_it)\omega_iA_i\cos(\omega_it)$ which is proportional to $KA_i^2\omega_i$.
+
+    If we have a limit to this power, this power should be constant during the $H$ experiments.
+    \[KA_i^2\omega_i = \text{const} \qquad A_i=\sqrt{\frac{\text{const}}{K\omega_i}}\]
+\end{remark}
+
+Focusing on the $i$-th experiment.
+
+\missingfigure{Fig5}
+
+\begin{remark}
+    If the system is LTI (linear time-invariant), the frequency response theorem says the if the input is a sine input of frequency $\omega_i$ the output must be a sine with frequency $\omega_i$.
+\end{remark}
+
+However $y_i(t)$ in real applications is not a perfect sinusoid.
+\begin{itemize}
+    \item Noise on output measurements
+    \item Noise on the system (not directly on the output)
+    \item (Small) non-linear effects (that we neglect)
+\end{itemize}
+
+In pre-processing of I/O data we want to extract from $y_i(t)$ a perfect sinusoid of frequency $\omega_i$.
+We force the assumption that the system is LTI, so the output must be a pure sine wave of frequency $\omega_i$ (all the remaining signal is noise).
+
+The model of the output signal is
+\[ \hat{y}_i = B_i \sin(\omega_it+\phi_i) = a_i\sin(\omega_it) + b_i\cos(\omega_it) \]
+There are 2 unknowns: $B_i$ and $\phi_i$ (or $a_i$ and $b_i$).
+We try to estimate $a_i$ and $b_i$ since they are \emph{linear}.
+
+The unknown parameters are $a_i$ and $b_i$ and we can find them by parametric identification.
+\[ \{ \hat{a}_i, \hat{b}_i \} = \argmin_{\{a_i, b_i\}} J_N(a_i, b_i) \]
+\[ J_N(a_i, b_i) = \frac{1}{N} \sum_{t=1}^N ( \underbrace{y_i(t)}_{\text{measurement}} \underbrace{- a_i\sin(\omega_it) - b_i\cos(\omega_it)}_\text{model output})^2 \]
+
+$J_N$ is a quadratic function of $a_i$ and $b_i$, so we can solve the problem explicitly.
+
+\begin{align*}
+    \frac{\partial J_N}{\partial a_i} &= \frac{2}{N} \sum_{t=1}^N (-\sin(\omega_it))(y_i(t) - a_i\sin(\omega_it)-b_i\cos(\omega_it)) = 0 \\
+    \frac{\partial J_N}{\partial b_i} &= \frac{2}{N} \sum_{t=1}^N (-\cos(\omega_it))(y_i(t) - a_i\sin(\omega_it)-b_i\cos(\omega_it)) = 0
+\end{align*}
+
+\[
+    \begin{bmatrix}
+        \sum_{t=1}^N \sin(\omega_it)^2 & \sum_{t=1}^N \sin(\omega_it)\cos(\omega_it) \\
+        \sum_{t=1}^N \sin(\omega_it)\cos(\omega_it) & \sum_{t=1}^N \cos(\omega_it)^2
+    \end{bmatrix}
+    \begin{bmatrix}
+        a_i \\ b_i
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \sum_{t=1}^N y_i(t)\sin(\omega_it) \\
+        \sum_{t=1}^N y_i(t)\cos(\omega_it)
+    \end{bmatrix}
+\]
+
+At this point we prefer to go back to a \emph{sin-only} form ($B_i$, $\phi_i$):
+\[
+    \hat{B}_i\sin(\omega_it + \phi_i) = \hat{B}_i\sin(\omega_it)\cos(\hat{\phi}_i) + \hat{B}_i\cos(\omega_it)\sin(\hat{\phi_i}) = \hat{a}_i\sin(\omega_it) + \hat{b}_i\cos(\omega_it)
+\]
+
+\begin{align*}
+    \hat{B}_i\cos(\hat{\phi}_i) = \hat{a}_i \\
+    \hat{B}_i\sin(\hat{\phi}_i) = \hat{b}_i \\
+\end{align*}
+\[
+    \frac{\hat{b}_i}{\hat{a}_i} = \frac{\sin\hat{\phi}_i}{\cos{\hat{\phi}_i}} = \tan(\hat{\phi_i}) \qquad \hat{\phi}_i = \arctan \left( \frac{\hat{b}_i}{\hat{a}_i} \right)
+\]
+\[
+    \hat{B}_i = \frac{\frac{\hat{a}_i}{\cos\hat{\phi}_i} + \frac{\hat{b}_i}{\sin\hat{\phi}_i}}{2}
+\]
+
+Repeating the experiment and pre-processing for the $H$ experiments we obtain
+
+\begin{align*}
+    \{ \hat{B}_1, \hat{\phi}_1 \} &\implies \frac{\hat{B}_1}{A_1} e^{j\hat{\phi_1}} \\
+    \{ \hat{B}_2, \hat{\phi}_2 \} &\implies \frac{\hat{B}_2}{A_2} e^{j\hat{\phi_2}} \\
+    \vdots& \\
+    \{ \hat{B}_H, \hat{\phi}_H \} &\implies \frac{\hat{B}_H}{A_H} e^{j\hat{\phi_H}} \\
+\end{align*}
+
+We obtain $H$ complex numbers, the estimated $H$ points of the frequency response of the transfer function $W(z)$ from the input $u(t)$ to the output $y(t)$ of the system.
+
+\missingfigure{Fig6}
+
+At the end of \emph{step 1} we have a frequency-domain dataset ($H$ values) representing $H$ estimated points of the frequency response of the system.
+
+\paragraph{Step 2} Model class selection (T.F.)
+
+\[
+    \mathcal{M}(\theta): W(z; \theta) = \frac{b_0+b_1z^{-1}+\cdots+b_pz^{-p}}{1+a_1z^{-1}+\cdots+a_nz^{-n}}z^{-1}
+    \qquad
+    \theta = \begin{bmatrix}
+        a_1 \\ \vdots \\ a_n \\ b_0 \\ \vdots \\ b_p
+    \end{bmatrix}
+\]
+
+\begin{remark}[Model order selection]
+    In this case the order is composed by 2 parameters $n$ and $p$.
+    Use cross-validation approach (or visual fitting in the Bode diagram).
+\end{remark}
+
+\paragraph{Step 3} New performance index (frequency domain).
+
+\[
+    J_H(\theta) = \frac{1}{H} \sum_{i=1}^H \left(W(e^{j\omega_i}; \theta) - \frac{\hat{B}_i}{A_i}e^{j\hat{\phi}_i} \right)^2
+\]
+
+\paragraph{Step 4} Optimization
+
+\[
+    \hat{\theta} = \argmin_\theta J_H(\theta)
+\]
+
+Usually $J_H(\theta)$ is a non-quadratic and non-convex function, iterative optimization methods are needed.
+
+\begin{remark}[Frequency bandwidth selection $\omega_H =\; ?$]
+    Theoretically the standard best solution should be $H$ points distributed uniformly from 0 to $\Omega_N$ (Nyquist).
+
+    In practice it's better to concentrate the experimental effort in a smaller and more focused bandwidth.
+
+    \missingfigure{Fig7}
+
+    $\omega_c$ is the expected cut-off frequency of the closed system.
+    A rule of thumb: $\omega_H \approx 3\omega_c$
+
+    \paragraph{Example} The ESC (electronic stability control) has an expected bandwidth of $\omega_c \approx 2 \text{Hz}$, so $\omega_H \approx 6\text{Hz}$.
+\end{remark}
