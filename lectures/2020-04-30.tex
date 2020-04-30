@@ -1,0 +1,109 @@
+\newlecture{Sergio Savaresi}{30/04/2020}
+
+\begin{remark}[Emphasis on special frequency range]
+    In some cases, between $\omega_1$ and $\omega_H$, we want to be more accurate in system identification in some frequency regions (typically around cut-off-frequency, around resonances).
+
+    We can use different weights for different frequencies.
+
+    \missingfigure{Fig1}
+
+    The performance index can be redefined:
+    \[
+        \tilde{J}_H (\theta) = \frac{1}{H} \sum_{i=1}^H \gamma_i \left(W(e^{j\omega_i};\theta) - \frac{\hat{B}_i}{A_i}e^{j\hat{\phi_i}}\right)^2
+    \]
+
+    Another \emph{trick}: more dense $\omega_i$ spacing in the frequency region of special interest (not really used).
+\end{remark}
+
+\begin{remark}[Single experiment]
+    Sometimes the set of $H$ independent single-sinusoid experiments can be replaced by a long single ``sine-sweep'' experiment.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (-0.5,0) -- (5,0) node[right] {$t$};
+            \draw[->] (0,-1) -- (0,2) node[left] {$u(t)$};
+            \draw[domain=0:4.5,samples=100,smooth,variable=\x,red] plot ({\x},{cos(\x*180/3.14*(\x^1.7+5))*e^(-\x/2.5)});
+        \end{tikzpicture}
+        \caption*{Slowing-varying sinusoid with increasing frequency and decreasing amplitude.}
+    \end{figure}
+
+    We can cut a-posteriori the signal into $H$ pieces, and then back to the standard procedure.
+    Or directly compute an estimation of $\hat{W}(e^{j\omega})$ as a ration of the output and input spectra.
+
+    \[
+        \hat{W}(e^{j\omega}) = \frac{\hat{\Gamma}_y(e^{j\omega})}{\hat{\Gamma}_u(e^{j\omega})}
+    \]
+
+    We can fit the estimated $\hat{W}(e^{j\omega})$ with the model frequency response $W(e^{j\omega}, \theta)$ in the performance index.
+    This experiment is quicker but has usually a lower signal-to-noise-ration.
+\end{remark}
+
+\section{Comparison between time domain (ARMAX) and frequency domain parametric methods}
+
+\paragraph{Frequency domains}
+\begin{description}
+    \item[Pro] Robust and very reliable. We put a lot of energy on each sinusoid. The frequency response estimation is very reliable.
+    \item[Pro] Intuitive (easy to understand)
+    \item[Pro] Consistent with control-design methods (usually in frequency domain)
+    \item[Cons] More demanding for the experiment
+\end{description}
+
+Note that F.D. and T.D. methods should provide the same result if done correctly.
+
+
+\chapter{Kalman Filter (software sensing in feedback)}
+
+In MIDA1 we have mostly used I/O transfer function representations:
+\[ y(t) = \frac{B(z)}{A(z)}u(t-k) + \frac{C(z)}{A(z)}e(t) \qquad e(t) \sim WN \]
+
+
+Kalman filter theory is fully based on S.S. representation.
+
+\[
+    \begin{cases}
+        x(t+1) = Fx(t) + Gu(t) + v_1(t)  & \qquad v_1 \sim WN \\
+        y(t) = Hx(t) + \cancel{Du(t)} + v_2(t) & \qquad v_2 \sim WN
+    \end{cases}
+\]
+
+\section{Motivation and Goals}
+
+Given a model description $\{F, G, H\}$ and noises variances (not a system identification technique), with K.F. theory we can address the following problems:
+
+\begin{itemize}
+    \item $k$-steps ahead prediction of output: $\hat{y}(t+k|t)$ (already solved in MIDA1 for ARMAX).
+    \item $k$-steps ahead prediction of state: $\hat{x}(t+k|t)$ (at time $t$ we have available $y(t)$, $y(t-1)$, $\ldots$, $u(t)$, $u(t-1)$, $\ldots$).
+    \item Find the filter of the state: $\hat{x}(t|t)$ (given data of $y(t)$ and past, and $u(t)$ and part, the estimation is made at the same time). In practice it's \emph{software-sensing}, most important problem solved by Kalman filter (ideed K.F. is named \emph{filter}).
+    \item Gray box system identification (see chapter 5). We have a recorded data set and the model structure with some unknown parameters.
+\end{itemize}
+
+
+Dynamical systems have this layout:
+\missingfigure{Fig3}
+
+MIMO system with $m$ inputs, $p$ outputs and $n$ states.
+
+\textbf{Key problem} usually $p \ll n$, physical sensors are much less than system states.
+\begin{itemize}
+    \item Cost
+    \item Cables, power supply
+    \item Maintenance (faults, degradation)
+\end{itemize}
+
+It is useful to have full ``measurement'' of states because:
+\begin{itemize}
+    \item Control design (state feedback design)
+    \item Monitoring (fault detection, predictive maintenance, \dots)
+\end{itemize}
+
+Software sensing (also called virtual sensing):
+\missingfigure{Fig4}
+
+\paragraph{Dilemma} When using software sensing and when physical sensing?
+\begin{itemize}
+    \item In some cases there is no option (not feasible installation of a physical sensor)
+    \item In most cases both options are viable: variable vs fixed cost
+\end{itemize}
+
+\missingfigure{Fig5}
