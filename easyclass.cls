@@ -141,6 +141,7 @@
 %=================================
 % draw pictures
 \RequirePackage{tikz}
+\RequirePackage{pgfplots}
 \usetikzlibrary{arrows,arrows.meta,decorations.pathreplacing,matrix,positioning,calc,shapes}
 \tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
    execute at end node=$]
@@ -175,7 +176,7 @@
 % make title
 \renewcommand{\maketitle}{
     \centering
-    {\scshape{\Large  \@university, \@courseid} \par}
+    {\scshape{\Large  \@university \par \@courseid} \par}
     \vspace{1.5cm}
     {\huge\bfseries{\@title} \par}
     \vspace{2cm}
