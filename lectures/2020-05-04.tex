@@ -1,0 +1,222 @@
+\newlecture{Sergio Savaresi}{04/05/2020}
+
+\paragraph{Key questions for software sensing}
+
+\begin{itemize}
+    \item Is software-sensing feasible? Test is the observability of the states from measured outputs.
+    \item Quality of estimation error (\emph{noise of measurement} for the software sensor).
+\end{itemize}
+
+\begin{example}[Slip estimation for ABS/traction control]
+    \missingfigure{Fig1}
+
+    \paragraph{Problem} Estimation of $v$.
+
+    Measure of $v$ can be done with:
+    \begin{itemize}
+        \item Optical sensor
+        \item GPS
+    \end{itemize}
+    Both have a problem of availability (not guaranteed). Physical sensing is not an option for industrial production.
+
+    Intuitive solution: install a longitudinal accelerometer ($a_x$) and integrate.
+    \missingfigure{Fig2}
+    \[
+        \hat{v} = \int a_x(t) dt \qquad <=> \qquad a_x(t) -> 1/s -> \hat{V}(t)
+    \]
+
+    In discrete time domain: discretization using approximation of derivative (Eulero forward method)
+    \[
+        \frac{d}{dt} v(t) = a_x(t) \qquad \frac{dv(t)}{dt} \approx \frac{v(t+1)-v(t)}{\Delta T_s} = a_x(t)
+    \]
+
+    Where $\Delta T_s$ is the sampling interval (e.g. 10ms).
+
+    \[
+        \hat{v}(t) = \hat{v}(t-1) + \Delta T_s a_x(t-1)
+    \]
+
+    \missingfigure{Fig3}
+
+    Unfortunately the measured signal is not $a_x(t)$ but $a_x(t)+d_{a_x}(t)$.
+
+    \missingfigure{Fig4}
+
+    Integrating noise generates a \emph{drift}. Integrator is not an asymptotic stable system.
+
+    \missingfigure{Fig5}
+
+    \paragraph{Solution} Use a Kalman Filter.
+
+    \missingfigure{Fig6}
+\end{example}
+
+\begin{example}[State of charge estimation of a battery]
+    \missingfigure{Fig7}
+    \[
+        \text{SoC}(t) = 1 - \frac{\int i(t)dt}{I} \qquad 0 \le \text{SoC} \le 1
+    \]
+    Where $I$ is the total amount of \emph{current} that can be extracted by the user of the battery.
+    This solution is not feasible since it integrates the noise on $i(t)$.
+\end{example}
+
+\section{Kalman Filter on Basic Systems}
+
+\begin{itemize}
+    \item No external inputs ($\cancel{Gu(t)}$): time series
+    \item Linear systems
+    \item Time invariant systems
+\end{itemize}
+
+After the description of the solution of Kalman Filter for the basic system, we make the extensions to a more general system, in particular with $Gu(t)$.
+
+\subsection{Detailed description of Basic System}
+
+\[
+    S: \begin{cases}
+        x(t+1) = Fx(t) + \cancel{Gu(t)} + v_1(t) & \text{state equation}\\
+        y(t) = Hx(t) + v_2(t) & \text{output equation}
+    \end{cases}
+\]
+\[
+    x(t) = \begin{bmatrix}
+        x_1(t) \\
+        x_2(t) \\
+        \vdots \\
+        x_n(t)
+    \end{bmatrix}
+    \qquad
+    \left(\;u(t) = \begin{bmatrix}
+        u_1(t) \\
+        u_2(t) \\
+        \vdots \\
+        u_m(t)
+    \end{bmatrix}\;\right)
+    \qquad
+    y(t) = \begin{bmatrix}
+        y_1(t) \\
+        y_2(t) \\
+        \vdots \\
+        y_p(t)
+    \end{bmatrix}
+\]
+
+System with $n$ states, ($m$ inputs) and $p$ outputs.
+
+$v_1(t)$ is a vector white-noise.
+\[
+    v_1(t) \sim WN(0, V_1) \qquad v_1(t) = \begin{bmatrix}
+        v_{11}(t) \\
+        v_{12}(t) \\
+        \vdots \\
+        v_{1n}(t)
+    \end{bmatrix}
+\]
+
+$v_1(t)$ is called state noise or model noise.
+It accounts for the modelling errors of the state equation of the system.
+
+\begin{itemize}
+    \item $E[v_1(t)] = \vec{0}$
+    \item $E[v_1(t) \cdot v_1(t)^T] = V_1$, where $V_1$ is an $n\times n$ covariance matrix (symmetric and semi-definite positive)
+    \item $E[v_1(t) \cdot v_1(t-\tau)^T] = 0 \quad \forall t \forall \tau \ne 0$
+\end{itemize}
+
+$v_2(t)$ is a vector white-noise.
+\[
+    v_2(t) \sim WN(0, V_2) \qquad v_2(t) = \begin{bmatrix}
+        v_{21}(t) \\
+        v_{22}(t) \\
+        \vdots \\
+        v_{2p}(t)
+    \end{bmatrix}
+\]
+
+$v_2(t)$ is called output noise or measurement (or sensor) noise.
+\begin{itemize}
+    \item $E[v_2(t)] = \vec{0}$
+    \item $E[v_2(t) \cdot v_2(t)^T] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (symmetric and \textbf{definite} positive)
+    \item $E[v_2(t) \cdot v_2(t-\tau)^T] = 0 \quad \forall t \forall \tau \ne 0$
+\end{itemize}
+
+Assumptions of the relationships between $v_1(t)$ and $v_2(t)$:
+\[
+    E[v_1(t) \cdot v_2(t-\tau)^T] = \underbrace{V_{12}}_{n\times p} = \begin{cases}
+        0 & \text{if } \tau \ne 0 \\
+        \text{can be non-zero} & \text{if } \tau = 0
+    \end{cases}
+\]
+
+They can be correlated but only at the same time (in practice $V_{12}=0$ is the most common assumption).
+
+Since the system $S$ is dynamic we need to define the initial conditions:
+\[
+    E[x(1)] = \underbrace{X_0}_{n\times 1} \qquad E[\left(x(1) - x(0)\right)\left(x(1)-x(0)\right)^T] = \underbrace{P_0}_{n\times n} \ge 0
+\]
+
+If $P_0 = 0$ the initial state is perfectly known.
+
+Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated with the initial state:
+\[
+    x(1) \perp v_1(t) \qquad x(1) \perp v_2(t)
+\]
+
+\subsection{Basic Solution}
+
+\begin{align*}
+    & \hat{x}(t+1|t) = F\hat{x}(t|t-1) + K(t)e(t) && \qquad \text{state equation} \\
+    & \hat{y}(t|t-1) = H\hat{x}(t|t-1) &&\qquad \text{output equation} \\
+    & e(t) = y(t) - \hat{y}(t|t-1) &&\qquad \text{output prediction error} \\
+    & K(t) = \left( FP(t)H^T+V_{12} \right) \left( HP(t)H^T+V_2 \right)^{-1} &&\qquad \text{gain of the K.F.} \\
+    & P(t+1) = \left( FP(t)F^T + V_1 \right) + &&\\
+    & - \left( FP(t)H^T + V_{12} \right)\left( HP(t)H^T + V_{2} \right)^{-1}\left( FP(t)H^T + V_{12} \right)^T && \qquad\text{difference Riccati equation}
+\end{align*}
+
+There equations must be completed with 2 initial conditions (2 are dynamic equations)
+
+\begin{align*}
+    \hat{x}(1|0) = E[x(1)] = X_0 & \text{state equation} \\
+    P(1) = \text{var}[x(1)] = P_0 & \text{DRE}
+\end{align*}
+
+\begin{remark}[Structure or $K(t)$ and D.R.E]
+    Notice that $K(t)$ and DRE have  a\emph{blockset} structure having this form: $AP(t)B^T+N$
+
+    There are 3 different types of blocks:
+    \begin{align*}
+        \text{state} \qquad& FP(t)F^T+V_1 \\
+        \text{output} \qquad& HP(t)H^T+V_2 \\
+        \text{mix} \qquad& FP(t)H^T+V_{12}
+    \end{align*}
+
+    \begin{align*}
+        \text{gain} \qquad& (\text{mix})(\text{output})^{-1} \\
+        \text{DRE} \qquad& (\text{state}) - (\text{mix})(\text{output})^{-1}(\text{mix})^T
+    \end{align*}
+\end{remark}
+
+\begin{remark}[Riccati equation]
+    Riccati equation is a special type of nonlinear matrix difference equation.
+
+    Notice that DRE is an autonomous, non-linear, discrete time, multi-variable system, described by a non-linear difference matrix equation.
+    \[
+        \text{DRE: } P(t+1) = f(P(t)) \qquad P(1) = P_0
+    \]
+\end{remark}
+
+\begin{remark}[Existance of DRE]
+    In order to guarantee the existance of DRE for all $t$ the only critical part is the inversion of the \emph{output} block:
+    \[
+        ( \underbrace{HP(t)H^T}_{\ge 0} + \underbrace{V_2}_{>0})^{-1} \qquad \text{Thanks to $V_2>0$ it's invertible}
+    \]
+\end{remark}
+
+\begin{remark}[Meaning of $P(t)$]
+    It can be proven that $P(t)$ has a very important meaning.
+
+    \[
+        P(t) = \text{var}[x(t) - \hat{x}(t|t-1)] = E[(x(t) - \hat{x}(t|t-1))(x(t) - \hat{x}(t|t-1))^T]
+    \]
+
+    $P(t)$ is the covariance of the 1-step prediction error of the state.
+\end{remark}
