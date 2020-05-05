@@ -8,7 +8,20 @@
 \end{itemize}
 
 \begin{example}[Slip estimation for ABS/traction control]
-    \missingfigure{Fig1}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \draw (0.5,0) -- (0,0) -- (0,0.5) -- (1,0.5) -- (1.5,1) -- (2.5,1) -- (2.8,0.5) -- (3.3,0.5) -- (3.3,0) -- (3.1,0);
+            \draw (1.1,0) -- (2.5,0);
+            \draw (0.8,0) circle (0.3);
+            \draw (2.8,0) circle (0.3);
+
+            \draw[->] (-0.1,0.5) -- (-0.6,0.5) node[left] {$v$};
+            \draw[->] (0.8,0) -- (0.8,-0.3) node[below] {$r$};
+            \draw[->] (1.146,0.2) arc[radius=0.4, start angle=30, end angle=90];
+            \node at (1.3,0.5) {$\omega$};
+        \end{tikzpicture}
+    \end{figure}
 
     \paragraph{Problem} Estimation of $v$.
 
@@ -20,7 +33,17 @@
     Both have a problem of availability (not guaranteed). Physical sensing is not an option for industrial production.
 
     Intuitive solution: install a longitudinal accelerometer ($a_x$) and integrate.
-    \missingfigure{Fig2}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \draw (0.5,0) -- (0,0) -- (0,0.5) -- (1,0.5) -- (1.5,1) -- (2.5,1) -- (2.8,0.5) -- (3.3,0.5) -- (3.3,0) -- (3.1,0);
+            \draw (1.1,0) -- (2.5,0);
+            \draw (0.8,0) circle (0.3);
+            \draw (2.8,0) circle (0.3);
+
+            \draw[->] (2.3,0.5) -- (1.7,0.5) node[above] {$a_x$};
+        \end{tikzpicture}
+    \end{figure}
     \[
         \hat{v} = \int a_x(t) dt \qquad <=> \qquad a_x(t) -> 1/s -> \hat{V}(t)
     \]
@@ -36,23 +59,98 @@
         \hat{v}(t) = \hat{v}(t-1) + \Delta T_s a_x(t-1)
     \]
 
-    \missingfigure{Fig3}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [int] (sys) {$\frac{\Delta T_s}{1-z^{-1}}$};
+            \node (in) [left of=sys, node distance=2cm] {};
+            \node (end) [right of=sys, node distance=2cm]{};
+
+            \draw[->] (in) edge node {$a_x(t)$} (sys);
+            \draw[->] (sys) edge node {$\hat{v}(t)$} (end);
+        \end{tikzpicture}
+    \end{figure}
 
     Unfortunately the measured signal is not $a_x(t)$ but $a_x(t)+d_{a_x}(t)$.
 
-    \missingfigure{Fig4}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \begin{axis}[axis lines=none,ymax=6]
+                \addplot[color=blue,smooth]
+                    coordinates {
+                        (0.00,2.35)(0.40,2.87)(0.80,2.99)(1.20,2.75)(1.60,2.83)(2.00,2.86)(2.40,3.19)(2.80,2.76)(3.20,2.45)(3.60,2.85)(4.00,2.55)(4.40,2.50)(4.80,2.64)(5.20,2.72)(5.60,3.26)(6.00,3.68)(6.40,3.95)(6.80,3.9)(7.20,4.00)(7.60,3.51)
+                    };
+                \addplot[color=red,smooth]
+                    coordinates {
+                        (0.00,2.35)(0.40,2.91)(0.80,3.07)(1.20,2.87)(1.60,2.99)(2.00,3.06)(2.40,3.43)(2.80,3.04)(3.20,2.77)(3.60,3.21)(4.00,2.95)(4.40,2.94)(4.80,3.12)(5.20,3.24)(5.60,3.82)(6.00,4.28)(6.40,4.59)(6.80,5.17)(7.20,5.0)(7.60,5.27)
+                    };
+                \draw[->] (-0.5,0) -- (800,0) node[right] {$t$};
+                \draw[->] (0.5,-0.5) -- (0.5,300) node[left] {};
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
 
     Integrating noise generates a \emph{drift}. Integrator is not an asymptotic stable system.
 
-    \missingfigure{Fig5}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [int] (sys) {$\frac{\Delta T_s}{1-z^{-1}}$};
+            \node [sum] (in) [left of=sys, node distance=1.5cm] {};
+            \node (in1) [above of=in, node distance=1cm] {$d_{a_x}(t)$};
+            \node (in2) [below of=in, node distance=1cm] {$a_x(t)$};
+            \node (end) [right of=sys, node distance=2cm]{};
+
+            \draw[->] (in) -- (sys);
+            \draw[->] (in1) -- (in) node[left, pos=0.8] {$+$};
+            \draw[->] (in2) -- (in) node[left, pos=0.8] {$+$};
+            \draw[->] (sys) edge node {$\hat{v}(t)$} (end);
+        \end{tikzpicture}
+    \end{figure}
 
     \paragraph{Solution} Use a Kalman Filter.
 
-    \missingfigure{Fig6}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [int, align=center, minimum width=3cm] (sys) {car};
+            \node [int, align=center, minimum width=3cm, below of=sys] (algo) {Kalman Filter};
+            \node (algoout) [right of=algo, node distance=3cm] {$\hat{v}(t)$};
+
+            \draw[->,transform canvas={xshift=-1.2cm}] (sys) -- (algo) node[pos=0.5] {$\omega_1$};
+            \draw[->,transform canvas={xshift=-0.6cm}] (sys) -- (algo) node[pos=0.5] {$\omega_2$};
+            \draw[->] (sys) -- (algo) node[pos=0.5] {$\omega_3$};
+            \draw[->,transform canvas={xshift=0.6cm}] (sys) -- (algo) node[pos=0.5] {$\omega_4$};
+            \draw[->,transform canvas={xshift=1.2cm}] (sys) -- (algo) node[pos=0.5] {$a_x$};
+
+            \draw[->] (algo) -- (algoout);
+        \end{tikzpicture}
+    \end{figure}
 \end{example}
 
 \begin{example}[State of charge estimation of a battery]
-    \missingfigure{Fig7}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw (0,0) rectangle ++(1.5cm,3cm);
+            \draw (0.6cm,3cm) rectangle ++(0.3,0.15);
+
+            \draw [pattern=north west lines, pattern color=green] (0,0) rectangle (1.5,2);
+
+            \draw [decorate,decoration={brace,amplitude=10pt}] (0,0) -- (0,3) node [black,midway,align=right,xshift=-0.3cm] {100\%};
+            \draw [decorate,decoration={brace,amplitude=10pt}] (1.5,2) -- (1.5,0) node [black,midway,align=right,xshift=0.3cm] {SoC};
+
+            \node [int, align=center] (sys) at (6,1.5) {SoC\\internal\\state};
+            \node [left of=sys, node distance=2cm] (in1) {$i(t)$};
+            \node [above of=sys, node distance=2cm] (in2) {$T(t)$};
+            \node [right of=sys, node distance=2cm] (out) {$v(t)$};
+
+            \draw[->] (in1) -- (sys);
+            \draw[->] (in2) -- (sys);
+            \draw[->] (sys) -- (out);
+        \end{tikzpicture}
+    \end{figure}
     \[
         \text{SoC}(t) = 1 - \frac{\int i(t)dt}{I} \qquad 0 \le \text{SoC} \le 1
     \]
