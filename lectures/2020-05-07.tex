@@ -1,0 +1,197 @@
+\newlecture{Sergio Savaresi}{07/05/2020}
+
+To answer those questions we need to fundamental theorems (K.F. asymptotic theorems).
+They provide \emph{sufficient} conditions only.
+
+\paragraph{First asymptotic theorem}
+
+Assumption: $V_{12} = 0$ and the system is asymptotically stable (all eigenvalues of $F$ are strictly inside the unit circle).
+Then:
+\begin{itemize}
+    \item A.R.E. has one and only one semi-definite positive solution: $\overline{P} \ge 0$
+    \item D.R.E. converges to $\overline{P}$, $\forall P_0 \ge 0$
+    \item The corresponding $\overline{K}$ is s.t. the K.F. is asymptotically stable
+\end{itemize}
+
+\begin{recall}
+    \paragraph{Observability} the pair $(F, H)$ is observable if and only if
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF \\
+            \vdots \\
+            HF^{n-1}
+        \end{bmatrix}
+        \qquad
+        \text{is max rank}
+    \]
+
+    \paragraph{Controllability from the noise}
+
+    \begin{align*}
+        x(t+1) = Fx(t) + Gu(t) + v_1(t) \qquad v_1(t) \sim WN(0, V_1)
+    \end{align*}
+
+    We need controllability from $v_1(t)$ (and don't care about $u(t)$).
+
+    \begin{align*}
+        x(t+1) = Fx(t) + v_1(t)
+    \end{align*}
+
+    It's always possible to factorize $V_1 = \Gamma\cdot\Gamma^T$ rewriting
+    \[
+        x(t+1) = Fx(t) + \Gamma\omega(t) \qquad \omega(t) \sim WN(0, I)
+    \]
+
+    We can say that the state $x$ is controllable/reachable from the input noise $v_1(t)$ if and only if:
+    \[
+        R = \begin{bmatrix}
+            \Gamma & F\Gamma & \cdots & F^{n-1}\Gamma
+        \end{bmatrix}
+    \]
+\end{recall}
+
+\paragraph{Second asymptotic theorem}
+
+Assumption: $V_{12} = 0$, $(F, H)$ is observable and $(F, \Gamma)$ is controllable.
+Then:
+\begin{itemize}
+    \item A.R.E. has one and only one definite positive solution $\overline{P} > 0$
+    \item D.R.E. converges to $\overline{P}$, $\forall P_0 \ge 0$
+    \item The corresponding $\overline{K}$ is such that the K.F. is asymptotically stable
+\end{itemize}
+
+There theorems are very useful in practice because we can fully avoid the (very difficult) convergence analysis of D.R.E.
+
+\textbf{Note} that the two theorems provide only sufficient conditions.
+
+\begin{exercise}
+    \[
+        S: \begin{cases}
+            x(t+1) = \frac{1}{2}x(t) + v_1(t) \quad& v_1 \sim WN(0, \frac{19}{20}) \\
+            y(t) = 2x(t) + v_2(t) \quad& v_2 \sim WN(0, 1)
+        \end{cases}
+        \qquad
+        v_1 \perp v_2
+    \]
+
+    \paragraph{Question} Find (if exists) the steady state (asymp.) K.F. $\hat{x}(t+1|t)$ and $\hat{x}(t|t)$.
+
+    \[
+        n = 1 \qquad F = \frac{1}{2} \qquad G = 0 \qquad H = 2 \qquad V_1 = \frac{19}{20} \qquad V_2 = 1 \qquad V_{12} = 0
+    \]
+
+    Since $V_{12} = 0$ we can try to use the asymptotic theorems.
+
+    \paragraph{First step} Compute the D.R.E.
+    \begin{align*}
+        P(t+1) &= \left( FP(t)F^T+V_1 \right) - \left( FP(t)H^T+V_{12} \right) \left( HP(t)H^T+V_2 \right)^{-1}\left( FP(t)H^T+V_{12} \right)^T \\
+        &= \frac{1}{4}P(t) + \frac{19}{20} - \frac{ \left(\frac{1}{\cancel{2}}P(t)\cancel{2}\right)^2 }{4P(t)+1} \\
+        &= \frac{\cancel{P(t)^2} + \frac{1}{4}P(t) + \frac{19}{5} P(t) + \frac{19}{20} - \cancel{P(t)^2} }{4P(t) + 1}
+    \end{align*}
+
+    \textbf{Note} The second order terms must cancel out.
+
+    \[
+        P(t+1) = \frac{81P(t) + 19}{80P(t)+20}
+    \]
+
+    \paragraph{Second step} Compute and solve the A.R.E.
+
+    \[
+        \overline{P} = \frac{81\overline{P} + 19}{80\overline{P}+20} \quad \implies \quad 80\overline{P}^2 + 20\overline{P}-81\overline{P}-19 = 0
+    \]
+    \[
+        \overline{P}_1 = 1 \qquad \cancel{\overline{P}_2 = -\frac{19}{80}} < 0
+    \]
+
+
+    $\overline{P}=1$ is the only definite positive solution of A.R.E.
+
+    \paragraph{Question} Does D.R.E. converges to $\overline{P}=1$, $\forall P_0 \ge 0$?
+
+    There are 2 methods for addressing this question:
+    \begin{itemize}
+        \item Direct analysis of D.R.E.
+        \item Using asymptotic theorems
+    \end{itemize}
+
+    \paragraph{First methods} Direct analysis of D.R.E.
+
+    \begin{align*}
+        P(t+1) = f(P(t)) \qquad \text{we need to plot $f(\cdot)$ in the $P(t)$ -- $P(t+1)$ plane}
+    \end{align*}
+
+    \[
+        \overline{P} = \frac{81\overline{P} + 19}{80\overline{P}+20}
+        \qquad
+        \begin{cases}
+            \text{vertical asy. value} & P(t) = -\frac{20}{80} = -\frac{1}{4} \\
+            \text{horizontal asy. value} & P(t) = \frac{81}{80}
+        \end{cases}
+    \]
+
+    \missingfigure{Fig1}
+    \missingfigure{Fig2}
+
+    By direct analysis/inspection of D.R.E. dynamics we can conclude that $\forall P_0\ge 0$, D.R.E. always converges to $\overline{P}_1=1$.
+
+    If $n=1$ the direct inspection is feasible, but it's very difficult for $n\ge2$.
+
+    \paragraph{Second method} Use theorems
+
+    \[
+        V_{12} = 0 \qquad F = \frac{1}{2} \text{($S$ is stable)} \quad \implies \quad \text{First theorem is fulfilled}
+    \]
+
+    The observability matrix of $\{F, H\}$ is $O=\begin{bmatrix} 2 \end{bmatrix}$ with full $\rank O = 1$, the system is fully observable.
+
+    Controllability from noise $v_1(t)$
+    \[
+        V_1 = \frac{19}{20} \qquad \Gamma=\sqrt{\frac{19}{20}}
+    \]
+    The controllability matrix of $\{F, \Gamma\}$ is $R = \begin{bmatrix} \sqrt{\frac{19}{20}} \end{bmatrix}$ with full $\rank R = 1$, the system is fully controllable from noise.
+
+    Both theorems are fulfilled, so A.R.E. has one and only one solution $\overline{P} > 0$, D.R.E. converges to $\overline{P}$, $\forall P_0\ge0$ and $\overline{K}$ makes the K.F. asymptotically stable.
+
+    \paragraph{Third step} Compute $\overline{K}$
+    \[
+        \overline{K} = \left(F\overline{P}H^T + V_{12}\right)\left(H\overline{P}H^T+V_2\right) = \left(\frac{1}{2}\cdot 1 \cdot 2 + 0\right) \left(2\cdot 1 \cdot 2 + 1\right)^{-1} = \frac{1}{5}
+    \]
+
+    Double-check the asymptotical stability of K.F.
+    \[
+        F - \overline{K}H = \frac{1}{2} - \frac{1}{5}\cdot 2 = \frac{5-4}{10} = \frac{1}{10}
+    \]
+
+    \missingfigure{Fig3}
+
+    \paragraph{Question} Find T.F. from $y(t)$ to $\hat{x}(t|t-1)$
+
+    \textbf{Recall} T.F. from block schemes of feedback systems.
+
+    \missingfigure{Fig4}
+
+    \[
+        y(t) = G_1(z) \left(u(t) \mp G_2(z)y(t)\right) \quad \implies \quad y(t) = \frac{G_1(z)}{1 \pm G_1(z)G_2(z)}u(t)
+    \]
+
+    The K.F. is composed of 2 nested loops.
+
+    \missingfigure{Fig5}
+
+    Predictor of state:
+    \[
+        \hat{x}(t|t-1) = \frac{ \frac{1}{5} \frac{z^{-1}}{1-\frac{1}{2}z^{-1}} }{ 1 + \frac{1}{5} \frac{z^{-1}}{1-\frac{1}{2}z^{-1}} 2 }y(t) = \frac{ \frac{1}{5}z^{-1} }{1-\frac{1}{10}z^{-1}}y(t)
+    \]
+
+    Predictor of output:
+    \[
+        \hat{y}(t|t-1) = H\hat{x}(t|t-1) = \frac{2}{5} \frac{ 1 }{1-\frac{1}{10}z^{-1}}y(t-1)
+    \]
+
+    Filter of state:
+    \[
+        \hat{x}(t|t) = F^{-1}\hat{x}(t+1|t) = \frac{2}{5} \frac{ 1 }{1-\frac{1}{10}z^{-1}}y(t-1)
+    \]
+\end{exercise}
