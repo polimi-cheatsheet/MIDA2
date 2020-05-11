@@ -1,0 +1,321 @@
+\newlecture{Sergio Savaresi}{11/05/2020}
+
+\begin{remark}[White noise]
+    In the formulas of Kalman Filter there is a requirement that $v_1(t)$ and $v_2(t)$ must be white noises.
+    In many practical applications this assumption can be too demanding.
+
+    We need a workaround to deal with practical applications where this assumption is not valid.
+
+    \[
+        \begin{cases}
+            x(t+1) = ax(t) + \eta(t) \qquad & \eta(t) \text{is not a white noise}\\
+            y(t) = bv(t) + v_2(t) \qquad & v_2(t) \sim WN(0,1)
+        \end{cases}
+    \]
+
+    A model of $\eta(t)$ is given:
+    \[
+        \eta(t) = \frac{1}{1-cz^{-1}}e(t) \qquad e \sim WN(0,1)
+    \]
+    $\eta(t)$ is not a white noise, but an AR(1) stochastic model.
+    We cannot apply K.F. formula to this system
+
+    We can proceed as follows
+    \begin{align*}
+        \eta(t) &= c\eta(t-1) + e(t) \\
+        \eta(t+1) &= c\eta(t) + e(t+1) \\
+        \eta(t+1) &= c\eta(t) + v(t) \qquad v(t) = e(t+!) \qquad v \sim WN(0,1) \qquad v \perp v_2
+    \end{align*}
+
+    \paragraph{Trick}: Extension of the state vector.
+
+    \begin{align*}
+        x(t) &\rightarrow x_1(t) \\
+        \eta(t) &\rightarrow x_2(t)
+    \end{align*}
+
+    \[
+        x_1(t+1) = ax_1(t) + x_2(t) \\
+        x_2(t+1) = cx_2(t) + v(t) \\
+        y(t) = bx_1(t) + v_2(t)
+    \]
+
+    \[
+        n=2 \quad F\begin{bmatrix}
+            a & 1 \\
+            0 & c
+        \end{bmatrix}
+        \quad H = \begin{bmatrix}
+            b & 0
+        \end{bmatrix}
+        \quad v_1 = \begin{bmatrix}
+            0 \\ v(t)
+        \end{bmatrix}
+        \quad V_1 = \begin{bmatrix}
+            0 & 0 \\
+            0 & 1
+        \end{bmatrix}
+        \quad v_2 \sim WN(0,1)
+        \quad V_{12} = 0
+    \]
+
+    We can apply K.F. to this system.
+\end{remark}
+
+\subsection{Extension to Non-Linear systems}
+
+Consider a system with non-linear dynamics:
+\[
+    S: \begin{cases}
+        x(t+1) = f(x(t), u(t)) + v_1(t) \\
+        y(t) = h(x(t)) + v_2(t)
+    \end{cases}
+\]
+
+Where $f$ and $h$ are non-linear functions of $x(t)$ and $u(t)$ (smoothness class $C^1$ or higher).
+
+\begin{example}
+    \[
+        S: \begin{cases}
+            x(t+1) = \frac{1}{2} x^5(t) + u^3(t) + v_1(t) \\
+            y(t) = e^{x(t)} + v_2(t)
+        \end{cases}
+    \]
+\end{example}
+
+How can we design a Kalman Filter in this case?
+
+\missingfigure{Fig1}
+
+For the gain block of K.F. we have 2 different types of solutions:
+\begin{enumerate}
+    \item (most natural and intuitive) The gain is a non-linear function of $e(t)$
+    \item The gain is a linear time-varying function
+\end{enumerate}
+
+The second solution is less intuitive but is the most effective: we can reuse in full K.F. formulas with small adjustments.
+K.F. can be applied to LTV systems.
+
+In practice Extended Kalman Filter idea is to make a time-varying linear local approximation of a non-linear time-invariant system.
+
+$K(t)$ in Extended Kalman Filter can be computed as:
+\[
+    K(t) = \left( F(t) P(t) H(t)^T + V_2 \right) \left( H(t) P(t) H(T)^T + V_2 \right)^{-1}
+\]
+And $P(t)$ can be computed from D.R.E.
+\[
+    P(t) = \left( F(t)P(t)F(t)^T+V_1 \right) - \left( F(t)P(t)H(t)^T + V_{12}\right)\left( H(t)P(t)H(t)^T + V_2\right)^{-1}\left( F(t)P(t)H(t)^T + V_{12}\right)^T
+\]
+
+\begin{itemize}
+    \item Equations of $K$ and DRE are the usual formulas of K.F.
+    \item The only difference is $F(t)$ and $H(t)$ are computed as follows
+\end{itemize}
+
+\begin{align*}
+    F(t) &=  \left.\frac{ \partial f(x(t), u(t))}{\partial x(t)} \right|_{x(t) = \hat{x}(t|t-1)} \\
+    H(t) &= \left. \frac{\partial h(x(t))}{\partial x(t)} \right|_{x(t) = \hat{x}(t|t-1)}
+\end{align*}
+
+EKF is the time-varying solution of K.F. where $F(t)$ and $H(t)$ are local linearized matrices computed around the last available state prediction $\hat{x}(t|t-1)$.
+
+Procedure to implement EKF at time $t$:
+\begin{itemize}
+    \item Take last available state prediction $\hat{x}(t|t-1)$
+    \item Using $\hat{x}(t|t-1)$, compute $F(t)$ and $H(t)$
+    \item Compute $K(t)$ and update D.R.E. equations
+    \item Compute $\hat{x}(t+1|t)$
+\end{itemize}
+
+\begin{remark}
+    \begin{itemize}
+        \item EKF is very powerful since can be applied to non-linear systems
+        \item Obviously EKF does not have a steady-state asymptotic solution
+        \item Main problems with EKF (same of L.T.V. K.F.):
+        \begin{itemize}
+            \item Very difficult (almost impossible) to have a theoretical guarantee of E.K.F. stability (in practice extensive empirical testing).
+            \item Computational load (at each time $F(t)$, $H(t)$, $K(t)$ and $P(t)$ must be computed run-time).
+        \end{itemize}
+    \end{itemize}
+
+    EKF is largely used today with some limitations in:
+    \begin{itemize}
+        \item safety-critical applications
+        \item mission-critical applications
+    \end{itemize}
+\end{remark}
+
+\begin{exercise}[K.F. full procedure]
+    \missingfigure{Fig2}
+
+    Suspended seat in the cabin of an off-highway vehicle (agr. tractor, earth-moving machine, etc\dots).
+
+    The physical sensors are:
+    \begin{itemize}
+        \item Vertical accelerometer placed at the basis of the cabin
+        \item Elongation sensor between the basis of the cabin and the seat
+    \end{itemize}
+
+    \paragraph{Problem} Estimation of the seat vertical speed.
+
+    Move from a pictorial representation to a schematic representation of it:
+    \missingfigure{Fig3}
+
+    The sensor are:
+    \begin{itemize}
+        \item Acceleration $\ddot{z}_d$ (+noise)
+        \item Elongation $z-z_d$ (+noise)
+    \end{itemize}
+
+    Model of the system dynamics (physical white-box model in continuous time domain).
+
+    Core model equation (force balance in vertical direction):
+    \begin{align*}
+        M\ddot{z} &= \underbrace{-C\frac{d}{dt}(z-z_d)}_\text{damping} \underbrace{-K(z-z_d)}_{spring} \cancel{+ \text{gravity} - Mg} \\
+                  &= -C(\dot{z} - \dot{z}_d) - K(z-z_d)
+    \end{align*}
+
+    Since we measure $\ddot{z}_d$ the overall dimension of the system is 4.
+    The vector of state variables is:
+    \[
+        x(t) = \begin{bmatrix}
+            z \\
+            \dot{z} \\
+            z_d \\
+            \dot{z}_d
+        \end{bmatrix} = \begin{bmatrix}
+            x_1(t) \\
+            x_2(t) \\
+            x_3(t) \\
+            x_4(t) \\
+        \end{bmatrix}
+        \qquad
+        u(t) = \ddot{z}_d
+        \qquad
+        y(t) = z-z_d
+    \]
+
+    We can write the full model in state space form
+    \[
+        \begin{cases}
+            \dot{x}_1 = x_2 \\
+            \dot{x}_2 = -\frac{C}{M} (x_2-x_4) - \frac{K}{M}(x_1-x_3) \\
+            \dot{x}_3 = x_4 \\
+            \dot{x}_4 = u \\
+            y = x_1-x_3
+        \end{cases}
+        \quad\Rightarrow\quad
+        \begin{cases}
+            \dot{x}_1 = x_2 \\
+            \dot{x}_2 = -\frac{K}{M}x_1 - \frac{C}{M}x_2 + \frac{K}{M}x_3 + \frac{C}{M} x_4 \\
+            \dot{x}_3 = x_4 \\
+            \dot{x}_4 = u \\
+            y = x_1-x_3
+        \end{cases}
+    \]
+    \[
+        A = \begin{bmatrix}
+            0 & 1 & 0 & 0 \\
+            -\frac{K}{M} & -\frac{C}{M} & \frac{K}{M} & \frac{C}{M} \\
+            0 & 0 & 0 & 1 \\
+            0 & 0 & 0 & 0
+        \end{bmatrix}
+        \quad
+        B = \begin{bmatrix}
+            0 \\ 0 \\ 0 \\ 1
+        \end{bmatrix}
+        \quad
+        C = \begin{bmatrix}
+            1 & 0 & -1 & 0
+        \end{bmatrix}
+    \]
+
+    Next is discretization (we use digital systems), choice of sampling time $\Delta$ (for this application can be 5ms).
+
+    Using Eulero-forward approximation of time derivative $\dot{x}(t) \approx \frac{x(t+1)-x(t)}{\Delta}$.
+
+    Example for the first equation:
+    \[
+        \frac{x_1(t+1)-x_1(t)}{\Delta} = x_2(t) \quad\Rightarrow\quad x_1(t+1) = x_1(t) + \Delta x_2(t)
+    \]
+
+    \[
+        \begin{cases}
+            x_1(t+1) = x_1(t) + \Delta x_2(t) + v_{11}(t) \\
+            x_2(t+1) = -\frac{\Delta K}{M} x_1(t) + \left( -\frac{\Delta C}{M} + 1 \right)x_2(t) + \frac{\Delta K}{M} x_3(t) + \frac{\Delta C}{M} x_4(t) + v_{12}(t) \\
+            x_3(t+1) = x_3(t) + \Delta x_4(t) + v_{13}(t) \\
+            x_4(t+1) = x_4(t) + \Delta u(t) + v_{14}(t) \\
+            y(t) = x_1(t) - x_3(t) + v_2(t)
+        \end{cases}
+    \]
+
+    This is normal state-space for in discrete time:
+    \[
+        \begin{cases}
+            x(t+1) = Fx(t) + Gu(t) \\
+            y(t) = Hx(t)
+        \end{cases}
+    \]
+    \[
+        F = \begin{bmatrix}
+            1 & \Delta & 0 & 0 \\
+            -\frac{\Delta K}{M} & -\frac{\Delta C}{M}+1 & \frac{\Delta K}{M} & \frac{\Delta C}{M} \\
+            0 & 0 & 1 & \Delta \\
+            0 & 0 & 0 & 1
+        \end{bmatrix}
+        \quad G = \begin{bmatrix}
+            0 \\ 0 \\ 0 \\ \Delta
+        \end{bmatrix}
+        \quad H = \begin{bmatrix}
+            1 & 0 & -1 & 0
+        \end{bmatrix}
+    \]
+
+    Noise on the state equations:
+    \[
+        v_1(t) = \begin{bmatrix}
+            v_{11}(t) \\
+            v_{12}(t) \\
+            v_{13}(t) \\
+            v_{14}(t)
+        \end{bmatrix}
+        \sim WN(0, V_1)
+        \qquad
+        V_1 = \begin{bmatrix}
+            \lambda_1^2 & 0 & 0 & 0\\
+            0 & \lambda_1^2 & 0 & 0 \\
+            0 & 0 & \lambda_1^2 & 0 \\
+            0 & 0 & 0 & \lambda_1^2 \\
+        \end{bmatrix}
+        \qquad
+        v_2(t) \sim WN(0, V_2)
+    \]
+    Assumptions:
+    \begin{itemize}
+        \item All white-noises
+        \item All uncorrelated
+    \end{itemize}
+
+    $V_2$ can be estimated by datasheet of elongation sensor, $\lambda_4$ can be estimated by datasheet of accelerometer.
+    We expect $\lambda_1$, $\lambda_2$ and $\lambda_3$ to be small, and we can use the simplifying assumption $\lambda_1^2=\lambda_2^2=\lambda_3^2 =\lambda^2$, estimated empirically.
+
+    \missingfigure{Fig4}
+
+    We can compute
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF \\
+            HF^2 \\
+            HF^3
+        \end{bmatrix}
+        \qquad
+        R = \begin{bmatrix}
+            G & FG & F^2G & F^3G
+        \end{bmatrix}
+    \]
+    From visual inspection of the block schema we expect full observability from output and full controllability from input.
+
+    K.F. at this point can be applied.
+    Theorem 1 and 2 are valid, we can directly jump to A.R.E. solution.
+\end{exercise}
