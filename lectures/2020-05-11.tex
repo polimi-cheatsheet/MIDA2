@@ -27,7 +27,7 @@
         \eta(t+1) &= c\eta(t) + v(t) \qquad v(t) = e(t+!) \qquad v \sim WN(0,1) \qquad v \perp v_2
     \end{align*}
 
-    \paragraph{Trick}: Extension of the state vector.
+    \paragraph{Trick} Extension of the state vector.
 
     \begin{align*}
         x(t) &\rightarrow x_1(t) \\
@@ -85,7 +85,49 @@ Where $f$ and $h$ are non-linear functions of $x(t)$ and $u(t)$ (smoothness clas
 
 How can we design a Kalman Filter in this case?
 
-\missingfigure{Fig1}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [int] (z1) at (1,4) {$z^{-1}$};
+        \node [int, double, double distance=0.5mm] (F1) at (-1.5,3) {$f$};
+        \node [int] (K) at (1,2) {$?$};
+        \node [int] (z2) at (1,1) {$z^{-1}$};
+        \node [int, double, double distance=0.5mm] (F2) at (-1.5,0) {$f$};
+
+        \node [int, double, double distance=0.5mm] (H1) at (4,4) {$h$};
+        \node [int, double, double distance=0.5mm] (H2) at (4,1) {$h$};
+
+        \node [sum] (sum1) at (6,4) {};
+        \node [sum] (sum2) at (7,2) {};
+        \node [sum] (sum3) at (-1.5,4) {};
+        \node [sum] (sum4) at (-1.5,1) {};
+
+        \node (v1) at (-1.5,5) {$v_1(t)$};
+        \node (v2) at (6,5) {$v_2(t)$};
+        \node[right] (y) at (8,4) {$y(t)$};
+        \node[right] (yhat) at (8,1) {$\hat{y}(t|t-1)$};
+        \node[right] (xhat) at (8,0) {$\hat{x}(t|t-1)$};
+
+        \draw[->] (v1) -- (sum3);
+        \draw[->] (sum3) -- (z1) node[pos=0.5] {$x(t+1)$};
+        \draw[->] (F1) -- (sum3);
+        \draw[->] (z1) -- (H1) node[pos=0.5] {$x(t)$};
+        \draw[->] (H1) -- (sum1);
+        \draw[->] (v2) -- (sum1);
+        \draw[->] (2.5,4) |- (F1);
+        \draw[->] (K) -| (sum4);
+        \draw[->] (sum4) -- (z2) node[pos=0.5] {$\hat{x}(t+1|t)$};
+        \draw[->] (7,4) -- (sum2) node[pos=0.8] {$+$};
+        \draw[->] (sum1) -- (y);
+        \draw[<-] (K) -- (sum2) node[pos=0.5,black] {$e(t)$};
+        \draw[->] (z2) -- (H2) node[pos=0.5] {$\hat{x}(t|t-1)$};
+        \draw[->] (F2) -- (sum4);
+        \draw[->] (2.5,1) |- (F2);
+        \draw[->] (H2) |- (yhat);
+        \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
+        \draw[->] (F2) -- (xhat);
+    \end{tikzpicture}
+\end{figure}
 
 For the gain block of K.F. we have 2 different types of solutions:
 \begin{enumerate}
@@ -146,7 +188,29 @@ Procedure to implement EKF at time $t$:
 \end{remark}
 
 \begin{exercise}[K.F. full procedure]
-    \missingfigure{Fig2}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[decoration={aspect=0.3, segment length=1.5mm, amplitude=3mm,coil},decorate] (-1,1) -- (-1,2);
+            \draw (0,2) -- (0,2.5);
+            \draw (-1,2) -- (1,2);
+            \draw (-1,1) -- (1,1);
+
+            \draw (1,2) -- (1,1.5);
+            \draw (0.8, 1.7) -- (0.8, 1.3) -- (1.2, 1.3) -- (1.2, 1.7);
+            \draw (1,1) -- (1,1.3);
+            \draw (0,0.7) -- (0,1);
+
+            \fill (-0.2,0.5) rectangle (0.2,0.7);
+            \draw (-1.5,2.5) -- (1.5,2.5) -- (1.5,5.5) -- (1.1,5.5) -- (1.1,2.9) -- (-1.5,2.9) -- (-1.5,2.5);
+
+            \draw[pattern=north east lines] (-3,0) rectangle (3,0.5);
+            \draw (-3,0.5) arc[radius=6,start angle=180, end angle=90] -- (3,0.5);
+
+            \draw[->] (0.4,0.55) -- (0.4,0.9) node[right,pos=0.5] {\footnotesize vertical acc.};
+            \draw[->] (-1.4,0.55) -- (-1.4,2.45) node[left,pos=0.5] {\footnotesize elongation};
+        \end{tikzpicture}
+    \end{figure}
 
     Suspended seat in the cabin of an off-highway vehicle (agr. tractor, earth-moving machine, etc\dots).
 
@@ -159,7 +223,44 @@ Procedure to implement EKF at time $t$:
     \paragraph{Problem} Estimation of the seat vertical speed.
 
     Move from a pictorial representation to a schematic representation of it:
-    \missingfigure{Fig3}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw (-1,2.5) rectangle (1,3.5);
+            \draw[decoration={aspect=0.3, segment length=1.5mm, amplitude=3mm,coil},decorate] (-1,1) -- (-1,2);
+            \draw (0,2) -- (0,2.5);
+            \draw (-1,2) -- (1,2);
+            \draw (-1,1) -- (1,1);
+
+            \draw (1,2) -- (1,1.5);
+            \draw (0.8, 1.7) -- (0.8, 1.3) -- (1.2, 1.3) -- (1.2, 1.7);
+            \draw (1,1) -- (1,1.3);
+            \draw (0,0.7) -- (0,1);
+
+            \draw plot[smooth, tension=1] coordinates {(-2, 0) (0,0.7) (2,0)};
+
+            \fill [pattern=north east lines] (2.1,0) rectangle (2.7,-0.1);
+
+            \draw (2.1,0) -- (2.7,0);
+            \draw[dotted] (0,1) -- (2.2,1);
+            \draw[dotted] (0,2.5) -- (2.6,2.5);
+
+            \draw [->] (2.2,0) -- (2.2,1);
+            \draw [->] (2.6,0) -- (2.6,2.5);
+
+            \node at (0,3) {$M$};
+            \node[right] at (1.1,3.7) {\footnotesize full mass of seat+driver};
+
+            \node at (-1.7,1.5) {$K$};
+            \node[left] at (-1.4,1.8) {\footnotesize spring stiffness};
+
+            \node at (1.5,1.5) {$C$};
+            \node[right] at (1.3,1.8) {\footnotesize damping ratio};
+
+            \node[left] at (2.2,0.5) {$z_d$};
+            \node[right] at (2.6,1.25) {$z$};
+        \end{tikzpicture}
+    \end{figure}
 
     The sensor are:
     \begin{itemize}
@@ -299,7 +400,75 @@ Procedure to implement EKF at time $t$:
     $V_2$ can be estimated by datasheet of elongation sensor, $\lambda_4$ can be estimated by datasheet of accelerometer.
     We expect $\lambda_1$, $\lambda_2$ and $\lambda_3$ to be small, and we can use the simplifying assumption $\lambda_1^2=\lambda_2^2=\lambda_3^2 =\lambda^2$, estimated empirically.
 
-    \missingfigure{Fig4}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node[left] (u) at (0,0) {$u(t)$};
+            \node[int] (d1) at (1,0) {$\Delta$};
+            \node[sum] (s1) at (2,0) {};
+            \node[above] (v14) at (2,0.5) {$v_{14}(t)$};
+            \node[int] (z4) at (4,0) {$z^{-1}$};
+            \node[int] (b4) at (6,1) {$\frac{\Delta C}{M}$};
+            \node[int] (d2) at (4,1) {$\Delta$};
+
+            \node[sum] (s2) at (2,2.5) {};
+            \node[above] (v13) at (2,3) {$v_{13}(t)$};
+            \node[int] (z3) at (4,2.5) {$z^{-1}$};
+            \node[int] (b3) at (6,4.5) {$\frac{\Delta K}{M}$};
+
+            \node[sum] (s3) at (7.5,4.5) {};
+            \node[above] (v12) at (7.5,5) {$v_{12}(t)$};
+            \node[int] (z2) at (9.5,4.5) {$z^{-1}$};
+            \node[int] (b2) at (9.5,3.5) {$-\frac{\Delta C}{M}+1$};
+
+            \node[sum] (s4) at (2,8) {};
+            \node[above] (v11) at (2,8.5) {$v_{11}(t)$};
+            \node[int] (z1) at (4,8) {$z^{-1}$};
+            \node[int] (b1) at (6,5.5) {$-\frac{\Delta K}{M}$};
+            \node[int] (d3) at (4,6.5) {$\Delta$};
+
+            \node[sum] (s5) at (11.5,2.5) {};
+            \node[below] (v2) at (11.5,2) {$v_2(t)$};
+            \node[right] (y) at (12,2.5) {$y(t)$};
+
+            \draw[->] (u) -- (d1);
+            \draw[->] (d1) -- (s1);
+            \draw[->] (v14) -- (s1);
+            \draw[->] (s1) -- (z4) node[pos=0.5] {\footnotesize $x_4(t+1)$};
+            \draw[->] (z4) -- (8,0) node[above] {\footnotesize $x_4(t)$};
+            \draw[->] (4.7,0) -- (4.7,-0.5) -- (2,-0.5) -- (s1);
+            \draw[->] (4.7,0) |- (d2);
+            \draw[->] (6,0) -- (b4);
+
+            \draw[->] (d2) -| (s2);
+            \draw[->] (v13) -- (s2);
+            \draw[->] (s2) -- (z3) node[pos=0.5] {\footnotesize $x_3(t+1)$};
+            \draw[->] (z3) -- (s5) node[pos=0.1] {\footnotesize $x_3(t)$};
+            \draw[->] (4.7,2.5) -- (4.7,2) -- (2.5,2) -- (s2);
+            \draw[->] (6,2.5) -- (b3);
+
+            \draw[->] (b3) -- (s3);
+            \draw[->] (v12) -- (s3);
+            \draw[->] (b4) -- (7,1) -- (7,4) -- (s3);
+            \draw[->] (b1) -- (7,5.5) -- (7,5) -- (s3);
+            \draw[->] (s3) -- (z2) node[pos=0.5] {\footnotesize $x_2(t+1)$};
+            \draw[->] (z2) -- (11,4.5) node[above] {\footnotesize $x_2(t)$};
+            \draw[->] (10.5,4.5) |- (b2);
+            \draw[->] (b2) -| (s3);
+
+            \draw[->] (v11) -- (s4);
+            \draw[->] (s4) -- (z1) node[pos=0.5] {\footnotesize $x_1(t+1)$};
+            \draw[->] (10.5,4.5) |- (d3);
+            \draw[->] (d3) -| (s4);
+            \draw[->] (4.7,8) -- (4.7,7.5) -- (2.5,7.5) -- (s4);
+            \draw[->] (z1) -| (s5) node[pos=0.05] {\footnotesize $x_1(t)$};
+            \draw[->] (6,8) -- (b1);
+
+            \draw[->] (v2) -- (s5);
+            \draw[->] (s5) -- (y);
+        \end{tikzpicture}
+    \end{figure}
 
     We can compute
     \[

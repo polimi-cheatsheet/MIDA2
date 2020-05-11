@@ -143,7 +143,7 @@
 % draw pictures
 \RequirePackage{tikz}
 \RequirePackage{pgfplots}
-\usetikzlibrary{arrows,arrows.meta,decorations.pathreplacing,matrix,positioning,calc,shapes,patterns}
+\usetikzlibrary{arrows,arrows.meta,decorations.pathreplacing,decorations.pathmorphing,matrix,positioning,calc,shapes,patterns}
 \tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
    execute at end node=$]
 \RequirePackage{graphicx}
