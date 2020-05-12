@@ -1,0 +1,144 @@
+\newlecture{Sergio Savaresi}{12/05/2020}
+
+\subsection{Direct optimization of gain $K$}
+\[
+    S: \begin{cases}
+        x(t+1) = 2x(t) \\
+        y(t) = x(t) + v(t) \quad v \sim WN(0, 1)
+    \end{cases}
+\]
+
+\paragraph{Problem} Compute the steady-state predictor of state $\hat{x}(t+1|t)$.
+
+We use 2 different methods:
+\begin{enumerate}
+    \item Direct optimization
+    \item K.F. theory
+\end{enumerate}
+
+\begin{remark}
+    The system is not stable and the state equation is noise-free.
+\end{remark}
+
+\paragraph{First mehtod} Direct solution
+
+Let's start from the standard observer structure
+\[
+    \begin{cases}
+        \hat{x}(t+1|t) = 2\hat{x}(t|t-1) + K(y(t) - \hat{y}(t|t-1)) \\
+        \hat{y}(t|t-1) = \hat{x}(t|t-1)
+    \end{cases}
+\]
+
+Find the optimal $K$ by minimizing the variance of the state prediction error $\text{var}\left[x(t)-\hat{x}(t|t-1)\right]$.
+
+Write the state prediction error expression:
+\begin{align*}
+    x(t+1) - \hat{x}(t+1|t) &= 2x(t) - \left[ 2\hat{x}(t|t-1) + K (y(t) - \hat{y}(t|t-1)) \right] =\\
+    &= 2x(t) - 2\hat{x}(t|t-1) - K(x(t) + v(t) - \hat{x}(t|t-1)) = \\
+    &= (2-K)(x(t) - \hat{x}(t|t-1)) - Kv(t)
+\end{align*}
+
+\paragraph{Definition} $\eta(t) = x(t) - \hat{x}(t|t-1)$
+
+The dynamic equation of the state prediction error is:
+\[
+    \eta(t+1) = (2-K)\eta(t) - Kv(t) \qquad v \sim WN(0,1)
+\]
+It is an AR(1) process, in canonical form:
+\[
+    \eta(t) = \frac{1}{1-(2-K)z^{-1}}e(t) \qquad e(t) = -Kv(t) \qquad e \sim WN(0, K^2)
+\]
+
+It's easy to find the variance of $\eta(t)$:
+\[
+    \gamma_\eta(0) = \text{var}\left[\eta(t)\right] = \frac{K^2}{1-(2-K)^2}
+\]
+
+By minimizing this function with respect to $K$:
+\[
+    \frac{\partial \text{var} \left[\eta(t)\right]}{\partial K} = 0 \quad\Rightarrow\quad \begin{cases}
+        K_1 = 0 & \text{(no need of feedback correction)} \\
+        K_2 = \frac{3}{2}
+    \end{cases}
+\]
+
+Both are acceptable solutions.
+
+\paragraph{Second method} Using K.F. theory
+
+From the system $S$: $F=2$, $H=1$, $V_1 = 0$ so $\Gamma = 0$, $V_2 = 1$, $V_{12} = 0$.
+
+Theorem 1 requires that $V_{12} = 0$ (ok) and $F$ is asymptotically stable (not ok).
+
+Theorem 2 requires that $V_{12} = 0$ (ok), $(F, \Gamma)$ not reachable (not ok), $(F, H)$ is observable (ok).
+
+We cannot skip the analysis of D.R.E.
+
+\[
+    \text{D.R.E.} = 4P(t) - \frac{(2P(t))^2}{P(t)+1} \ldots
+\]
+\[
+    P(t+1) = \frac{4P(t)}{P(t) + 1}
+\]
+
+Next, find the corresponding the A.R.E. solutions.
+\[
+    \overline{P} = \frac{4\overline{P}}{\overline{P}+1} \quad\Rightarrow\quad \begin{cases}
+        \overline{P}_1 = 0 \\
+        \overline{P}_2 = 3
+    \end{cases}
+    \quad\Rightarrow\quad \begin{cases}
+        K_1 = 0 \\
+        K_2 = \frac{3}{2}
+    \end{cases}
+\]
+
+We need to make the D.R.E. convergence analysis.
+\missingfigure{Fig1}
+
+If we start from $P_0=0$ (no uncertainty in the knowledge of $x(1)$) it converges into $\overline{P}_1=0$, the state equation is noise-free and we don't need feedback and the prediction is perfect (open-loop solution).
+This is a feasible but ideal situation.
+
+The standard solution (no perfect initial condition) is when $K=\frac{3}{2}$ (real closed-loop solution).
+
+\chapter{Software-sensing with Black-Box Methods}
+
+In chapter 3 we have seen classical technology of software-sensing based on Kalman Filter:
+\missingfigure{Fig2}
+
+Main features of this approach:
+\begin{itemize}
+    \item A (white-box/physical) model must be available.
+    \item No need (in principle) of a training dataset including measurements of the state to be estimated.
+    \item It is a feedback estimation algorithm (feedback correction of the model using estimated output error).
+    \item Constructive method (non-parametric, no optimization involved).
+    \item Can be used (in principle) to estimate states which are impossible to be measured (also at prototyping/training/design stage).
+\end{itemize}
+
+Are there other classes of software-sensing techniques? Yes, black-box approaches with \emph{learning}/\emph{training} from data.
+
+In this chapter we see them focusing on the architecture (we do not need new algorithms, just use something we have already studied).
+
+\section{Linear Time Invariant Systems}
+
+Let's consider a simplified case (SISO system with one state) to understand the approach.
+\[
+    S: \begin{cases}
+        x(t+1) = zx(t) + bu(t) + v_1(t) \\
+        y(t) = cx(t) + v_2(t)
+    \end{cases}
+\]
+
+\paragraph{Problem} Estimation of $\hat{x}(t)$ from measured signals $u(t)$ and $y(t)$.
+
+We can start from the observer K.F. architecture:
+\missingfigure{Fig3}
+
+Let's find the relationship between $u(t) \rightarrow \hat{x}(t)$ and $y(t) \rightarrow \hat{x}(t)$.
+\begin{align*}
+    \hat{x}(t) &= \frac{b {\color{blue}\frac{z^{-1}}{1-az^{-1}}}}{1+Kc{\color{blue}\frac{z^{-1}}{1-az^{-1}}}} u(t) + \frac{ K{\color{blue}\frac{z^{-1}}{1-az^{-1}}} }{1+Kc{\color{blue}\frac{z^{-1}}{1-az^{-1}}}} y(t) \\
+    &= \frac{b}{1+(Kc-a)z^{-1}}u(t-1) + \frac{K}{1+(Kc-a)z^{-1}} y(t-1)
+\end{align*}
+
+We can make a Black-Box estimation of these two transfer functions from data.
