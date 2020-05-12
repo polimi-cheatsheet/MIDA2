@@ -134,26 +134,6 @@ There theorems are very useful in practice because we can fully avoid the (very 
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-            \tikzset{
-                hatch distance/.store in=\hatchdistance,
-                hatch distance=10pt,
-                hatch thickness/.store in=\hatchthickness,
-                hatch thickness=0.2pt
-            }
-            \makeatletter
-            \pgfdeclarepatternformonly[\hatchdistance,\hatchthickness]{flexible hatch}
-            {\pgfqpoint{0pt}{0pt}}
-            {\pgfqpoint{\hatchdistance}{\hatchdistance}}
-            {\pgfpoint{\hatchdistance-1pt}{\hatchdistance-1pt}}%
-            {
-                \pgfsetcolor{\tikz@pattern@color}
-                \pgfsetlinewidth{\hatchthickness}
-                \pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
-                \pgfpathlineto{\pgfqpoint{\hatchdistance}{\hatchdistance}}
-                \pgfusepath{stroke}
-            }
-            \makeatother
-
             \fill [pattern=flexible hatch, pattern color=gray!40] (-2.5,-2) -- (5.5,-2) -- (5.5,0) -- (0,0) -- (0,4.9) -- (-2.5,4.9) -- (-2.5,-2);
             \draw[->] (-2.5,0) -- (6,0) node[below] {$P(t)$};
             \draw[->] (0,-2) -- (0,5) node[above] {$P(t+1)$};
