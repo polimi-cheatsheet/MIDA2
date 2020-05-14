@@ -1,0 +1,137 @@
+\newlecture{Sergio Savaresi}{14/05/2020}
+
+K.F. is a sophisticated way to build those T.F. from a white-box model.
+We can estimate these functions directly from data.
+
+We can adopt a black-box approach to estimate these T.F.:
+
+\paragraph{Dataset for training}
+\begin{align*}
+    \left\{ u(1), u(2), \ldots, u(N) \right\} \\
+    \left\{ y(1), y(2), \ldots, y(N) \right\} \\
+    \left\{ x(1), x(2), \ldots, x(N) \right\}
+\end{align*}
+
+In the supervised training approach we need measurements of the state to be estimated (physical sensor for $x(t)$ only for design/training of the software-sensor).
+
+We can use 4SID for direct non-parametric identification of $(u,y)\rightarrow x$ dynamics, or we can use classic parametric system identification approach:
+
+\paragraph{Model selection} \phantom{lol}
+
+\missingfigure{Fig1}
+
+\paragraph{Performance index}
+\[
+    J_N(\theta) = \frac{1}{N}\sum_{t=1}^N \left( x(t) - (S_{ux}(z, \theta) u(t) + S_{yx}(z,\theta)y(t)) \right)^2
+\]
+
+\paragraph{Optimization}
+\[
+    \hat{\theta}_N = \argmin_\theta J_N(\theta)
+\]
+
+We obtain $S_{ux}(z, \hat{\theta}_N)$ and $S_{yx}(z, \hat{\theta}_N)$, the black-box software sensor.
+
+\section{Comparison between K.F. and B.B. software sensing}
+
+\begin{center}
+    \begin{tabular}{l|c|c}
+        & \textbf{K.F.} & \textbf{B.B.} \\
+        \hline
+        Need of (WB) physical model of the system & \color{red} Yes & \color{green} No \\
+        Need a training set & \color{green} No & \color{red} Yes \\
+        Interpretability of the result & \color{green} Yes & \color{red} No \\
+        Easy retuning for a similar (different) system & \color{green} Yes & \color{red} No \\
+        Accuracy of the estimation & \color{green} Good & \color{green} Very Good \\
+        Can be used also in case of un-measurable states & \color{green} Yes & \color{red} No \\
+    \end{tabular}
+\end{center}
+
+\section{Non-linear systems}
+
+When the system is non-linear the problem becomes more complicated.
+Let's take inspiration from E.K.F.
+
+\missingfigure{Fig2}
+
+\begin{remark}
+    In K.F. the E.K.F. extension uses the trick of a time-varying linear gain $K(t)$ but the obvious choice is a non-linear gain (static nonlinear function).
+\end{remark}
+
+The content of the box is:
+\missingfigure{Fig3}
+
+The problem is again the B.B. identification of a non-linear dynamic system, starting from a measured training dataset.
+
+\paragraph{Architecture \#1} Use a recurrent neural network
+
+\missingfigure{Fig4}
+
+\missingfigure{Fig5}
+
+Most general approach but practically seldom used: major issues of stability and convergence of training.
+
+\paragraph{Architecture \#2} Split the system into a static non-linear system and linear dynamics (F.I.R. architecture)
+
+\missingfigure{Fig6}
+
+\begin{remark}
+    Notice that in principle $\hat{x}(t)$ can depend on $y(t)$ whereas we know $\hat{x}(t)$ can only depend on $u(t-1)$ and past values.
+
+    In case of a MIMO system with
+    \begin{align*}
+        m \text{ inputs: } u(t) = \begin{bmatrix}
+            u_1(t) \\
+            \vdots \\
+            u_m(t)
+        \end{bmatrix} \quad p \text{ outputs: } y(t) = \begin{bmatrix}
+            y_1(t) \\
+            \vdots \\
+            y_p(t)
+        \end{bmatrix} \quad n \text{ states: } x(t) = \begin{bmatrix}
+            x_1(t) \\
+            \vdots \\
+            x_n(t)
+        \end{bmatrix}
+    \end{align*}
+
+    The estimation problem is the search of the optimal parameter vector $\theta$ for the function
+    \[
+        f(\cdot, \theta): \RR^{m\times n_u + p \times (n_y + 1)} \rightarrow \RR^n
+    \]
+
+    The estimation of this function $f(\cdot, \theta)$ is much simpler than the estimation of a recurrent neural network.
+    Moreover the stability is guaranteed (the system is F.I.R.).
+\end{remark}
+
+\paragraph{Architecture \#3} Static non-linear function plus linear dynamics but with a I.I.R. scheme
+
+\missingfigure{Fig7}
+
+\paragraph{Architecture \#4} Separation of system dynamics and a static non-linear system using regressors built from physical knowledge
+
+\missingfigure{Fig8}
+
+The system (can be dynamic and non-linear) that builds the regressors (signals $r_1(t)$, $r_2(t)$, \ldots) from the physical sensors $u(t)$ and $y(t)$ using physical knowledge of the system.
+
+The idea is to facilitate the job of $f(\cdot, \theta)$ by presenting at its input a smaller and more meaningful set of signals (regressors).
+
+\begin{exercise}[Continue from the last one]
+    Model (key equation) of the system:
+    \[
+        M\ddot{z} = -c(t)(\dot{z}-\dot{z}_d) - K(z-z_d)
+    \]
+
+    Measurable input $\ddot{z}$ with an accelerometer, $z-z_d$ measurable output with elongation sensor.
+    We want to estimate $\dot{z}$.
+
+    The change is $c(t)$ is a semi-active suspension, can be electronically changed (control variable).
+
+    We can solve the problem with K.F. or we can make an experiment and collect training data:
+    \begin{align*}
+        c(t)        : & \left\{ c(1), c(2), \cdots, c(N) \right\} \\
+        z(t)-z_d(t) : & \left\{ z(1)-z_d(1), z(2)-z_d(2), \cdots, z(N)-z_d(N) \right\} \\
+        \ddot{z}(t) : & \left\{ \ddot{z}(1), \ddot{z}(2), \cdots, \ddot{z}(N) \right\} \\
+        \dot{z}(t)  : & \left\{ \dot{z}(1), \dot{z}(2), \cdots, \dot{z}(N) \right\} \text{ (just for training)} \\
+    \end{align*}
+\end{exercise}

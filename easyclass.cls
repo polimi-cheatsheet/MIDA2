@@ -79,7 +79,7 @@
   }%
 }
 
-\defineblock{exercise}{Excercise}{red!40}
+\defineblock{exercise}{Exercise}{red!40}
 \defineblock{remark}{Remark}{purple!20}
 \defineblock{example}{Example}{orange!20}
 \defineblock{recall}{Recall}{orange!20}
