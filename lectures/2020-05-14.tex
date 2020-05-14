@@ -18,7 +18,23 @@ We can use 4SID for direct non-parametric identification of $(u,y)\rightarrow x$
 
 \paragraph{Model selection} \phantom{lol}
 
-\missingfigure{Fig1}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int] (ux) {$s_{ux}(z, \theta)$};
+        \node[int, below of=ux] (yx) {$s_{yx}(z, \theta)$};
+        \node[left,left of=ux] (u) {$u(t)$};
+        \node[left,left of=yx] (y) {$y(t)$};
+        \node[sum,right of=ux,xshift=1cm,yshift=-1cm] (sum) {};
+        \node[right, right of=sum] (x) {$\hat{x}(t)$};
+
+        \draw[->] (u) -- (ux);
+        \draw[->] (y) -- (yx);
+        \draw[->] (ux) -| (sum);
+        \draw[->] (yx) -| (sum);
+        \draw[->] (sum) -- (x);
+    \end{tikzpicture}
+\end{figure}
 
 \paragraph{Performance index}
 \[
@@ -47,33 +63,165 @@ We obtain $S_{ux}(z, \hat{\theta}_N)$ and $S_{yx}(z, \hat{\theta}_N)$, the black
     \end{tabular}
 \end{center}
 
-\section{Non-linear systems}
+\section{Non-linear Systems}
 
 When the system is non-linear the problem becomes more complicated.
 Let's take inspiration from E.K.F.
 
-\missingfigure{Fig2}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int,dashed border,align=center] at (2,4) (n1) {non-lin\\dyn sys};
+        \node[int,double border,align=center] at (2,2) (n2) {non-lin\\function};
+        \node[int,dashed border,align=center] at (2,0) (n3) {non-lin\\dyn sys};
+        \node[sum] at (4,2) (sum) {};
+        \node[left] at (0,4) (u) {input};
+        \node[left] at (6,4) (y) {output};
+
+        \draw[dashed, blue] (0,-1) rectangle (5,3);
+
+        \draw[->] (u) -- (n1);
+        \draw[->] (0.5,4) |- (n3);
+        \draw[->] (n2) -- (n3);
+        \draw[->] (sum) -- (n2);
+        \draw[->] (n1) -| (sum) node[pos=0.9] {+};
+        \draw[<-] (sum) |- (n3) node[pos=0.1] {-};
+        \draw[->] (n1) -- (y);
+        \draw[->,transform canvas={yshift=-0.3cm}] (n3) -- ++(4,0) node[right] {$\hat{x}(t)$};
+    \end{tikzpicture}
+\end{figure}
 
 \begin{remark}
     In K.F. the E.K.F. extension uses the trick of a time-varying linear gain $K(t)$ but the obvious choice is a non-linear gain (static nonlinear function).
 \end{remark}
 
 The content of the box is:
-\missingfigure{Fig3}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int,double border,align=center] at (0,0) (n) {non-lin\\dyn T.I. sys};
+        \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
+        \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
+        \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t)$};
+    \end{tikzpicture}
+\end{figure}
 
 The problem is again the B.B. identification of a non-linear dynamic system, starting from a measured training dataset.
 
 \paragraph{Architecture \#1} Use a recurrent neural network
 
-\missingfigure{Fig4}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int,dashed border,align=center] at (0,0) (n) {recurrent\\neural net};
+        \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
+        \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
+        \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t)$};
+    \end{tikzpicture}
+\end{figure}
 
-\missingfigure{Fig5}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node[int] at (0,4) (a1) {$a_1$};
+            \node[int] at (0,3) (a2) {$a_2$};
+            \node at (0,2) {$\vdots$};
+            \node[int] at (0,1) (ah) {$a_h$};
+            \node[sum] at (2,2) (sum) {};
+            \node[int,ellipse,align=center] at (3.5,2) (nlf) {N.L.\\fun};
+
+            \draw[<-] (a1) -- ++(-1,0);
+            \draw[<-] (a2) -- ++(-1,0);
+            \draw[<-] (ah) -- ++(-1,0);
+
+            \draw[->] (a1) -- (sum);
+            \draw[->] (a2) -- (sum);
+            \draw[->] (ah) -- (sum);
+            \draw[<-] (sum) -- ++(0,0.5) node[above] {$b$};
+            \draw[->] (sum) -- (nlf);
+            \draw[->] (nlf) -- ++(1.5,0);
+        \end{tikzpicture}
+        \caption*{Static function of a neuron}
+    \end{minipage}
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[int] at (0,4) (a1) {$a_1$};
+            \node[int] at (0,3) (a2) {$a_2$};
+            \node at (0,2) {$\vdots$};
+            \node[int] at (0,1) (ah) {$a_h$};
+            \node[sum] at (2,2) (sum) {};
+            \node[int,ellipse,align=center] at (3.5,2) (nlf) {N.L.\\fun};
+            \node[int, below of=nlf] (z) {$z^{-1}$};
+            \node[int, below of=sum] (c) {$c$};
+
+            \draw[<-] (a1) -- ++(-1,0);
+            \draw[<-] (a2) -- ++(-1,0);
+            \draw[<-] (ah) -- ++(-1,0);
+
+            \draw[->] (a1) -- (sum);
+            \draw[->] (a2) -- (sum);
+            \draw[->] (ah) -- (sum);
+            \draw[<-] (sum) -- ++(0,0.5) node[above] {$b$};
+            \draw[->] (sum) -- (nlf);
+            \draw[->] (nlf) -- ++(1.5,0);
+
+            \draw[->] (4.5,2) |- (z);
+            \draw[->] (z) -- (c);
+            \draw[->] (c) -- (sum);
+        \end{tikzpicture}
+        \caption*{Upgrade to a dynamic neuron}
+    \end{minipage}
+\end{figure}
 
 Most general approach but practically seldom used: major issues of stability and convergence of training.
 
 \paragraph{Architecture \#2} Split the system into a static non-linear system and linear dynamics (F.I.R. architecture)
 
-\missingfigure{Fig6}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int] at (1.5,0) (yn) {$z^{-1}$};
+        \node[int] at (1.5,1.5) (y2) {$z^{-1}$};
+        \node[int] at (1.5,2.5) (y1) {$z^{-1}$};
+
+        \node[int] at (1.5,4) (un) {$z^{-1}$};
+        \node[int] at (1.5,5.5) (u2) {$z^{-1}$};
+        \node[int] at (1.5,6.5) (u1) {$z^{-1}$};
+
+        \node[left] at (0,6.5) (u) {$u(t)$};
+        \node[left] at (0,3.2) (y) {$y(t)$};
+
+        \node[int,minimum height=7cm,double border,align=center] at (5.25,3.25) (sys) {non-linear\\static\\parametric\\function\\(e.g. static\\neural\\network)};
+
+        \draw[->] (u) -- (u1);
+        \draw[->] (u1) -- (u2);
+        \draw[->,dotted] (u2) -- (un);
+        \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
+        \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
+        \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
+
+        \draw[->] (y) -- (y-|sys.west);
+        \draw[->] (1.5,3.2) -- (y1);
+        \draw[->] (y1) -- (y2);
+        \draw[->,dotted] (y2) -- (yn);
+        \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
+        \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
+        \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
+
+        \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t)$};
+
+        \draw[decoration={brace}, decorate] (3.5,-0.7) node {} -- (0,-0.7);
+        \node[align=center,below] at (1.75,-0.9) {linear dynamic\\system};
+
+        \draw[decoration={brace}, decorate] (7,-0.7) node {} -- (3.6,-0.7);
+        \node[align=center,below] at (5.25,-0.9) {non-linear static\\system to be\\estimated};
+    \end{tikzpicture}
+\end{figure}
 
 \begin{remark}
     Notice that in principle $\hat{x}(t)$ can depend on $y(t)$ whereas we know $\hat{x}(t)$ can only depend on $u(t-1)$ and past values.
@@ -106,11 +254,73 @@ Most general approach but practically seldom used: major issues of stability and
 
 \paragraph{Architecture \#3} Static non-linear function plus linear dynamics but with a I.I.R. scheme
 
-\missingfigure{Fig7}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int] at (1.5,0) (yn) {$z^{-1}$};
+        \node[int] at (1.5,1.5) (y2) {$z^{-1}$};
+        \node[int] at (1.5,2.5) (y1) {$z^{-1}$};
+
+        \node[int] at (1.5,4) (un) {$z^{-1}$};
+        \node[int] at (1.5,5.5) (u2) {$z^{-1}$};
+        \node[int] at (1.5,6.5) (u1) {$z^{-1}$};
+
+        \node[int] at (1.5,8) (xn) {$z^{-1}$};
+        \node[int] at (1.5,9.5) (x2) {$z^{-1}$};
+        \node[int] at (1.5,10.5) (x1) {$z^{-1}$};
+
+        \node[left] at (0,10.5) (x) {$x(t)$};
+        \node[left] at (0,6.5) (u) {$u(t)$};
+        \node[left] at (0,3.2) (y) {$y(t)$};
+
+        \node[int,minimum height=11cm,minimum width=1.5cm,double border,align=center] at (5.25,5.25) (sys) {$f(\cdot,\theta)$};
+
+        \draw[->] (u) -- (u1);
+        \draw[->] (u1) -- (u2);
+        \draw[->,dotted] (u2) -- (un);
+        \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
+        \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
+        \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
+
+        \draw[->] (y) -- (y-|sys.west);
+        \draw[->] (1.5,3.2) -- (y1);
+        \draw[->] (y1) -- (y2);
+        \draw[->,dotted] (y2) -- (yn);
+        \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
+        \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
+        \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
+
+        \draw[->] (x) -- (x1);
+        \draw[->] (x1) -- (x2);
+        \draw[->,dotted] (x2) -- (xn);
+        \draw[->] (x1) -- (x1-|sys.west) node[pos=0.5] {$x(t-1)$};
+        \draw[->] (x2) -- (x2-|sys.west) node[pos=0.5] {$x(t-2)$};
+        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$x(t-n_u)$};
+
+        \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t)$};
+
+        \draw[dashed, blue] (0.7,7.2) rectangle (4.2,11.5) node[black, right] {recursive I.I.R. architecture};
+    \end{tikzpicture}
+\end{figure}
 
 \paragraph{Architecture \#4} Separation of system dynamics and a static non-linear system using regressors built from physical knowledge
 
-\missingfigure{Fig8}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int, dashed border, minimum width=1.5cm, minimum height=3cm] at (0,0) (sys) {};
+        \node[int, dashed border, minimum height=3cm] at (4,0) (f) {$f(\cdot,\theta)$};
+
+        \draw[<-,transform canvas={yshift=0.5cm}] (sys) -- ++(-2cm,0) node[left] {$u(t)$};
+        \draw[<-,transform canvas={yshift=-0.5cm}] (sys) -- ++(-2cm,0) node[left] {$y(t)$};
+
+        \draw[->,transform canvas={yshift=1.2cm}] (sys) -- (f) node[pos=0.5] {$r_1(t)$};
+        \draw[->,transform canvas={yshift=0.6cm}] (sys) -- (f) node[pos=0.5] {$r_2(t)$};
+        \draw[->,transform canvas={yshift=-1.2cm}] (sys) -- (f) node[pos=0.5] {$r_h(t)$};
+        \node at (2,0) {$\vdots$};
+        \draw[->] (f) -- ++(2cm,0) node[right] {$\hat{x}(t)$};
+    \end{tikzpicture}
+\end{figure}
 
 The system (can be dynamic and non-linear) that builds the regressors (signals $r_1(t)$, $r_2(t)$, \ldots) from the physical sensors $u(t)$ and $y(t)$ using physical knowledge of the system.
 

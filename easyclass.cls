@@ -169,6 +169,90 @@
   \pgfpathlineto{\pgfqpoint{\hatchdistance}{\hatchdistance}}
   \pgfusepath{stroke}
 }
+% double border
+\tikzstyle{double border} = [double, double distance=0.5mm]
+% pattern in border
+\newcounter{tmp}
+\newif\ifpathisclosed
+\tikzset{dashed border/.style={
+    preaction={decoration={contour lineto closed, contour distance=2pt},
+      decorate,
+    },
+    postaction={
+      insert path={%
+        \pgfextra{%
+          \pgfinterruptpath
+          \path[pattern=north west lines, pattern color=black,even odd rule]
+          \mySecondList \myList
+          ;
+        \endpgfinterruptpath}
+    }},
+}}
+\def\pgfdecoratedcontourdistance{0pt}
+\pgfset{
+  decoration/contour distance/.code=%
+\pgfmathsetlengthmacro\pgfdecoratedcontourdistance{#1}}
+\pgfdeclaredecoration{contour lineto closed}{start}{%
+  \state{start}[
+  next state=draw,
+  width=0pt,
+  persistent precomputation=\let\pgf@decorate@firstsegmentangle\pgfdecoratedangle]{%
+    %\xdef\myList{}\xdef\mySecondList{}%
+    \setcounter{tmp}{0}%
+    \global\pathisclosedfalse%
+    \pgfpathmoveto{\pgfpointlineattime{.5}
+      {\pgfqpoint{0pt}{\pgfdecoratedcontourdistance}}
+    {\pgfqpoint{\pgfdecoratedinputsegmentlength}{\pgfdecoratedcontourdistance}}}%
+  }%
+  \state{draw}[next state=draw, width=\pgfdecoratedinputsegmentlength]{%
+    \ifpgf@decorate@is@closepath@%
+      \pgfmathsetmacro\pgfdecoratedangletonextinputsegment{%
+      -\pgfdecoratedangle+\pgf@decorate@firstsegmentangle}%
+    \fi
+    \pgfmathsetlengthmacro\pgf@decoration@contour@shorten{%
+    -\pgfdecoratedcontourdistance*cot(-\pgfdecoratedangletonextinputsegment/2+90)}%
+    \pgfpathlineto
+    {\pgfpoint{\pgfdecoratedinputsegmentlength+\pgf@decoration@contour@shorten}
+    {\pgfdecoratedcontourdistance}}%
+    \stepcounter{tmp}%
+    \pgfcoordinate{muemmel\number\value{tmp}}{\pgfpoint{\pgfdecoratedinputsegmentlength+\pgf@decoration@contour@shorten}
+    {\pgfdecoratedcontourdistance}}%
+    \pgfcoordinate{feep\number\value{tmp}}{\pgfpoint{\pgfdecoratedinputsegmentlength}{0pt}}%
+    \ifnum\value{tmp}=1\relax%
+     \pgfcoordinate{muemmel0}{\pgfpoint{0pt}{\pgfdecoratedcontourdistance}}%
+     \pgfcoordinate{feep0}{\pgfpoint{0pt}{0pt}}%
+     \xdef\myList{(muemmel\number\value{tmp})}%
+     \xdef\mySecondList{(feep\number\value{tmp})}%
+    \else
+     \xdef\myList{\myList -- (muemmel\number\value{tmp})}%
+     \xdef\mySecondList{(feep\number\value{tmp}) -- \mySecondList}%
+    \fi
+    \ifpgf@decorate@is@closepath@%
+      \pgfpathclose
+      \global\pathisclosedtrue%
+    \fi
+  }%
+  \state{final}{%\typeout{\myList,\mySecondList}%
+    \ifpathisclosed%
+      \xdef\myList{\myList -- cycle}%
+      \xdef\mySecondList{\mySecondList -- cycle}%
+      %\typeout{closed \mySecondList \myList }
+    \else
+      %\typeout{\number\value{tmp}}%
+      \xdef\myList{(muemmel0) -- \myList -- cycle}%
+      \xdef\mySecondList{\mySecondList -- (feep0) --}%
+      %\typeout{not closed \mySecondList \myList }%
+    \fi
+  }%
+}
+\tikzset{
+  contour/.style={
+    decoration={
+      name=contour lineto closed,
+      contour distance=#1
+    },
+decorate}}
+
 
 %=================================
 % title page
