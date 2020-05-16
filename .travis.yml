@@ -1,0 +1,24 @@
+sudo: required
+dist: xenial
+language: generic
+services:
+  - docker
+install:
+  - docker pull aergus/latex
+script:
+  - docker run --rm -it -v$(pwd):/MIDA2 -w /MIDA2 aergus/latex bash -c 'latexmk -pdf -f MIDA2.tex || true'
+branches:
+  except:
+    - /^travis-.*/
+
+before_deploy:
+  - git config --local user.name "Travis Builder"
+  - git config --local user.email "travis@travis.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-travis-$(date +'%Y%m%d-%H%M%S')-$(git log --format=%h -1)}
+  - git tag $TRAVIS_TAG
+deploy:
+  provider: releases
+  api_key:
+    secure: "GugtkMpmZStvPDyY7Cn6KkRqM321PWxOoXKlm4TlkPIE1eGeLfyVFb9eag+r9LhNuuCxBnKFd8XGJU8w9cXfrh28NtKA/LLI1o3UrkSFY5vjjndXb0LeqTnLXj/l439DaeNBZ0PVF+fwMb6grFxwg0u4B16d7ggph3vwLRRmEk9XMWCQsnjkeQ9J3ehBkn/KaZ7pOrAe6yolJ49+EzRulSoM35+hJSFijSC4sBOzu5f66boXEbZGCbEzEttcZy4EfFfnpneclEhZeHLWj6hZeAnofvDAS5/BIT9+JSAdqu4gD8pk6vP86kVOEw4LA4LR9BXUpXU6Uv2QIkmArHQPvYcBlesaqFUMuOqst8gCCNd6zrvxbbxMDNc3j+W+9PNMpuVFhNX82vx/d1AL3TWgjjsIqNZTZxvGeC4w1apxbFLdzA9zi3pINaPaBJlzvUBpxBP92U57B+/ftyiSfQ8rsxSuNCKL0t9GwZiD7hJ25x79zqy/2MfauTJipwJQtd6QnJUPX7ROwiYIzn/R+7ALS58rcGNGhxQgIOnzb6PjV3YaJyR9PyAqH6V10SX8BOHigQZbKk1U7APPqIXdhBq/DM3DlgL7bvWZgKXyQgby6PtYE7PdX1rXcMorPraEP6bGDQBAle8FhI6s8P8sLOZYqlUC58phgLZbI6n3ojm37/8="
+  file: MIDA2.pdf
+  skip_cleanup: true
