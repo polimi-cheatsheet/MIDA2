@@ -1,0 +1,155 @@
+\newlecture{Sergio Savaresi}{18/05/2020}
+
+\paragraph{Conclusions} In case of black-box software sensing with non-linear systems the problem can be quite complex.
+Using \emph{brute-force} approach (1 dynamic neural network) is usually doomed to failure.
+The best is to gain some insight into the system and build some \emph{smart} regressors before black-box map.
+
+\chapter{Gray-box System Identification}
+
+We'll see two approaches
+\begin{itemize}
+    \item Using Kalman Filter
+    \item Using Simulation error method
+\end{itemize}
+
+\section{Using Kalman Filter}
+Kalman Filter is not a system identification method, it is a variable estimation approach (software-sensor, observer).
+However we can use it also for gray-box system identification (\emph{side benefit} of K.F.).
+
+\paragraph{Problem definition} We have a model, typically built as a white-box model using first principles:
+\[
+    S: \begin{cases}
+        x(t+1) = f(x(t), u(t), \theta) + v_1(t) \\
+        y(t) = h(x(t), \theta) + v_2(t)
+    \end{cases}
+\]
+
+$f$ and $h$ are linear or non-linear functions, depending on some unknown parameter $\theta$ (with a physical meaning, e.g. mass, resistance, friction, \dots).
+
+The problem is to estimate $\hat{\theta}$.
+
+K.F. solves this problem by transforming the unknown parameters in extended states: K.F. makes the simultaneous estimation of $\hat{x}(t|t)$ (classic Kalman Filter problem) and $\hat{\theta}(t)$ (parameter identification problem).
+
+\paragraph{Trick} State extension
+
+\[
+    S: \begin{cases}
+        x(t+1) = f(x(t), u(t), \theta(t)) + v_1(t) \\
+        \theta(t+1) = \theta(t) + v_\theta(t) \\
+        y(t) = h(x(t), \theta(t)) + v_2(t)
+    \end{cases}
+\]
+
+The new extended state vector is $x_E = \begin{bmatrix} x(t) \\ \theta(t) \end{bmatrix}$.
+The unknown parameters are transformed in unknown variables.
+
+The new equation we created
+\[
+    \theta(t+1) = \theta(t) + v_\theta(t)
+\]
+It is a \emph{fictitious} equation (not a physical equation).
+
+The core dynamics is $\theta(t+1)=\theta(t)$, it's the equations of something which is constant.
+This is exactly the nature of $\theta(t)$ which is indeed a constant vector of parameters.
+
+We need a \emph{fictitious} noise in order to force Kalman Filter to find the right value of $\theta$ (if no noise in this equation K.F. probably would stay fixed on the initial condition).
+We tell K.F. to do not rely on initial conditions.
+
+Notice that this equation is not of an asymptotic stable system but a simply-stable system.
+It's not a problem because K.F. can deal with non-asymptotically stable systems.
+
+\paragraph{Design choice} The choice of the covariance matrix of $v_\theta(t) \sim WN(0, V_\theta)$.
+
+We make the empirical assumption that $v_1 \perp v_\theta$ and $v_2 \perp v_\theta$ (there is no reason for $v_\theta$ to be correlated with $v_1$ and $v_2$).
+\[
+    V_\theta = \begin{bmatrix}
+        \lambda_{1\theta}^2 & & & \\
+        & \lambda_{2\theta}^2 & & \\
+        & & \ddots & \\
+        & & & \lambda_{n_\theta\theta}^2\\
+    \end{bmatrix}
+\]
+
+It is a $n_\theta\times n_\theta$ and usually it is assumed that $\lambda_{1\theta}^2=\lambda_{2\theta}^2=\dots=\lambda_{n_\theta\theta}^2$.
+We assume that $v_\theta(t)$ is a set of independent W.N. all with the same variance $\lambda_\theta^2$ (tuned empirically).
+
+\missingfigure{Fig2}
+
+With a small value of $\lambda_\theta^2$ there is a slow convergence with small oscillations (noise) at steady-state (big trust to initial conditions).
+With large values of $\lambda_\theta^2$ there's fast convergence but noisy at steady-state.
+
+$\lambda_\theta^2$ is selected according to the best compromise for your specific application.
+
+\paragraph{Notice} This trick can work in principle with any number of unknown parameters (e.g. 3 sensors, 10 states and 20 parameters).
+In practice it works well only on a limited number of parameters (e.g. 3 sensors, 5 states and 2 parameters).
+
+\begin{example}
+    \missingfigure{Fig3}
+
+    \begin{description}
+        \item[Input] $F(t)$
+        \item[Output] Position $x(t)$ (measured)
+        \item[Parameters] $K$ and $M$ are known (measured), $c$ is unknown`
+    \end{description}
+
+    \missingfigure{Fig4}
+
+    \paragraph{Problem} Estimate $c$ with a K.F.
+
+    Using K.F. we do not need a training dataset.
+
+    \paragraph{Step 1} Model the system
+    \[
+        \ddot{x}M = -Kx - c\dot{x} + F
+    \]
+    It's a differential, continuous time linear equation.
+    It's second order so we need 2 state variables: $x_1(t) = x(t)$ and $x_2(t) = \dot{x}(t)$.
+    \[
+        \begin{cases}
+            \dot{x}(t) = x_2(t) \\
+            M\dot{x}_2(t) = -Kx_1(t) -cx_2(t) + F(t) \\
+            y(t) = x_1(t)
+        \end{cases}
+        \begin{cases}
+            \dot{x}_1(t) = x_2(t) \\
+            \dot{x}_2(t) = -\frac{K}{M} x_1(t) - \frac{c}{M} x_2(t) + \frac{1}{M}F(t) \\
+            y(t) = x_1(t)
+        \end{cases}
+    \]
+
+    \paragraph{Step 2} Discretization
+
+    Eulero forward: $\dot{x}(t) \approx \frac{x(t+1)-x(t)}{\Delta}$.
+
+    \[
+        \begin{cases}
+            \frac{x_1(t+1)-x_1(t)}{\Delta} &= x_2(t) \\
+            \frac{x_2(t+1)-x_2(t)}{\Delta} &= -\frac{K}{M} x_1(t) - \frac{c}{M} x_2(t) + \frac{1}{M}F(t) \\
+            y(t) &= x_1(t)
+        \end{cases}
+    \]
+    \[
+        \begin{cases}
+            x_1(t+1) = x_1(t) + \Delta x_2(t) \\
+            x_2(t+1) = -\frac{K\Delta}{M}x_1(t) + \left(1-\frac{c\Delta}{M}\right)x_2(t) + \frac{\Delta}{M}F(t) \\
+            y(t) = x_1(t)
+        \end{cases}
+    \]
+
+    \paragraph{Step 3} State extension
+    \[
+        x_3(t+1) = x_3(t)
+    \]
+    \[
+        \begin{cases}
+            x_1(t+1) = x_1(t) + \Delta x_2(t) + v_{11}(t) \\
+            x_2(t+1) = -\frac{K\Delta}{M}x_1(t) + \left(1-\frac{\Delta {\color{red}x_3(t)}}{M}\right)x_2(t) + \frac{\Delta}{M}F(t) + v_{12}(t) \\
+            {\color{red}x_3(t+1) = x_3(t) + v_{13}(t)} \\
+            y(t) = x_1(t) + v_2(t)
+        \end{cases}
+    \]
+
+    The system is ready for K.F. application: we get at the same time $\hat{x}(t)$ and $\hat{c}(t)$.
+
+    Notice that we need Extended Kalman Filter: even if the original system was linear, state extension moved to a non-linear system.
+\end{example}

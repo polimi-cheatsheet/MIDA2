@@ -344,4 +344,28 @@ The idea is to facilitate the job of $f(\cdot, \theta)$ by presenting at its inp
         \ddot{z}(t) : & \left\{ \ddot{z}(1), \ddot{z}(2), \cdots, \ddot{z}(N) \right\} \\
         \dot{z}(t)  : & \left\{ \dot{z}(1), \dot{z}(2), \cdots, \dot{z}(N) \right\} \text{ (just for training)} \\
     \end{align*}
+
+    % this part has been done the 18/05/2020
+
+    Back to the main equation:
+    \[
+        M\ddot{z} = -K(z-z_d)-C(t)(\dot{z}-\dot{z}_d)
+    \]
+    \[
+        \underbrace{\dot{z}}_{\text{to be estim.}} =
+        -\frac{K}{M} \underbrace{\int (z-z_d)dt}_{r_1(t)}
+        -\frac{1}{M} \underbrace{\int C(t)(\dot{z}-\dot{z}_d)dt}_{r_2(t)}
+    \]
+
+    We also consider this equation
+    \[
+        \dot{z}_d = \underbrace{\int \ddot{z}_d dt}_{r_3(t)}
+    \]
+
+    $r_1(t)$ and $r_2(t)$ are the primary regressors, directly linked to $\dot{z}(t)$. $r_3(t)$ is a secondary regressor, it can help $r_1(t)$.
+
+    Since these regressors are obtained by integration to avoid drifting (by DC components of noise integration) we have to high-pass the inputs with high-pass filters ($\frac{z-1}{z-a}$).
+
+    \paragraph{Full filtering scheme} \phantom{lol}
+    \missingfigure{Fig1}
 \end{exercise}
