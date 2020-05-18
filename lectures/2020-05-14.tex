@@ -367,5 +367,39 @@ The idea is to facilitate the job of $f(\cdot, \theta)$ by presenting at its inp
     Since these regressors are obtained by integration to avoid drifting (by DC components of noise integration) we have to high-pass the inputs with high-pass filters ($\frac{z-1}{z-a}$).
 
     \paragraph{Full filtering scheme} \phantom{lol}
-    \missingfigure{Fig1}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \draw[int, dashed border] (0.5,-0.5) rectangle ++(5.5,6);
+            \node[int, double border, minimum width=1.5cm, minimum height=6cm] at (8,2.5) (f) {$f(\cdot, \theta)$};
+            \node[left] at (0,0) (c) {$c(t)$};
+            \node[left] at (0,3) (d) {$z-z_d$};
+            \node[left] at (0,5) (z) {$\ddot{z}$};
+            \node[sum] at (2,0) (mult) {$\times$};
+            \node[int] at (2,1.5) (d1) {$\frac{z-1}{z}$};
+            \node[int] at (3.5,0) (d2) {$\frac{z-1}{z-a}$};
+            \node[int] at (5,0) (d3) {$\frac{1}{z-1}$};
+            \node[int] at (3.5,3) (d4) {$\frac{z-1}{z-a}$};
+            \node[int] at (5,3) (d5) {$\frac{1}{z-1}$};
+            \node[int] at (3.5,5) (d6) {$\frac{z-1}{z-a}$};
+            \node[int] at (5,5) (d7) {$\frac{1}{z-1}$};
+
+            \node[below] at (3,-0.7) {regressors building block};
+
+            \draw[->] (c) -- (mult);
+            \draw[->] (d1) -- (mult);
+            \draw[->] (mult) -- (d2);
+            \draw[->] (d2) -- (d3);
+            \draw[->] (z) -- (d6);
+            \draw[->] (d6) -- (d7);
+            \draw[->] (d) -- (d4);
+            \draw[->] (d4) -- (d5);
+            \draw[->] (d) -| (d1);
+
+            \draw[->] (d7) -- (d7-|f.west) node[pos=0.7] {$r_3(t)$};
+            \draw[->] (d5) -- (d5-|f.west) node[pos=0.7] {$r_1(t)$};
+            \draw[->] (d3) -- (d3-|f.west) node[pos=0.7] {$r_2(t)$};
+            \draw[->] (f) -- (9.5,2.5) node[right] {$\hat{\dot{z}}$};
+        \end{tikzpicture}
+    \end{figure}
 \end{exercise}

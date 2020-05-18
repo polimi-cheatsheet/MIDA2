@@ -73,7 +73,35 @@ We make the empirical assumption that $v_1 \perp v_\theta$ and $v_2 \perp v_\the
 It is a $n_\theta\times n_\theta$ and usually it is assumed that $\lambda_{1\theta}^2=\lambda_{2\theta}^2=\dots=\lambda_{n_\theta\theta}^2$.
 We assume that $v_\theta(t)$ is a set of independent W.N. all with the same variance $\lambda_\theta^2$ (tuned empirically).
 
-\missingfigure{Fig2}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+            node distance=2cm,auto,>=latex',
+            declare function={
+                f1(\x) = (\x < 2) * (\x/2*(3-1)) +
+                         (\x >= 2) * (3-1) +
+                         (\x > 0.2) * rand/2.5 +
+                         1;
+                f2(\x) = (\x < 4.5) * (\x/4.5*(3-1)) +
+                         (\x >= 4.5) * (3-1) +
+                         (\x > 0.2) * rand/15 +
+                         1;
+            }
+        ]
+        \draw[->] (0,0) -- (6,0) node[below] {$t$};
+        \draw[->] (0,0) -- (0,4) node[left] {$\theta$};
+
+        \node[green] at (2.3,1.5) {\footnotesize small $\lambda_\theta^2$};
+        \node[blue] at (2.3,3.7) {\footnotesize big $\lambda_\theta^2$};
+
+        \draw[dotted] (6,3) -- (0,3) node[left] {$\overline{\theta}$};
+        \draw[domain=0:5.5,smooth,variable=\x,blue,samples=70] plot ({\x},{f1(\x)});
+        \draw[domain=0:5.5,smooth,variable=\x,green,samples=70] plot ({\x},{f2(\x)});
+
+        \draw[mark=*] plot coordinates {(0,1)} node[left, align=right] {Initial\\condition};
+    \end{tikzpicture}
+    \caption*{Influence of choice of $\lambda_\theta^2$}
+\end{figure}
 
 With a small value of $\lambda_\theta^2$ there is a slow convergence with small oscillations (noise) at steady-state (big trust to initial conditions).
 With large values of $\lambda_\theta^2$ there's fast convergence but noisy at steady-state.
@@ -84,15 +112,37 @@ $\lambda_\theta^2$ is selected according to the best compromise for your specifi
 In practice it works well only on a limited number of parameters (e.g. 3 sensors, 5 states and 2 parameters).
 
 \begin{example}
-    \missingfigure{Fig3}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \draw (0,0) -- (6,0);
+            \draw[pattern=north east lines] (0,0) rectangle (-0.5,2);
+            \draw[] (2,0) rectangle (4,1.5);
+            \node at (3,0.75) {$M$};
+            \draw[decoration={aspect=0.3, segment length=1mm, amplitude=2mm,coil},decorate] (0.5,0.75) -- (1.5,0.75);
+            \draw (0,0.75) -- (0.5,0.75);
+            \draw (1.5,0.75) -- (2,0.75);
+            \draw[->] (4,0.75) -- (5,0.75) node[right] {$F$};
+            \fill[pattern=north east lines] (1.8,0) rectangle ++(2.4,-0.1) node[above right] {\footnotesize friction $c$};
+            \draw[->] (3,-0.5) -- (4,-0.5) node[right] {$x$};
+            \draw (3,-0.55) -- (3,-0.45);
+        \end{tikzpicture}
+    \end{figure}
 
     \begin{description}
         \item[Input] $F(t)$
         \item[Output] Position $x(t)$ (measured)
-        \item[Parameters] $K$ and $M$ are known (measured), $c$ is unknown`
+        \item[Parameters] $K$ and $M$ are known (measured), $c$ is unknown
     \end{description}
 
-    \missingfigure{Fig4}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node[int,align=center] at (0,0) (s) {system\\$c = ?$};
+            \draw[<-] (s) -- ++(-1.5,0) node[left] {$F(t)$};
+            \draw[->] (s) -- ++(1.5,0) node[right] {$x(t)$};
+        \end{tikzpicture}
+    \end{figure}
 
     \paragraph{Problem} Estimate $c$ with a K.F.
 
