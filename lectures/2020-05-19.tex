@@ -1,0 +1,129 @@
+\newlecture{Sergio Savaresi}{19/05/2020}
+
+\section{Using Simulation Error Method}
+
+Are there alternative ways to solve gray-box system identification problems?
+A commonly (and intuitive) used method is parametric identification approach based on Simulation Error Method (SEM).
+
+\missingfigure{Fig1}
+
+\paragraph{Step 1} Collect data from an experiment
+
+\begin{align*}
+    \{ \tilde{u}(1), \tilde{u}(2), \dots, \tilde{u}(N) \} \\
+    \{ \tilde{y}(1), \tilde{y}(2), \dots, \tilde{y}(N) \}
+\end{align*}
+
+\paragraph{Step 2} Define model structure
+\[
+    y(t) = \mathcal{M}(u(t), \overline{\theta}, \theta)
+\]
+Mathematical model (linear or non-linear) usually written from first principle equations. $\overline{\theta}$ is the set of known parameters (mass, resistance, \dots), $\theta$ is the set of unknown parameters (possibly with bounds).
+
+\paragraph{Step 3} Performance index definition
+\[
+    J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \left( \tilde{y}(t) - \mathcal{M}(\tilde{u}(t), \overline{\theta}, \theta) \right)^2
+\]
+
+\paragraph{Step 4} Optimization
+
+\[
+    \hat{\theta}_N = \argmin_\theta J_N(\theta)
+\]
+
+\begin{itemize}
+    \item Usually no analytic expression of $J_N(\theta)$ is available.
+    \item Each computation of $J_N(\theta)$ requires an entire simulation of the model from $t=1$ to $t=N$.
+    \item Usually $J_N(\theta)$ is a non-quadratic and non-convex function. Iterative and randomized optimization methods must be used.
+    \item It's intuitive but very computationally demanding.
+\end{itemize}
+
+\missingfigure{Fig2}
+
+Can S.E.M. be applied also to B.B. methods?
+
+\begin{example}
+    We collect data $\{ \tilde{u}(1), \tilde{u}(2), \dots, \tilde{u}(N) \}$ and $\{ \tilde{y}(1), \tilde{y}(2), \dots, \tilde{y}(N) \}$, we want to estimate from data the I/O model.
+
+    \[
+        y(t) = \frac{b_0 + b_1z^{-1}}{a+a_1z^{-1} + a_2z^{-2}}u(t-1) \qquad \theta = \begin{bmatrix}
+            a_1 \\ a_2 \\ b_0 \\ b_1
+        \end{bmatrix}
+    \]
+
+    In time domain $y(t) = -a_1y(t-1)-a_2y(t-2)+b_0u(t-1)+b_1u(t-2)$.
+
+    Using P.E.M.
+    \[
+        \hat{y}(t|t-1) = -a_1\hat{y}(t-1)-a_2\hat{y}(t-2)+b_0\hat{u}(t-1)+b_1\hat{u}(t-2)
+    \]
+    \begin{align*}
+        J_N(\theta) &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) - \hat{y}(t|t-1, \theta) \right)^2 \\
+        &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) +a_1\tilde{y}(t-1)+a_2\tilde{y}(t-2)-b_0\tilde{u}(t-1)-b_1\tilde{u}(t-2) \right)^2 \\
+    \end{align*}
+
+    Notice that it's a quadratic formula.
+
+    \missingfigure{Fig3}
+
+    Using S.E.M.
+    \[
+        \hat{y}(t|t-1) = -a_1\hat{y}(t-1)-a_2\hat{y}(t-2)+b_0\tilde{u}(t-1)+b_1\tilde{u}(t-2)
+    \]
+    \begin{align*}
+        J_N(\theta) &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) - \hat{y}(t|t-1, \theta) \right)^2 \\
+        &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) +a_1\hat{y}(t-1)+a_2\hat{y}(t-2)-b_0\tilde{u}(t-1)-b_1\tilde{u}(t-2) \right)^2 \\
+    \end{align*}
+
+    Notice that it's non-linear with respect to $\theta$.
+\end{example}
+
+P.E.M. approach looks much better, but do not forget the noise! P.E.M. is much less robust w.r.t. noise, we must include a model of the noise in the estimated model.
+We use ARMAX models.
+
+If we use ARX models:
+\[
+    y(t) = \frac{b_0+b_1z^{-1}}{a+a_1z^{-1}+a_2z^{-2}}u(t-1) + \frac{1}{a+a_1z^{-1}+a_2z^{-2}}e(t)
+\]
+\[
+    \hat{y}(t|t-1) = b_0u(t-1)+b_1u(t-2) - a_1y(t-1)-a_2y(t-2)
+\]
+
+If we use ARMAX models the numerator of the T.F. for $e(t)$ is $a+c_1z^{-1}+\ldots+c_mz^{-m}$, in this case $J_N(\theta)$ is non-linear.
+This leads to the same complexity of S.E.M.
+
+The second problem of P.E.M. is high sensitivity to sampling time choice.
+Remember that when we write at discrete time $y(t)$ we mean $y(t\cdot \Delta)$.
+
+\[
+    \hat{y}(t|t-1) = -a_1\tilde{y}(t-1)-a_2\tilde{y}(t-2) + b_0\tilde{u}(t-1)+b_1\tilde{u}(t-2)
+\]
+
+If $\Delta$ is very small the difference between $\tilde{y}(t)$ and $\tilde{y}(t-1)$ becomes very small.
+The effect is that the P.E.M. optimization ends to provide this \emph{trivial} solution:
+\[
+    a_1 = -1 \qquad a_2 \rightarrow 0 \qquad b_0 \rightarrow 0 \qquad b_1 \rightarrow 0 \qquad \Rightarrow \qquad \tilde{y}(t) \approx \tilde{y}(t-1)
+\]
+
+This is a wrong model due to the fact that the recursive part of the model is using past measures of the output instead of past values of the model outputs.
+
+\section{Conclusion}
+
+Summary of system identification methods for I/O systems
+\missingfigure{Fig4}
+
+\begin{itemize}
+    \item Collect a dataset for training (if needed)
+    \item Choose a model domain (linear static/non-linear static/linear dynamic/non-linear dynamic), using gray-box or black-box
+    \item Estimation method: constructive (4SID), parametric (P.E.M. or S.E.M.) or filtering (state extension of K.F.)
+\end{itemize}
+
+Better black-box for system identification and software-sensing or white box?
+
+It depends on the goals and type of applications.
+
+\begin{itemize}
+    \item Black box is very general and very flexible, make maximum use of data and no or little need of domain knowhow
+    \item White box is very useful when you are the system-designer (not only the control algorithm designer), can provide more insight in the system.
+    \item Gray box can sometimes be obtained by hybrid systems (part is black-box and part is white-box).
+\end{itemize}
