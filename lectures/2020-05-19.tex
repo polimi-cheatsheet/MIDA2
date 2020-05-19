@@ -5,7 +5,14 @@
 Are there alternative ways to solve gray-box system identification problems?
 A commonly (and intuitive) used method is parametric identification approach based on Simulation Error Method (SEM).
 
-\missingfigure{Fig1}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int, align=center] at (0,0) (sys) {Model with\\some unknown\\parameters};
+        \draw[<-] (sys) -- ++(-2,0) node[left] {$u(t)$};
+        \draw[->] (sys) -- ++(2,0) node[right] {$y(t)$};
+    \end{tikzpicture}
+\end{figure}
 
 \paragraph{Step 1} Collect data from an experiment
 
@@ -38,7 +45,25 @@ Mathematical model (linear or non-linear) usually written from first principle e
     \item It's intuitive but very computationally demanding.
 \end{itemize}
 
-\missingfigure{Fig2}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \draw (0,2) rectangle ++(2,2);
+        \node[align=center] at (1,3) {Model of\\the system};
+        \node[draw, ellipse, align=center] at (1,0) (m) {Model\\$\mathcal{M}(c)$};
+        \node[sum] at (4,0) (sum) {};
+        \node[int] at (4,-1.5) (J) {$J(c)$};
+
+        \draw[<-] (m) -- (-1,0) node[left] {$\tilde{F}(t)$};
+        \draw[->] (m) -- (sum) node[pos=0.8] {+} node[pos=0.5] {$\hat{y}(t)$};
+        \draw[->] (4,3) -- (sum) node[pos=0.9] {-};
+        \draw[->] (sum) -- (J) node[pos=0.5, right] {\footnotesize simulation error};
+        \draw[->] (J) -| (m);
+
+        \draw[<-] (0,3) -- (-1,3) node[left] {$\tilde{F}(t)$};
+        \draw[->] (2,3) -- (5,3) node[right] {$\tilde{y}(t)$};
+    \end{tikzpicture}
+\end{figure}
 
 Can S.E.M. be applied also to B.B. methods?
 
@@ -64,7 +89,53 @@ Can S.E.M. be applied also to B.B. methods?
 
     Notice that it's a quadratic formula.
 
-    \missingfigure{Fig3}
+    \begin{figure}[H]
+        \begin{minipage}[t]{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+                \node[int] at (1,1) (zu) {$z^{-1}$};
+                \node[int] at (1,3.5) (zy) {$z^{-1}$};
+
+                \node at (0,2) (u) {$\tilde{u}(t)$};
+                \node at (0,4.5) (y) {$\tilde{y}(t)$};
+
+                \node[int,minimum height=5cm,minimum width=1.5cm,align=center] at (3.5,2.5) (sys) {Linear\\function\\of $\theta$};
+
+                \draw[->] (zu) -- (zu-|sys.west) node[pos=0.5] {$\scriptstyle\tilde{u}(t-1)$};
+                \draw[->] (u) -- (u-|sys.west);
+                \draw[->] (1,2) -- (zu);
+                \draw[->] (zy) -- (zy-|sys.west) node[pos=0.5] {$\scriptstyle\tilde{y}(t-1)$};
+                \draw[->] (y) -- (y-|sys.west);
+                \draw[->] (1,4.5) -- (zy);
+                \draw[->] (sys) -- ++(2,0) node[above] {$\scriptstyle\hat{y}(t|t-1)$};
+            \end{tikzpicture}
+            \caption*{P.E.M.}
+        \end{minipage}
+        \begin{minipage}[t]{0.4\textwidth}
+            \centering
+            \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+                \node[int] at (1,1) (zu) {$z^{-1}$};
+                \node[int] at (1,3) (zy) {$z^{-1}$};
+                \node[int] at (1,4.5) (zy2) {$z^{-1}$};
+
+                \node at (0,2) (u) {$\tilde{u}(t)$};
+
+                \node[int,minimum height=5cm,minimum width=1.5cm,align=center] at (3.5,2.5) (sys) {Linear\\function\\of $\theta$};
+
+                \draw[->] (zu) -- (zu-|sys.west) node[pos=0.5] {$\scriptstyle\tilde{u}(t-1)$};
+                \draw[->] (u) -- (u-|sys.west);
+                \draw[->] (1,2) -- (zu);
+
+                \draw[->] (zy) -- (zy-|sys.west) node[pos=0.5] {$\scriptstyle\hat{y}(t-2)$};
+                \draw[->] (zy2) -- (zy2-|sys.west) node[pos=0.5] {$\scriptstyle\hat{y}(t-1)$};
+                \draw[->] (zy2) -- (zy);
+                \draw[->] (4.8,2.5) -- (4.8,5.5) -- (1,5.5) -- (zy2);
+
+                \draw[->] (sys) -- ++(2,0) node[above] {$\scriptstyle\hat{y}(t|t-1)$};
+            \end{tikzpicture}
+            \caption*{S.E.M.}
+        \end{minipage}
+    \end{figure}
 
     Using S.E.M.
     \[
@@ -110,7 +181,14 @@ This is a wrong model due to the fact that the recursive part of the model is us
 \section{Conclusion}
 
 Summary of system identification methods for I/O systems
-\missingfigure{Fig4}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int, dashed border, minimum width=1.5cm, minimum height=1.5cm] at (0,0) (sys) {};
+        \draw[<-] (sys) -- ++(-1.5,0) node[left] {$u(t)$};
+        \draw[->] (sys) -- ++(1.5,0) node[right] {$y(t)$};
+    \end{tikzpicture}
+\end{figure}
 
 \begin{itemize}
     \item Collect a dataset for training (if needed)
