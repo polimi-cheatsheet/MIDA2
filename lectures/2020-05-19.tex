@@ -71,7 +71,7 @@ Can S.E.M. be applied also to B.B. methods?
     We collect data $\{ \tilde{u}(1), \tilde{u}(2), \dots, \tilde{u}(N) \}$ and $\{ \tilde{y}(1), \tilde{y}(2), \dots, \tilde{y}(N) \}$, we want to estimate from data the I/O model.
 
     \[
-        y(t) = \frac{b_0 + b_1z^{-1}}{a+a_1z^{-1} + a_2z^{-2}}u(t-1) \qquad \theta = \begin{bmatrix}
+        y(t) = \frac{b_0 + b_1z^{-1}}{1+a_1z^{-1} + a_2z^{-2}}u(t-1) \qquad \theta = \begin{bmatrix}
             a_1 \\ a_2 \\ b_0 \\ b_1
         \end{bmatrix}
     \]
@@ -154,7 +154,7 @@ We use ARMAX models.
 
 If we use ARX models:
 \[
-    y(t) = \frac{b_0+b_1z^{-1}}{a+a_1z^{-1}+a_2z^{-2}}u(t-1) + \frac{1}{a+a_1z^{-1}+a_2z^{-2}}e(t)
+    y(t) = \frac{b_0+b_1z^{-1}}{1+a_1z^{-1}+a_2z^{-2}}u(t-1) + \frac{1}{1+a_1z^{-1}+a_2z^{-2}}e(t)
 \]
 \[
     \hat{y}(t|t-1) = b_0u(t-1)+b_1u(t-2) - a_1y(t-1)-a_2y(t-2)
