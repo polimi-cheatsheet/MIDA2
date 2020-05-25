@@ -1,0 +1,162 @@
+\newlecture{Sergio Savaresi}{19/05/2020}
+
+\chapter{Minimum variance control}
+
+Design and analysis of feedback systems.
+It's not system identification nor software sensing.
+
+\begin{itemize}
+    \item Control design is the main motivation to system identification and software sensing.
+    \item MVC is based on \emph{mathematics} of system identification and software sensing (prediction theory).
+\end{itemize}
+
+\paragraph{Setup of the problem} Consider a generic ARMAX model:
+\[
+    y(t) = \frac{B(z)}{A(z)}u(t-k) + \frac{C(z)}{A(z)}e(t) \qquad e(t) \sim WN(0, \lambda^2)
+\]
+\begin{align*}
+    B(z) &= b_0 + b_1z^{-1} + \dots + b_pz^{-p} \\
+    A(z) &= 1   + a_1z^{-1} + \dots + a_mz^{-m} \\
+    C(z) &= 1   + c_1z^{-1} + \dots + c_nz^{-n}
+\end{align*}
+
+Assumptions:
+\begin{itemize}
+    \item $\frac{C(z)}{A(z)}$ is in canonical form
+    \item $b_0\ne 0$ ($k$ is the actual delay)
+    \item $\frac{B(z)}{A(z)}$ is \emph{minimum phase}
+\end{itemize}
+
+\begin{remark}
+    $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
+
+    \missingfigure{Fig1}
+
+    At the very beginning the response of a non-minimum phase system goes to the opposite direction w.r.t. the final value.
+
+
+    Intuitively it's very difficult to control non-minimum phase systems.
+    You can take the wrong decision if you react immediately.
+
+    Also for human it's difficult, for example \emph{steer to roll} dynamics in a bicycle.
+
+    Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but generalized MVC).
+\end{remark}
+
+The problem we wish to solve is optimal tracking of the desired behavior of output:
+\missingfigure{Fig2}
+
+In a more formal way MVC tries to minimize this performance index:
+\[
+    J = E\left[ (y(t) - y^0(t))^2 \right]
+\]
+It's the variance of the tracking error, because of the it's called Minimum Variance Control.
+
+Some additional (small) technical assumptions:
+\begin{itemize}
+    \item $y^0(t)$ and $e(t)$ are not correlated (usually fulfilled)
+    \item We assume that $y^0(t)$ is known only up to time $t$ (present time), we have no preview of the future desired $y^0(t)$ ($y^0(t)$ is totally unpredictable).
+\end{itemize}
+
+\begin{remark}
+    There are 2 sub-classes of control problems:
+    \begin{itemize}
+        \item When $y^0(t)$ is constant or step-wise (regulation problem)
+        \item When $y^0(t)$ is varying (tracking problem)
+    \end{itemize}
+
+    \missingfigure{Fig3}
+\end{remark}
+
+Bottom-up way of presenting M.V.C.
+
+\paragraph{Simplified problem \#1}
+\[
+    S: y(t) = ay(t-1) + b_0u(t-1) + b_1u(t-2) \qquad y(t) = \frac{b_0+b_1z^{-1}}{1-az^{-1}}u(t-1)
+\]
+
+We assume that $y^0(t)=\overline{y}$ (regulation problem) and the system is noise-free.
+\begin{itemize}
+    \item $b_0\ne 0$
+    \item Root of numerator must be inside the unit circle
+\end{itemize}
+
+To design the minimum variance controller we must minimize the performance index:
+\[
+    J = E\left[ (y(t) - y^0(t))^2 \right]
+\]
+There is no noise so we can remove the expected value
+\begin{align*}
+    J &= \left( y(t) - y^0(t) \right)^2 = \left( y(t) - \overline{y}^0 \right)^2 = \left( ay(t-1)+b_0u(t-1)+b_1u(t-2) - \overline{y}^0 \right)^2 = \\
+    &= \left( ay(t) + b_0u(t) + b_1u(t-1)-\overline{y}^0 \right)^2 \\
+    \frac{\partial J}{\partial u(t)} &= 2\left( ay(t)+b_0u(t)+b_1u(t-1)-\overline{y}^0 \right)\left(b_0\right)
+\end{align*}
+
+Why the derivative is just $b_0$? We are at present time $t$ and at time $t$ the control algorithm must take a decision on the value of $u(t)$.
+At time $t$, $y(t)$, $y(t-1)$, \dots, $u(t-1)$, $u(t-2)$, \dots{} are no longer variables but numbers.
+
+\[
+    \frac{\partial J}{\partial u(t)} = 0 \qquad ay(t)+b_0u(t)+b_1u(t-1)-\overline{y}^0 = 0 \\
+\]
+\[
+    u(t) = \left( \overline{y}^0  - ay(t)\right)\frac{1}{b_0+b_1z^{-1}}
+\]
+\missingfigure{Fig4}
+
+\paragraph{Simplified problem \#2}
+\[
+    S: y(t) = ay(t-1) + b_0u(t-1) + b_1u(t-2) + e(t) \qquad e(t) \sim WN(0, \lambda^2)
+\]
+
+The reference variable is $y^0(t)$ (tracking problem).
+
+The performance index is
+\[
+    J = E\left[ (y(t) - y^0(t))^2 \right]
+\]
+
+The fundamental trick to solve this problem is to re-write $y(t)$ as:
+\[
+    y(t) = \hat{y}(t|t-1) + \epsilon(t)
+\]
+
+Since $k=1$ we know that $\epsilon(t) = e(t)$, so $y(t) = \hat{y}(t|t-1)+e(t)$.
+\begin{align*}
+    J &= E\left[ \left(\hat{y}(t|t-1)+e(t) - y^0(t)\right)^2 \right] \\
+    &= E\left[   \left((\hat{y}(t|t-1)-y^0(t)) +e(t)\right)^2 \right] \\
+    &= E\left[ \left(\hat{y}(t|t-1)-y^0(t)\right)^2 \right] + E\left[e(t)^2\right] + \cancel{2E\left[e(t)\left( \hat{y}(t|t-1)-y^0(t) \right)\right]} \\
+\end{align*}
+
+Notice that
+\[
+    \argmin_{u(t)} \left\{ E\left[ \left(\hat{y}(t|t-1)-y^0(t)\right)^2 \right] + \lambda^2 \right\} = \argmin_{u(t)} \left\{ E\left[ \left(\hat{y}(t|t-1)-y^0(t)\right)^2 \right] \right\}
+\]
+The best result is when $\hat{y}(t|t-1)=y^0(t)$, we can force this relationship.
+
+Now we must compute the 1-step predictor of the system:
+\[
+    S: y(t) = \frac{b_1+b_1z^{-1}}{1-az^{-1}}u(t-1) + \frac{1}{1-az^{-1}}e(t)
+\]
+Note that this is an $ARMAX(1,0,1+1)$.
+\[
+    k=1 \qquad B(z) = b_0+b_1z^{-1} \qquad A(z)=1-az^{-1} \qquad C(z) = 1
+\]
+
+General solution for 1-step prediction of ARMAX:
+\[
+    \hat{y}(t|t-1) = \frac{B(z)}{C(z)}u(t-1) + \frac{C(z)-A(z)}{C(z)}y(t)
+\]
+If we apply this formula we obtain:
+\[
+    \hat{y}(t|t-1) = \frac{b_0+b_1z^{-1}}{1}u(t-1) + \frac{1-1+az^{-1}}{1}y(t) = (b_0+b_1z^{-1})u(t-1)+ay(t-1)
+\]
+
+Now we can impose that $\hat{y}(t|t-1)=y^0(t)$
+\[
+    b_0u(t) + b_1u(t-1) + ay(t) = y^0(t) \qquad u(t) = \left( y^0(t+1) - ay(t) \right)\frac{1}{b_0+b_1z^{-1}}
+\]
+But we don't have $y^0(t+1)$, so we use $y^0(t)$.
+\[
+    u(t) = \left( y^0(t) - ay(t) \right)\frac{1}{b_0+b_1z^{-1}}
+\]
+\missingfigure{Fig5}
