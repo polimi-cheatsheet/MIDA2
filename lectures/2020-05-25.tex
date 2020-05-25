@@ -1,6 +1,5 @@
-\newlecture{Sergio Savaresi}{19/05/2020}
-
 \chapter{Minimum variance control}
+\newlecture{Sergio Savaresi}{19/05/2020}
 
 Design and analysis of feedback systems.
 It's not system identification nor software sensing.
@@ -30,7 +29,26 @@ Assumptions:
 \begin{remark}
     $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
 
-    \missingfigure{Fig1}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \draw[->] (0,4) -- (0,7) node[left] {$u(t)$};
+            \draw[->] (0,4) -- (5,4) node[below] {$t$};
+            \draw[->] (0,0) -- (0,3) node[left] {$y(t)$};
+            \draw[->] (0,0) -- (5,0) node[below] {$t$};
+
+            \draw[line width=0.4mm] (0,4) -- (1,4) -- (1,6.5) -- (5,6.5);
+            \draw[dotted] (1,0) -- (1,4);
+            \draw[dotted] (0,2.5) -- (5,2.5) node[right] {\footnotesize steady state};
+
+            \draw[domain=1:4.5,smooth,variable=\x,green,samples=70] plot ({\x},{2.5-2.5*(1-(\x-1)/3.5)^5});
+            \draw[domain=1:4.5,smooth,variable=\x,green,samples=70] plot ({\x},{2.5-2.5*(1-(\x-1)/3.5)^5+sin(\x*180)/\x});
+            \draw[domain=1:4.5,smooth,variable=\x,red,samples=70] plot ({\x},{2.5-2.5*(1-(\x-1)/3.5)^5+3*sin(\x*180)/(\x^2)});
+
+            \node[red,right] at (1.5,-0.5) {\footnotesize not minimum-phase};
+            \node[green,right] at (2,1.5) {\footnotesize minimum-phase};
+        \end{tikzpicture}
+    \end{figure}
 
     At the very beginning the response of a non-minimum phase system goes to the opposite direction w.r.t. the final value.
 
@@ -44,7 +62,24 @@ Assumptions:
 \end{remark}
 
 The problem we wish to solve is optimal tracking of the desired behavior of output:
-\missingfigure{Fig2}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[int,ellipse,align=center] at (-1,0) (cont) {controller\\algorithm};
+        \node[int] at (2.5,0) (ba) {$\frac{B(z)}{A(z)}$};
+        \node[int] at (4,1.5) (ca) {$\frac{C(z)}{A(z)}$};
+        \node[sum] at (4,0) (sum) {};
+
+        \draw[dotted] (0.8,-1) rectangle (5,3.2) node[right] {system};
+        \draw[->] (cont) -- (ba) node[pos=0.7] {$u(t)$};
+        \draw[->] (ba) -- (sum);
+        \draw[->] (ca) -- (sum);
+        \draw[<-] (cont) -- ++(-2,0) node[left] {$y^0(t)$};
+        \draw[<-] (ca) -- ++(0,1) node[above] {$e(t)$};
+        \draw[->] (sum) -- ++(2,0) node[right] {$y(t)$};
+        \draw[->] (5.5,0) -- (5.5,-1.5) -- (-1,-1.5) -- (cont);
+    \end{tikzpicture}
+\end{figure}
 
 In a more formal way MVC tries to minimize this performance index:
 \[
@@ -65,7 +100,53 @@ Some additional (small) technical assumptions:
         \item When $y^0(t)$ is varying (tracking problem)
     \end{itemize}
 
-    \missingfigure{Fig3}
+    \begin{figure}[H]
+        \centering
+        \begin{minipage}[t]{0.48\textwidth}
+            \centering
+            \begin{tikzpicture}[
+                node distance=2cm,auto,>=latex',
+                declare function={
+                    f(\x) =  (\x < 0.5) * 1 +
+                             (\x >= 0.5) * (\x < 2) * 2 +
+                             (\x >= 2) * (\x < 3) * 3 +
+                             (\x >= 3) * (\x < 4) * 1.5 +
+                             (\x >= 4) * 1;
+                    f2(\x) = (f(\x-0.5) + (f(\x) - f(\x-0.5)) / 720 +
+                             f(\x-0.4) + (f(\x) - f(\x-0.4)) / 120 +
+                             f(\x-0.3) + (f(\x) - f(\x-0.3)) / 24 +
+                             f(\x-0.2) + (f(\x) - f(\x-0.2)) / 6 +
+                             f(\x-0.1) + (f(\x) - f(\x-0.1)) / 2) / 5 +
+                             rand/8;
+                }
+            ]
+                \draw[->] (0,0) -- (0,3) node[above] {$y(t)$};
+                \draw[->] (0,0) -- (5,0) node[below] {$t$};
+                \draw[domain=0:5,variable=\x,blue,samples=100] plot ({\x},{f(\x)});
+                \draw[domain=0:5,variable=\x,red,smooth,samples=100] plot ({\x},{f2(\x)});
+            \end{tikzpicture}
+            \caption*{Regulation problem}
+        \end{minipage}
+        \begin{minipage}[t]{0.48\textwidth}
+            \centering
+            \begin{tikzpicture}[
+                node distance=2cm,auto,>=latex',
+                declare function={
+                    f(\x) =  (sin(\x*180)/2+sin(\x*270)/2)+1.5;
+                    f2(\x) = (f(\x-0.3) + (f(\x) - f(\x-0.3)) / 24 +
+                             f(\x-0.2) + (f(\x) - f(\x-0.2)) / 6 +
+                             f(\x-0.1) + (f(\x) - f(\x-0.1)) / 2) / 3 +
+                             rand/8;
+                }
+            ]
+                \draw[->] (0,0) -- (0,3) node[above] {$y(t)$};
+                \draw[->] (0,0) -- (5,0) node[below] {$t$};
+                \draw[domain=0:5,variable=\x,blue,samples=70] plot ({\x},{f(\x)});
+                \draw[domain=0:5,variable=\x,red,smooth,samples=50] plot ({\x},{f2(\x)});
+            \end{tikzpicture}
+            \caption*{Tracking problem}
+        \end{minipage}
+    \end{figure}
 \end{remark}
 
 Bottom-up way of presenting M.V.C.
@@ -101,7 +182,22 @@ At time $t$, $y(t)$, $y(t-1)$, \dots, $u(t-1)$, $u(t-2)$, \dots{} are no longer 
 \[
     u(t) = \left( \overline{y}^0  - ay(t)\right)\frac{1}{b_0+b_1z^{-1}}
 \]
-\missingfigure{Fig4}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[sum] at (0,0) (sum) {};
+        \node[int] at (1.5,0) (b1) {$\frac{1}{b_0+b_1z^{-1}}$};
+        \node[int] at (5,0) (b2) {$z^{-1}\frac{b_0+b_1z^{-1}}{1-az^[-1]}$};
+        \node[int] at (3,-1.5) (b3) {$a$};
+
+        \draw[->] (sum) -- (b1);
+        \draw[->] (b1) -- (b2) node[pos=0.5] {$u(t)$};
+        \draw[->] (b3) -| (sum) node[pos=0.9] {-};
+        \draw[<-] (sum) -- ++(-1.5,0) node[left] {$\overline{y}^0$} node[pos=0.2] {+};
+        \draw[->] (b2) -- ++(2.5,0) node[right] {$y(t)$};
+        \draw[->] (6.5,0) |- (b3);
+    \end{tikzpicture}
+\end{figure}
 
 \paragraph{Simplified problem \#2}
 \[
@@ -159,4 +255,24 @@ But we don't have $y^0(t+1)$, so we use $y^0(t)$.
 \[
     u(t) = \left( y^0(t) - ay(t) \right)\frac{1}{b_0+b_1z^{-1}}
 \]
-\missingfigure{Fig5}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[sum] at (0,0) (sum) {};
+        \node[int] at (1.5,0) (b1) {$\frac{1}{b_0+b_1z^{-1}}$};
+        \node[int] at (5,0) (b2) {$z^{-1}\frac{b_0+b_1z^{-1}}{1-az^[-1]}$};
+        \node[int] at (3,-1.5) (b3) {$a$};
+        \node[int] at (7,1.5) (b4) {$\frac{1}{1-az^{-1}}$};
+        \node[sum] at (7,0) (sum2) {};
+
+        \draw[->] (sum) -- (b1);
+        \draw[->] (b1) -- (b2) node[pos=0.5] {$u(t)$};
+        \draw[->] (b3) -| (sum) node[pos=0.9] {-};
+        \draw[<-] (sum) -- ++(-1.5,0) node[left] {$\overline{y}^0$} node[pos=0.2] {+};
+        \draw[->] (sum2) -- ++(1.5,0) node[right] {$y(t)$};
+        \draw[->] (b2) -- (sum2);
+        \draw[->] (b4) -- (sum2);
+        \draw[<-] (b4) -- ++(0,1) node[above] {$e(t)$};
+        \draw[->] (8,0) |- (b3);
+    \end{tikzpicture}
+\end{figure}
