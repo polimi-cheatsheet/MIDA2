@@ -1,0 +1,168 @@
+\newlecture{Sergio Savaresi}{27/05/2020}
+
+\begin{remark}
+    For stability let's recall a result of feedback system:
+    \missingfigure{Fig1}
+    To check the closed-loop stability:
+    \begin{itemize}
+        \item compute the \emph{loop-function} $L(z) = F_1(z) F_2(z)$
+        \item Build the \emph{characteristic polynomial} $\chi(z) = L_N(z) + L_D(z)$ (sum of numerator and denominator)
+        \item Find the roots of $\chi(z)$, closed loop system is asymptotically stable iif all the roots of $\chi(z)$ are strictly inside the unit circle
+    \end{itemize}
+\end{remark}
+
+\[
+    L(z) = \frac{1}{b_0+b_1z^{-1}} \cdot \frac{z^{-1}(b_0+b_1z^{-1})}{1-az^{-1}} \cdot a
+\]
+\[
+    \chi(z) = az^{-1}(b_0+b_1z^{-1}) + (1-az^{-1})(b_0+b_1z^{-1}) = b_0+b_1z^{-1} = B(z)
+\]
+
+The closed loop system is asymptotically stable thanks to the minimum phase assumption.
+
+Performance analysis
+\missingfigure{Fig2}
+
+Since the system is L.T.I. we can use the superposition principle:
+\[
+    y(t) = F_{y^0y}(z)y^0(t) + F_{ey}(z)e(t)
+\]
+
+Let's compute these transfer functions:
+\begin{align*}
+    F_{y^0y} &= \frac{ \frac{1}{b_0+b_1z^{-1}} \frac{z^{-1}(b_0+b_1z^{-1})}{1-az^{-1}} }{ 1 + \frac{1}{b_0+b_1z^{-1}} \frac{z^{-1}(b_0+b_1z^{-1})}{1-az^{-1}}a } = z^{-1} \\
+    F_{ey} &= \frac{ \frac{1}{1-az^{-1}} }{ 1 + \frac{1}{b_0+b_1z^{-1}} \frac{z^{-1}(b_0+b_1z^{-1})}{1-az^{-1}}a } = 1
+\end{align*}
+
+Notice that that the closed loop system has a very simple closed-loop behavior:
+\[
+    y(t) = z^{-1}y^0(t) + e(t) = y^0(t-1) + e(t)
+\]
+
+$y(t)$ follows exactly $y^0(t)$ (but with a 1-step delay), disturbed by noise $e(t)$.
+This is the best possible solution.
+
+\section{General solution}
+
+\[
+    S: y(t) = \frac{B(z)}{A(z)}u(t-k) + \frac{C(z)}{A(z)}e(t) \qquad e(t) \sim WN(0, \lambda^2)
+\]
+
+With the assumptions:
+\begin{itemize}
+    \item $b_0 \ne 0$
+    \item $B(z)$ has all the roots strictly inside the unit circle (minimum phase)
+    \item $\frac{C(z)}{A(z)}$ is canonical representation
+    \item $y^0(t) \perp e(t)$
+    \item $y^0(t)$ is unpredictable
+\end{itemize}
+
+\paragraph{Goal} Minimize $J = E\left[ \left( y(t) - y^0(t) \right)^2 \right]$
+
+The trick is to rewrite $y(t) = \hat{y}(t|t-k) + \epsilon(t)$.
+
+\begin{align*}
+    J &= E\left[ \left( \hat{y}(t|t-k) + \epsilon(t) - y^0(t) \right)^2 \right] = E\left[ \left( (\hat{y}(t|t-k) - y^0(t)) + \epsilon(t) \right)^2 \right] \\
+    & = E\left[ \left(\hat{y}(t|t-k) - y^0(t)\right)^2 \right] + E\left[ \epsilon(t)^2 \right] + \cancel{2E\left[ \epsilon(t)\left( \hat{y}(t|t-k) - y^0(t) \right) \right]} \\
+    &= E\left[ (\hat{y}(t|t-k) - y^0(t))^2 \right] + \text{constant w.r.t. $u(t)$}
+\end{align*}
+
+General formula for ARMAX predictor:
+\[
+    \frac{C(z)}{A(z)} = \underbrace{E(z)}_\text{solution} + \underbrace{\frac{\tilde{R}(z)z^{-n}}{A(z)}}_\text{residual} \qquad \text{(after $n$ steps of long division)}
+\]
+
+\[
+    \hat{y}(t|t-k) = \frac{B(z)E(z)}{C(z)}u(t-k) + \frac{\tilde{R}(z)}{C(z)}y(t-k)
+\]
+Shift ahead $k$-steps:
+\[
+    \hat{y}(t+k|t) = \frac{B(z)E(z)}{C(z)}u(t) + \frac{\tilde{R}(z)}{C(z)}y(t)
+\]
+
+Impose $\hat{y}(t+k|t) = y^0(t+k)$, at time $t$ we don't know $y^0(t+k)$, we replace it with $y^0(t)$.
+\[
+    \hat{y}(t+k|t) = y^0(t)
+\]
+
+\[
+    \frac{B(z)E(z)}{C(z)}u(t) + \frac{\tilde{R}(z)}{C(z)}y(t) = y^0(t)
+\]
+\[
+    u(t) = \frac{1}{B(z)E(z)}\left(C(z)y^0(t)-\tilde{R}(z)y(t)\right)
+\]
+\missingfigure{Fig3}
+
+\subsection{Stability check}
+
+\[
+    L(z) = \frac{1}{B(z)E(z)}\cdot \frac{z^{-k}B(z)}{A(z)}\cdot\tilde{R}(z)
+\]
+\begin{align*}
+    \chi(z) = z^{-k}B(z)\tilde{R}(z) + B(z)E(z)A(z) = B(z) \left( z^{-k}\tilde{R}(z)+E(z)A(z) \right) = B(z)C(z)
+\end{align*}
+
+The system is asymptotically stable iif:
+\begin{itemize}
+    \item All roots of $B(z)$ are stable (minimum phase assumption)
+    \item All roots of $C(z)$ are stable (canonical representation)
+\end{itemize}
+
+\subsection{Performance analysis}
+
+\[
+    y(t) = F_{y^0y}(z)y^0(t) + F_{ey}(z)e(t)
+\]
+\begin{align*}
+    F_{y^0y} &= \frac{ C(z) \frac{1}{B(z)E(z)}\frac{z^{-k}B(z)}{A(z)} }{1 + \frac{1}{B(z)E(z)}\frac{z^{-k}B(z)}{A(z)}\tilde{R}(z) } = z^{-k} \\
+    F_{y^0y} &= \frac{ \frac{C(z)}{A(z)}}{1 + \frac{1}{B(z)E(z)}\frac{z^{-k}B(z)}{A(z)}\tilde{R}(z) } = E(z)\\
+\end{align*}
+
+At closed loop the behavior is very simple:
+\[
+    y(t) = y^0(t-k)+E(z)e(t)
+\]
+
+$y(t)$ exactly tracks/follows $y^0(t)$ but with $k$ steps of delay and it's disturbed by noise $E(z)e(t)$.
+This is the best possible solution.
+
+\begin{remark}
+    The closed-loop behavior is very simple.
+
+    \missingfigure{Fig4}
+
+    Where are all the poles of the original system?
+
+    The M.V. controller \emph{pushes} all the system poles into the non-observable and/or non-controllable parts of the system (it makes internal cancellations).
+    It's not a problem since we verified it's internally asymptotically stable.
+\end{remark}
+
+\section{Main limits of Minimum Variance Controllers}
+
+\begin{itemize}
+    \item Can be applied only to minimum phase systems
+    \item We cannot moderate the control/actuation effort
+    \item We cannot design a specific behavior from $y^0(t)$ to $y(t)$
+\end{itemize}
+
+To overcome these limits there is an extension called G.M.V.C. (Generalized Minimum Variance Control).
+Main difference: extension of the performance index.
+
+\begin{align*}
+    \text{MVC: } J &= E\left[ \left(y(t) - y^0(t)\right)^2 \right] \\
+    \text{GMVC: } J &= E\left[ \left(P(z)y(t) - y^0(t) + Q(z)u(t)\right)^2 \right]
+\end{align*}
+\begin{itemize}
+    \item $P(z)$ is the \emph{reference model}
+    \item $Q(z)$ is a T.F. that makes a penalty to big values of $u(t)$
+\end{itemize}
+
+\begin{remark}[Reference model $P(t)$]
+    \missingfigure{Fig5}
+
+    The typical goal is to obtain the best possible tracking $y(t) = y^0(t)$, however perfect tracking may not be the best solution, but the best solution is to track a \emph{reference model}: $y(t) = P(z)y^0(t)$.
+\end{remark}
+
+\begin{example}[Cruise control in a car]
+    \missingfigure{Fig6}
+\end{example}
