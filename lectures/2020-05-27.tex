@@ -21,7 +21,7 @@
     \begin{itemize}
         \item compute the \emph{loop-function} $L(z) = F_1(z) F_2(z)$
         \item Build the \emph{characteristic polynomial} $\chi(z) = L_N(z) + L_D(z)$ (sum of numerator and denominator)
-        \item Find the roots of $\chi(z)$, closed loop system is asymptotically stable iif all the roots of $\chi(z)$ are strictly inside the unit circle
+        \item Find the roots of $\chi(z)$, closed loop system is asymptotically stable iff all the roots of $\chi(z)$ are strictly inside the unit circle
     \end{itemize}
 \end{remark}
 
@@ -47,7 +47,7 @@ Performance analysis
 
 Since the system is L.T.I. we can use the superposition principle:
 \[
-    y(t) = F_{y^0y}(z)y^0(t) + F_{ey}(z)e(t)
+    y(t) = \underbrace{F_{y^0y}(z)y^0(t)}_\text{TF from $y^0$ to $y$} + \underbrace{F_{ey}(z)e(t)}_\text{TF from $e$ to $y$}
 \]
 
 Let's compute these transfer functions:
@@ -149,7 +149,7 @@ Impose $\hat{y}(t+k|t) = y^0(t+k)$, at time $t$ we don't know $y^0(t+k)$, we rep
     \chi(z) = z^{-k}B(z)\tilde{R}(z) + B(z)E(z)A(z) = B(z) \left( z^{-k}\tilde{R}(z)+E(z)A(z) \right) = B(z)C(z)
 \end{align*}
 
-The system is asymptotically stable iif:
+The system is asymptotically stable iff:
 \begin{itemize}
     \item All roots of $B(z)$ are stable (minimum phase assumption)
     \item All roots of $C(z)$ are stable (canonical representation)
