@@ -45,7 +45,7 @@
         \end{tikzpicture}
     \end{figure}
     \[
-        \hat{v} = \int a_x(t) dt \qquad <=> \qquad a_x(t) -> 1/s -> \hat{V}(t)
+        \hat{v} = \int a_x(t) dt \qquad \iff \qquad a_x(t) \rightarrow 1/s \rightarrow \hat{v}(t)
     \]
 
     In discrete time domain: discretization using approximation of derivative (Eulero forward method)
@@ -273,12 +273,12 @@ Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated wit
 These equations must be completed with 2 initial conditions (2 are dynamic equations)
 
 \begin{align*}
-    \hat{x}(1|0) = E[x(1)] = X_0 & \text{state equation} \\
-    P(1) = \text{var}[x(1)] = P_0 & \text{DRE}
+    \hat{x}(1|0) = E[x(1)] = X_0 & \qquad\text{state equation} \\
+    P(1) = \text{var}[x(1)] = P_0 & \qquad\text{DRE}
 \end{align*}
 
 \begin{remark}[Structure or $K(t)$ and D.R.E]
-    Notice that $K(t)$ and DRE have  a\emph{blockset} structure having this form: $AP(t)B^T+N$
+    Notice that $K(t)$ and DRE have  a \emph{blockset} structure having this form: $AP(t)B^T+N$
 
     There are 3 different types of blocks:
     \begin{align*}

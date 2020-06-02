@@ -8,14 +8,14 @@
 
     \[
         \begin{cases}
-            x(t+1) = ax(t) + \eta(t) \qquad & \eta(t) \text{is not a white noise}\\
-            y(t) = bv(t) + v_2(t) \qquad & v_2(t) \sim WN(0,1)
+            x(t+1) = ax(t) + \eta(t) \qquad & \eta(t) \text{ is not a white noise}\\
+            y(t) = bx(t) + v_2(t) \qquad & v_2(t) \sim WN(0,1)
         \end{cases}
     \]
 
     A model of $\eta(t)$ is given:
     \[
-        \eta(t) = \frac{1}{1-cz^{-1}}e(t) \qquad e \sim WN(0,1)
+        \eta(t) = \frac{1}{1-cz^{-1}}e(t) \qquad e(t) \sim WN(0,1)
     \]
     $\eta(t)$ is not a white noise, but an AR(1) stochastic model.
     We cannot apply K.F. formula to this system
@@ -24,20 +24,21 @@
     \begin{align*}
         \eta(t) &= c\eta(t-1) + e(t) \\
         \eta(t+1) &= c\eta(t) + e(t+1) \\
-        \eta(t+1) &= c\eta(t) + v(t) \qquad v(t) = e(t+!) \qquad v \sim WN(0,1) \qquad v \perp v_2
+        \eta(t+1) &= c\eta(t) + v(t) \qquad v(t) = e(t+1) \qquad v \sim WN(0,1) \qquad v \perp v_2
     \end{align*}
 
     \paragraph{Trick} Extension of the state vector.
 
     \begin{align*}
-        x(t) &\rightarrow x_1(t) \\
-        \eta(t) &\rightarrow x_2(t)
+        x(t) \mapsto x_1(t) \\
+        \eta(t) \mapsto x_2(t)
     \end{align*}
-
     \[
-        x_1(t+1) = ax_1(t) + x_2(t) \\
-        x_2(t+1) = cx_2(t) + v(t) \\
-        y(t) = bx_1(t) + v_2(t)
+        \begin{cases}
+            x_1(t+1) = ax_1(t) + x_2(t) \\
+            x_2(t+1) = cx_2(t) + v(t) \\
+            y(t) = bx_1(t) + v_2(t)
+        \end{cases}
     \]
 
     \[

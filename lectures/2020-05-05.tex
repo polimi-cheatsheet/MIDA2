@@ -50,7 +50,7 @@
 The idea behind Kalman Filter is simple and intuitive:
 \begin{itemize}
     \item We make a simulated replica of the system (without noises $v_1$ and $v_2$, not measurable)
-    \item We compare the true measured output with the estimated/simulated output $\hat{y}(T|t-1)$
+    \item We compare the true measured output with the estimated/simulated output $\hat{y}(t|t-1)$
     \item We make corrections on K.F. main equation, proportional (with gain $K(t)$) to the output error in order to keep K.F. as close as possible to the system
     \item We extract the state estimation $\hat{x}(t|t-1)$
 \end{itemize}
@@ -262,7 +262,7 @@ If $\overline{K}$ exists, the K.F. is asymptotically stable if and only if all t
 \paragraph{Existance of $\overline{K}$}
 
 \[
-    \overline{K} = \left(F\overline{P}H^T + V_{12}\right)\left(H\overline{P}H^T+V_2\right)
+    \overline{K} = \left(F\overline{P}H^T + V_{12}\right)\left(H\overline{P}H^T+V_2\right)^{-1}
 \]
 
 $\overline{K}$ exists if $\overline{P}$ exists.
