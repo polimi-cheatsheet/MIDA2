@@ -1,0 +1,198 @@
+\chapter{Recursive Identification}
+\newlecture{Stefano Dattilo}{03/06/2020}
+
+\begin{recall}[ARX syatem]
+    \[
+        y(t) = \frac{B(z)}{A(z)}u(t-1) + \frac{1}{A(z)}e(t) \qquad e(t) \sim WN(m_e, \lambda_e)
+    \]
+    \begin{align*}
+        B(z) &= b_0 + b_1z^{-1} + \ldots + b_pz^{-p} \\
+        A(z) &= 1 + a_1z^{-1} + \ldots + a_mz^{-m} \\
+    \end{align*}
+
+    \[
+        y(t) = -a_1y(t-1) - \ldots - a_my(t-m) + b_0u(t-1) + \ldots b_pu(t-p-1) + e(t)
+    \]
+
+    \[
+        \theta = \begin{bmatrix}
+            a_1 \\ \vdots \\ a_m \\
+            b_0 \\ \vdots \\ b_p
+        \end{bmatrix} \qquad
+        \phi(t) = \begin{bmatrix}
+            -y(t-1) \\ \vdots \\ -y(t-m) \\
+            u(t-1) \\ \vdots \\ u(t-p-1)
+        \end{bmatrix}
+        \qquad
+        y(t) = \phi(t)^T\theta+e(t)
+    \]
+
+    \paragraph{Objective} Identify $\theta$ starting from an available dataset.
+\end{recall}
+
+\section{Least square}
+
+\[
+    \hat{\theta_N} = \argmin_\theta \left\{ J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \left( y(t) - \hat{y}(t|t-1, \theta) \right)^2 \right\}
+\]
+
+We need to find the model predictor $\hat{y}(t|t-1, \theta)$.
+\begin{align*}
+    y(t) = \underbrace{\phi(t)^T\theta}_{\text{known at $t-1$}} + \underbrace{e(t)}_\text{unpredictable}
+\end{align*}
+$\hat{y}(t|t-1, \theta) = \phi(t)^T\theta$ is the best possible 1-step predictor.
+
+\[
+    J_N(\theta) = \frac{1}{N}\sum_{t=1}^N \left( y(t) - \phi(t)^T\theta \right)^2
+\]
+It is possible to find $\hat{\theta}_N$ (the minimizer) explicitly:
+\[
+    \hat{\theta}_N\text{ is such that } \frac{\partial J_N(\theta)}{\partial \theta} = 0
+\]
+\begin{align*}
+    \hat{\theta}_N &= S(N)^{-1} \sum_{t=1}^N \phi(t)y(t) \\
+    S(N) &= \sum_{t=1}^{N} \phi(t)\phi(t)^T
+\end{align*}
+
+This procedure has a drawback:
+\missingfigure{Form1}
+
+$\hat{\theta}_N$ is not used to compute $\hat{\theta}_{N+1}$, it is necessary to repeat all the computation.
+The solution is \emph{Recursive Least Square}.
+
+\section{Recursive Least Square}
+
+\missingfigure{Fig1}
+
+\textbf{Advantages}
+\begin{itemize}
+    \item Lower computational effort
+    \item You save memory allocation
+\end{itemize}
+
+\subsection{First form}
+
+\paragraph{Objective} $\hat{\theta}_N = f(\hat{\theta}_{N-1}, \phi(N))$
+
+\begin{align}
+    \hat{\theta}_N &= S(N)^{-1} \sum_{t=1}^N \phi(t)y(t) \\
+    \sum_{t=1}^N \phi(t)y(t) &= S(N)\hat{\theta}_N \\
+    \hat{\theta}_{N-1} &= S(N-1)^{-1} \sum_{t=1}^{N-1} \phi(t)y(t) \\
+    \sum_{t=1}^{N-1} \phi(t)y(t) &= S(N-1)\hat{\theta}_{N-1} \\
+    \sum_{t=1}^{N} \phi(t)y(t) &= \sum_{t=1}^{N-1} \phi(t)y(t) + \phi(N)y(N) \\
+    \sum_{t=1}^{N} \phi(t)y(t) &= S(N-1)\hat{\theta}_{N-1} + \phi(N)y(N) = \text{ equation } (1.2) \\
+    S(N) \hat{\theta}_N &= S(N-1) \hat{\theta}_{N-1} + \phi(N)y(N)
+\end{align}
+
+We need to find an expression of $S(N-1)$:
+\begin{align*}
+    S(N) &= \sum_{t=1}^N \phi(t)\phi(t)^T = \underbrace{\sum_{t=1}^{N-1} \phi(t)\phi(t)^T}_{S(N-1)} + \phi(N)\phi(N)^T \\
+    S(N-1) &= S(N) - \phi(N)\phi(N)^T \\
+    S(N)\hat{\theta}_N &= \left( S(N) - \phi(N)\phi(N)^T \right)\hat{\theta}_{N-1} + \phi(N)y(N) \\
+    S(N)\hat{\theta}_N &= S(N)\hat{\theta}_{N-1} - \phi(N)\phi(N)^T\hat{\theta}_{N-1} + \phi(N)y(N) \\
+    \hat{\theta}_N &= \hat{\theta}_{N-1} + \underbrace{S(N)^{-1}\phi(N)}_{K(N)\text{ gain}}\underbrace{\left[ y(N) - \phi(N)^T\hat{\theta}_{N-1} \right]}_{\epsilon(N) \text{ prediction error}}
+\end{align*}
+
+\begin{align*}
+    \hat{\theta}_N &= \hat{\theta}_{N-1} + K(N)\epsilon(N) \\
+    K(N) &= S(N)^{-1}\phi(N) \\
+    \epsilon(N) &= y(N) - \phi(N)^T\hat{\theta}_{N-1} \\
+    S(N) &= S(N-1) + \phi(N)\phi(N)^T
+\end{align*}
+
+This method has a drawback: $S(N) - S(N-1) = \phi(N)\phi(N)^T \ge 0$, so $S(N) \rightarrow \infty$.
+It tends to saturate the numeric precision of the digital computing unit.
+
+\subsection{Second form}
+
+\paragraph{Trick} Normalize w.r.t. $N$
+\begin{align*}
+    S(N) &= S(N-1) + \phi(N)\phi(N)^T \\
+    R(N) &= \frac{1}{N} S(N) = \frac{1}{N} \frac{N-1}{N-1} S(N-1) + \frac{1}{N} \phi(N)\phi(N)^T \\
+    &= \frac{N-1}{N}R(N-1) + \frac{1}{N}\phi(N)\phi(N)^T
+\end{align*}
+
+\begin{align*}
+    \hat{\theta}_N &= \hat{\theta}_{N-1} + K(N)\epsilon(N) \\
+    K(N) &= \frac{1}{N}R(N)^{-1}\phi(N) \\
+    \epsilon(N) &= y(N) - \phi(N)^T\hat{\theta}_{N-1} \\
+    R(N) &= \frac{N-1}{N}R(N-1) + \frac{1}{N}\phi(N)\phi(N)^T
+\end{align*}
+
+It has a drawback: matrix inversion at each time step.
+The solution is the recursive least square in third form.
+
+\subsection{Third form}
+
+\begin{lemma}[Matrix inversion]
+    Consider 4 matrices $F$, $G$, $H$, $K$ such that:
+    \begin{itemize}
+        \item $F+GHK$ makes sense (dimensionally)
+        \item $F$, $H$ and $F+GHK$ square and invertible
+    \end{itemize}
+    Then $(F+GHK)^{-1} = F^{-1} - F^{-1}G(H^{-1} + KF^{-1}G)^{-1}KF^{-1}$
+\end{lemma}
+
+In our case $S(N)^{-1} = (\underbrace{S(N-1)}_F + \underbrace{\phi(N)}_G \underbrace{1}_H \underbrace{\phi(N)^T}_K )^{-1}$
+
+\[
+    S(N)^{-1} = S(N-1)^{-1} - \underbrace{S(N-1)^{-1}}_{\substack{\text{computed at}\\\text{previous step}}}\phi(N)\underbrace{\left[1 + \phi(N)^TS(N-1)\phi(N) \right]^{-1}}_\text{scalar}\phi(N)^TS(N-1)^{-1}
+\]
+
+Define $V(N) = S(N)^{-1}$
+\[
+    V(N) = V(N-1) - \frac{V(N-1)\phi(N)\phi(N)^TV(N-1)}{1+\phi(N)^TV(N-1)\phi(N)}
+\]
+\begin{itemize}
+    \item $V(N)$ does not tend to zero
+    \item It's no more necessary to invert a matrix
+\end{itemize}
+
+\begin{align*}
+    \hat{\theta}_N &= \hat{\theta}_{N-1} + K(N)\epsilon(N) \\
+    K(N) &= V(N)\phi(N) \\
+    \epsilon(N) &= y(N) - \phi(N)^T\hat{\theta}_{N-1} \\
+    V(N) &= V(N-1) - \frac{V(N-1)\phi(N)\phi(N)^TV(N-1)}{1+\phi(N)^TV(N-1)\phi(N)}
+\end{align*}
+
+\begin{remark}
+    RLS is a rigorous version of LS (not an approximation), provided a correct initialization.
+
+    \missingfigure{Fig2}
+
+    \begin{itemize}
+        \item Collect a first set of data, till $t_0$
+        \item Compute $\hat{\theta}_{t_0}$ and $S(t_0)$ with LS
+        \item Use the recursive to update $\hat{\theta}_t$ and $S(t)$
+    \end{itemize}
+
+    In practice $\hat{\theta}_0 = 0$ and $S(0) = I$, the error due to the \emph{wrong} initialization will expire with time.
+\end{remark}
+
+\section{Recursive Least Square with Forgetting Factor}
+
+Consider a time varying parameter
+\missingfigure{Fig3}
+
+$\hat{\alpha}_0$ is the correct estimation at time $N$, but it does not minimizes the objective function $J_N(\alpha)= \frac{1}{N} \sum_{t=1}^N \left( y(t) - \hat{y}(t|t-1, \alpha) \right)^2$ because it considers the entire time history of the system.
+
+In order to identify a time varying parameter the RLS must be force to forget old data.
+The solution is provided by the minimization of $J_N$:
+\[
+    J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \rho^{N-t}\left( y(t) - \hat{y}(t|t-1,\theta) \right)^2
+\]
+
+Where $0 \le \rho \le 1$ is called \emph{forgetting factor}. If $\rho=1$ it's the previous formulation. If $\rho<1$ the old data has less importance than new data.
+
+\begin{align*}
+    \hat{\theta}_N &= \hat{\theta}_{N-1} + K(N)\epsilon(N) \\
+    K(N) &= S(N)^{-1}\phi(N) \\
+    \epsilon(N) &= y(N) - \phi(N)^T\hat{\theta}_{N-1} \\
+    S(N) &= \rho S(N-1) + \phi(N)\phi(N)^T
+\end{align*}
+
+\begin{remark}[Choice of $\rho$]
+    \missingfigure{Fig4}
+
+    If $\rho \ll 1$ there's high tracking speed but low precision. With $\rho \approx 1$ there's low tracking speed but greater precision.
+\end{remark}
