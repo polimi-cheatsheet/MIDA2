@@ -147,6 +147,11 @@
 \tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
    execute at end node=$]
 \RequirePackage{graphicx}
+\pgfmathsetseed{42}
+% Cross
+\tikzset{cross/.style={cross out, draw=black, minimum size=2*(#1-\pgflinewidth), inner sep=0pt, outer sep=0pt},
+  %default radius will be 1pt.
+  cross/.default={0.1cm}}
 % tikz styles for the block diagrams
 \tikzstyle{int}  = [draw, fill=blue!20, minimum size=2em]
 \tikzstyle{init} = [pin edge={to-,thin,black}]
