@@ -50,9 +50,9 @@ Mathematical model (linear or non-linear) usually written from first principle e
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
         \draw (0,2) rectangle ++(2,2);
         \node[align=center] at (1,3) {Model of\\the system};
-        \node[draw, ellipse, align=center] at (1,0) (m) {Model\\$\mathcal{M}(c)$};
+        \node[draw, ellipse, align=center] at (1,0) (m) {Model\\$\mathcal{M}(\theta)$};
         \node[sum] at (4,0) (sum) {};
-        \node[int] at (4,-1.5) (J) {$J(c)$};
+        \node[int] at (4,-1.5) (J) {$J(\theta)$};
 
         \draw[<-] (m) -- (-1,0) node[left] {$\tilde{F}(t)$};
         \draw[->] (m) -- (sum) node[pos=0.8] {+} node[pos=0.5] {$\hat{y}(t)$};

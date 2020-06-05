@@ -1,4 +1,4 @@
-\chapter{Minimum variance control}
+\chapter{Minimum Variance Control}
 \newlecture{Sergio Savaresi}{25/05/2020}
 
 Design and analysis of feedback systems.
@@ -156,7 +156,7 @@ Bottom-up way of presenting M.V.C.
     S: y(t) = ay(t-1) + b_0u(t-1) + b_1u(t-2) \qquad y(t) = \frac{b_0+b_1z^{-1}}{1-az^{-1}}u(t-1)
 \]
 
-We assume that $y^0(t)=\overline{y}$ (regulation problem) and the system is noise-free.
+We assume that $y^0(t)=\overline{y}^0$ (regulation problem) and the system is noise-free.
 \begin{itemize}
     \item $b_0\ne 0$
     \item Root of numerator must be inside the unit circle
@@ -187,7 +187,7 @@ At time $t$, $y(t)$, $y(t-1)$, \dots, $u(t-1)$, $u(t-2)$, \dots{} are no longer 
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
         \node[sum] at (0,0) (sum) {};
         \node[int] at (1.5,0) (b1) {$\frac{1}{b_0+b_1z^{-1}}$};
-        \node[int] at (5,0) (b2) {$z^{-1}\frac{b_0+b_1z^{-1}}{1-az^[-1]}$};
+        \node[int] at (5,0) (b2) {$z^{-1}\frac{b_0+b_1z^{-1}}{1-az^{-1}}$};
         \node[int] at (3,-1.5) (b3) {$a$};
 
         \draw[->] (sum) -- (b1);
@@ -231,7 +231,7 @@ The best result is when $\hat{y}(t|t-1)=y^0(t)$, we can force this relationship.
 
 Now we must compute the 1-step predictor of the system:
 \[
-    S: y(t) = \frac{b_1+b_1z^{-1}}{1-az^{-1}}u(t-1) + \frac{1}{1-az^{-1}}e(t)
+    S: y(t) = \frac{b_0+b_1z^{-1}}{1-az^{-1}}u(t-1) + \frac{1}{1-az^{-1}}e(t)
 \]
 Note that this is an $ARMAX(1,0,1+1)=ARX(1,2)$.
 \[
@@ -268,7 +268,7 @@ But we don't have $y^0(t+1)$, so we use $y^0(t)$.
         \draw[->] (sum) -- (b1);
         \draw[->] (b1) -- (b2) node[pos=0.5] {$u(t)$};
         \draw[->] (b3) -| (sum) node[pos=0.9] {-};
-        \draw[<-] (sum) -- ++(-1.5,0) node[left] {$\overline{y}^0$} node[pos=0.2] {+};
+        \draw[<-] (sum) -- ++(-1.5,0) node[left] {$y^0(t)$} node[pos=0.2] {+};
         \draw[->] (sum2) -- ++(1.5,0) node[right] {$y(t)$};
         \draw[->] (b2) -- (sum2);
         \draw[->] (b4) -- (sum2);
