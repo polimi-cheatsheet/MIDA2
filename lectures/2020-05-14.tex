@@ -100,7 +100,7 @@ The content of the box is:
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[int,double border,align=center] at (0,0) (n) {non-lin\\dyn T.I. sys};
+        \node[int,dashed border,align=center] at (0,0) (n) {non-lin\\dyn T.I. sys};
         \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
         \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
         \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t)$};
@@ -308,7 +308,7 @@ Most general approach but practically seldom used: major issues of stability and
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[int, dashed border, minimum width=1.5cm, minimum height=3cm] at (0,0) (sys) {};
+        \node[int, double border, minimum width=1.5cm, minimum height=3cm] at (0,0) (sys) {};
         \node[int, dashed border, minimum height=3cm] at (4,0) (f) {$f(\cdot,\theta)$};
 
         \draw[<-,transform canvas={yshift=0.5cm}] (sys) -- ++(-2cm,0) node[left] {$u(t)$};
