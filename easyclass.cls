@@ -281,6 +281,11 @@ decorate}}
 \newcommand{\instructor}[1]{
   \def\@instructor{#1}
 }
+% define contributors info
+\def\@contributors{Contributors}
+\newcommand{\contributors}[1]{
+  \def\@contributors{#1}
+}
 % make title
 \renewcommand{\maketitle}{
     \centering
@@ -288,12 +293,15 @@ decorate}}
     \vspace{1.5cm}
     {\huge\bfseries{\@title} \par}
     \vspace{2cm}
-    \@instructor
+    {{\Large Instructors}\par \@instructor}
     \vspace{2cm}
     % \includegraphics[width=0.25\textwidth]{figures/funny.png}
     \vfill
     % Bottom of the page
-    {\Large\itshape \@author \par}
+    {{\Large Author}\par \@author\par}
+    \vspace*{0.5cm}
+    {{\Large Contributors}\par \@contributors\par}
+    \vspace*{0.5cm}
     {\large \@version \par}
 }
 
