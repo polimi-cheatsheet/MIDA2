@@ -33,7 +33,7 @@
 \section{Least square}
 
 \[
-    \hat{\theta_N} = \argmin_\theta \left\{ J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \left( y(t) - \hat{y}(t|t-1, \theta) \right)^2 \right\}
+    \hat{\theta}_N = \argmin_\theta \left\{ J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \left( y(t) - \hat{y}(t|t-1, \theta) \right)^2 \right\}
 \]
 
 We need to find the model predictor $\hat{y}(t|t-1, \theta)$.
@@ -100,7 +100,7 @@ The solution is \emph{Recursive Least Square}.
     \hat{\theta}_{N-1} &= S(N-1)^{-1} \sum_{t=1}^{N-1} \phi(t)y(t) \\
     \sum_{t=1}^{N-1} \phi(t)y(t) &= S(N-1)\hat{\theta}_{N-1} \\
     \sum_{t=1}^{N} \phi(t)y(t) &= \sum_{t=1}^{N-1} \phi(t)y(t) + \phi(N)y(N) \\
-    \sum_{t=1}^{N} \phi(t)y(t) &= S(N-1)\hat{\theta}_{N-1} + \phi(N)y(N) = \text{ equation } (1.2) \\
+    \sum_{t=1}^{N} \phi(t)y(t) &= S(N-1)\hat{\theta}_{N-1} + \phi(N)y(N) = \text{ equation } (7.2) \\
     S(N) \hat{\theta}_N &= S(N-1) \hat{\theta}_{N-1} + \phi(N)y(N)
 \end{align}
 
@@ -229,7 +229,7 @@ Consider a time varying parameter
 
 $\hat{\alpha}_0$ is the correct estimation at time $N$, but it does not minimizes the objective function $J_N(\alpha)= \frac{1}{N} \sum_{t=1}^N \left( y(t) - \hat{y}(t|t-1, \alpha) \right)^2$ because it considers the entire time history of the system.
 
-In order to identify a time varying parameter the RLS must be force to forget old data.
+In order to identify a time varying parameter the RLS must be forced to forget old data.
 The solution is provided by the minimization of $J_N$:
 \[
     J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \rho^{N-t}\left( y(t) - \hat{y}(t|t-1,\theta) \right)^2

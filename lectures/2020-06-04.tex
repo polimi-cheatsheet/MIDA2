@@ -203,8 +203,8 @@ Transformation formulas:
 Another simple discretization technique frequently used is the discretization of time-derivative $\dot{x}$.
 
 \begin{align*}
-    \text{\textbf{eulero backward}} &\qquad \dot{x} \approx \frac{x(t)-x(t-1)}{\Delta T} = \frac{x(t)-z^{-1}x(t)}{\Delta T} = \frac{z-1}{z\Delta T} x(t) \\
-    \text{\textbf{eulero forward}} &\qquad \dot{x} \approx \frac{x(t+1)-x(t)}{\Delta T} = \frac{zx(t)-x(t)}{\Delta T} = \frac{z-1}{\Delta T} x(t)
+    \text{\textbf{Eulero backward}} &\qquad \dot{x} \approx \frac{x(t)-x(t-1)}{\Delta T} = \frac{x(t)-z^{-1}x(t)}{\Delta T} = \frac{z-1}{z\Delta T} x(t) \\
+    \text{\textbf{Eulero forward}} &\qquad \dot{x} \approx \frac{x(t+1)-x(t)}{\Delta T} = \frac{zx(t)-x(t)}{\Delta T} = \frac{z-1}{\Delta T} x(t)
 \end{align*}
 
 General formula
@@ -344,9 +344,9 @@ Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system 
 
         \draw[dotted] (1.5,1.875) -- (1.5,0) node[below] {};
         \node[below] at (0.75,0) {\footnotesize B.W. of interest};
-        \draw (4,0.1) -- (4,0) node[below] {$\scriptstyle f_S$};
+        \draw (4,0.1) -- (4,0) node[below] {$\scriptstyle \omega_S$};
         \draw (1.5,0) edge[bend left=20,->] (4,0);
-        \node at (2.75,0.45) {\footnotesize x10};
+        \node at (2.75,0.45) {$\scriptstyle \times 10$};
     \end{tikzpicture}
 \end{figure}
 
