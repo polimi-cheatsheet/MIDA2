@@ -128,12 +128,12 @@ $R$ is also called \emph{reachability} matrix.
             \draw[-{Rays[n=4]}] (noc) -- (noc_out);
             \draw[-{Rays[n=4]}] (nonc) -- (nonc_out);
             \draw[{Rays[n=4]}-] (onc_in) -- (onc);
-            \draw[->] (input) edge[bend left=10] (noc);
-            \draw[->, line width=0.5mm] (input) edge[bend right=10] (oc);
+            \draw (input) edge[->, bend left=10] (noc);
+            \draw[line width=0.5mm] (input) edge[->, bend right=10] (oc);
             \draw[line width=0.5mm] (u) edge (input);
             \draw (onc) edge[bend left=10] (output);
             \draw[line width=0.5mm] (oc) edge[bend right=10] (output);
-            \draw[->, line width=0.5mm] (output) edge (y);
+            \draw[line width=0.5mm] (output) edge[->] (y);
 
             \draw[draw=black] (-4cm,-5.5cm) rectangle ++(8cm,6.5cm);
         \end{tikzpicture}
