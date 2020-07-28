@@ -62,7 +62,7 @@ This general structure was known before Kalman Filter development, it's called \
 Fundamental contribution of Kalman was to find the optimal gain $K(t)$.
 $K(t)$ is not a simple scalar gain but is a (maybe very large) $n\times p$ matrix.
 
-The section of gain matrix $K(t)$ is very critical:
+The selection of gain matrix $K(t)$ is very critical:
 \begin{itemize}
     \item If $K(t)$ is \emph{too small}: the estimation is not optimal because we are \emph{under exploiting} the information in $y(t)$
     \item If $K(t)$ is \emph{too big}: risk of over-exploiting $y(t)$ and we can get noise amplification, even risk of instability

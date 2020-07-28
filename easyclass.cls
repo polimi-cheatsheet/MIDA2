@@ -110,20 +110,15 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Typography, change document font
-\RequirePackage[tt=false, type1=true]{libertine}
-\RequirePackage[varqu]{zi4}
-\RequirePackage[libertine]{newtxmath}
+% Typography
 \RequirePackage[T1]{fontenc}
-
-\RequirePackage[protrusion=true,expansion=true]{microtype}
 
 % Disable paragraph indentation, and increase gap
 \RequirePackage{parskip}
 
 %=================================
 % header and footer
-\RequirePackage{scrpage2}
+\RequirePackage{scrlayer-scrpage}
 \pagestyle{scrheadings}
 \deftripstyle{pagestyle}
 %   [0.5pt]
