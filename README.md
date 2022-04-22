@@ -21,7 +21,7 @@ If you want to adjust or modify the document you can do that via a Pull Request 
 - ###  Andrea Bosisio ([@andreabosisio](https://github.com/andreabosisio))<br>andrea2.bosisio@mail.polimi.it
 
 ### Other credits
-The style of this LaTeX document is taken from another repository of a project which contains the [MIDA1(051588)](https://www11.ceda.polimi.it/schedaincarico/schedaincarico/controller/scheda_pubblica/SchedaPublic.do?&evn_default=evento&c_classe=765793&polij_device_category=DESKTOP&__pj0=0&__pj1=c4cfdb62e79df118344594f5fd1ca434) lectures notes: [mida1 repo](https://github.com/teobucci/mida).
+The style of this LaTeX document is taken from another repository of a project which contains the [MIDA1 (051588)](https://www11.ceda.polimi.it/schedaincarico/schedaincarico/controller/scheda_pubblica/SchedaPublic.do?&evn_default=evento&c_classe=765793&polij_device_category=DESKTOP&__pj0=0&__pj1=c4cfdb62e79df118344594f5fd1ca434) lectures notes: [mida1 repo](https://github.com/teobucci/mida).
 The style has been changed in order to ease a possible merge of this repo with the [mida1 repo](https://github.com/teobucci/mida) and compose a full version of lecture notes of the whole MIDA course.
 
 ## License
