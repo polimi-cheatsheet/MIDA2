@@ -17,7 +17,7 @@ If you want to adjust or modify the document you can do that via a Pull Request 
 
 ## Autors 
 
-- ###  Edoardo Morassutto ([@edomora97](https://github.com/edomora97))<br>matteo.beltrante@mail.polimi.it
+- ###  Edoardo Morassutto ([@edomora97](https://github.com/edomora97))<br>edoardo.morassutto@gmail.com
 - ###  Andrea Bosisio ([@andreabosisio](https://github.com/andreabosisio))<br>andrea2.bosisio@mail.polimi.it
 
 ### Other credits
