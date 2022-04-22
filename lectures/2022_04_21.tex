@@ -54,7 +54,7 @@ This problem can be solved with \emph{software sensing (SW-sensing)} (also calle
         \node [block, align=center, below of=sys] (algo) {SW-sensing algorithm};
         \node (algoout) [right of=algo, node distance=3cm] {$\hat{x}(t)$};
         
-        \draw[<-] (sys.north) --++ (0,1)
+        \draw[<-, dashed] (sys.north) --++ (0,1)
             node[right, align=center] {immeasurable \\ disturbances};
         \draw[->] (in1) -- (sys);
         \draw[->] (in2) -- (sys);
@@ -548,10 +548,10 @@ The selection of gain matrix $K(t)$ is very critical:
     \item if $K(t)$ is \emph{too big}: risk of over-exploiting $y(t)$ and we can get noise amplification, even risk of instability
 \end{itemize}
 
-Design of Kalman Filter does not require a \emph{training dataset}, but a complete model of the system:
+Design of a Kalman Filter does not require a \emph{training dataset}, but a complete model of the system:
 \begin{itemize}
     \item $F$, $G$, $H$ matrixes: usually obtained with a white-box physical modelling of the system
-    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications; $V_1$ much more difficult to be designed (it's the most critical design parameter of K.F.)
+    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of KF)
 \end{itemize}
 
  
