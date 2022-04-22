@@ -1,0 +1,334 @@
+%!TEX root = ../main.tex
+
+\paragraph{Step 1} Build the Hankel matrix from data using ``one-shot'' all the available $N$ data points.
+
+\[
+    \tilde{H}_{qd} = \begin{bmatrix}
+        \tilde{\omega}(1) & \tilde{\omega}(2) & \cdots & \tilde{\omega}(d) \\
+        \tilde{\omega}(2) & \tilde{\omega}(3) & \cdots & \tilde{\omega}(d+1) \\
+        \vdots            & \vdots            & \ddots & \vdots \\
+        \tilde{\omega}(q) & \tilde{\omega}(q+1) & \cdots & \tilde{\omega}(q+d-1) \\
+    \end{bmatrix}
+\]
+
+$\tilde{H}_{qd}$ is a $q\times d$ matrix.\\
+\textbf{Note} that, as before, we start from $\tilde{\omega}(1)$ since we are assuming $\tilde{\omega}(0)=0$. \\
+\textbf{Note} that $q+d-1$ must equal to $N$ so that we use all the dataset.
+
+
+\begin{remark}[Choice of $q$ and $d$]
+    Hypothesis: $q<d$ so that $q+d-1=N \Rightarrow q=N+1-d$.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$d$};
+            \draw[->] (0,-0.5) -- (0,3) node[left] {$q$};
+            \draw[domain=0.3:2.7,smooth,variable=\x,black] plot ({\x},{3-\x});
+            \draw[line width=0.6mm,domain=1.5:1.8,smooth,variable=\x,green] plot ({\x},{3-\x});
+            \draw[line width=0.6mm,domain=2.3:2.7,smooth,variable=\x,blue] plot ({\x},{3-\x});
+            \draw[dotted] (0,0) -- (1.5,1.5);
+
+            \node at (2.3,1.5) {$q \approx d$};
+            \node at (3.1,0.7) {$q \ll d$};
+
+            \node[below] at (0.3,0) {$1$};
+            \node[below] at (2.7,0) {$N$};
+            \node[left] at (0,0.3) {$1$};
+            \node[left] at (0,2.7) {$N$};
+        \end{tikzpicture}
+    \end{figure}
+
+    If $q \approx d$ the method has better accuracy but high computational effort.
+    
+    If $q \ll d$ it's computationally less intensive but has the worst accuracy.
+
+    \textbf{Rule of thumb:} If $ q > \frac{d}{2}$ we get to a good enough result.
+\end{remark}
+
+\paragraph{Step 2} \emph{Singular Value Decomposition (SVD)} of $\tilde{H}_{qd}$
+
+\[
+    \underbrace{\tilde{H}_{qd}}_{q\times d} = \underbrace{\tilde{U}}_{q\times q} \underbrace{\tilde{S}}_{q\times d} \underbrace{\tilde{V}\transpose}_{d\times d}
+\]
+
+where $\tilde{U}$ and $\tilde{V}$ are \emph{square} and \emph{unitary} matrices and $\tilde{S}$ is a \emph{rectangular diagonal} matrix such that:
+
+\[
+    \tilde{S} = \begin{bmatrix}
+        \sigma_1 & & & & &\\
+        & \sigma_2 & & & &\\
+        & & \ddots & & &\\
+        & & & \sigma_d & &\\
+    \end{bmatrix}
+\]
+
+where $\sigma_1$, $\sigma_2$, $\ldots$, $\sigma_q$ are the \emph{singular values} of $\tilde{H}_{qd}$.
+Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_q$).
+
+\begin{definition}
+    A matrix $M$ is unitary if:
+    \begin{itemize}
+        \item $\det M = 1$ (so it's invertible)
+        \item $M^{-1} = M\transpose$
+    \end{itemize}
+\end{definition}
+
+\begin{obs}
+    The singular values of a rectangular matrix are a \emph{sort of eigenvalues} of a square matrix.\\
+    SVD is a \emph{sort of diagonalization} of a rectangular matrix.
+\end{obs}
+
+\begin{remark}
+    For a square matrix, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. If $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM\transpose)}$ (for non zero eigenvalues).
+\end{remark}
+
+\begin{remark}[How to compute SVD]
+    The optimal numerical computation is not trivial. 
+
+    Theoretical method for SVD computation is to make 2 diagonalization steps:
+    \[
+        \underbrace{\tilde{H}_{qd} \tilde{H}_{qd}\transpose}_{q\times q} = \tilde{U}\tilde{S}\tilde{S}\transpose\tilde{U}\transpose
+    \]
+    \[
+        \underbrace{\tilde{H}_{qd}\transpose \tilde{H}_{qd}}_{d\times d} = \tilde{V}\tilde{S}\transpose\tilde{S}\tilde{V}\transpose
+    \]
+    
+    Instead, use \texttt{svd(M)} in Matlab.
+\end{remark}
+
+\paragraph{Step 3} Plot the singular values and separate (cut-off) the system from noise.
+
+\begin{figure}[H]
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (0,0) -- (5,0) node[right] {$i$};
+            \draw[->] (0,0) -- (0,2) node[left] {$\sigma_i$};
+            \node at (0.5,1.8) {\textbullet};
+            \node at (1.0,1.3) {\textbullet};
+            \node at (1.5,1.0) {\textbullet};
+            \node at (2.0,0.9) {\textbullet};
+            \node at (2.5,0.8) {\textbullet};
+            \node at (3.0,0.2) {\textbullet};
+            \node at (3.5,0.2) {\textbullet};
+            \node at (4.0,0.2) {\textbullet};
+            \node at (4.5,0.2) {\textbullet};
+            \draw (2.5,-0.1) -- (2.5,0.1);
+            \node at (2.5,-0.4) {$n$};
+
+            \draw[decoration={brace}, decorate] (0.5,2) node {} -- (2.5,1);
+            \node at (2.5,1.8) {signal SV};
+
+            \draw[decoration={brace}, decorate] (3,0.4) node {} -- (4.5,0.4);
+            \node at (3.75,0.8) {noise SV};
+        \end{tikzpicture}
+        \caption*{Ideal case}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (0,0) -- (5,0) node[right] {$i$};
+            \draw[->] (0,0) -- (0,2) node[left] {$\sigma_i$};
+            \node at (0.5,1.8) {\textbullet};
+            \node at (1.0,1.3) {\textbullet};
+            \node at (1.5,1.0) {\textbullet};
+            \node at (2.0,0.8) {\textbullet};
+            \node at (2.5,0.6) {\textbullet};
+            \node at (3.0,0.4) {\textbullet};
+            \node at (3.5,0.3) {\textbullet};
+            \node at (4.0,0.2) {\textbullet};
+            \node at (4.5,0.2) {\textbullet};
+            \draw (2,-0.1) rectangle ++(1,0.2);
+            \node at (2.5,-0.4) {$n$};
+
+            \draw[decoration={brace}, decorate] (2,1) node {} -- (3,1);
+            \node at (2.5,1.4) {transition};
+        \end{tikzpicture}
+        \caption*{Real case}
+    \end{minipage}
+\end{figure}
+
+In the ideal case there is a perfect/clear separation between the signal and the noise S.V. (a jump).
+The index of the jump is $n$, that is the order of the system.
+
+In the real case there is no clear distinction between signal and noise singular values, since the order of the system can assume values in an interval.
+With some empirical test we can select a good compromise between complexity, precision and overfitting (see \emph{cross-validation}).
+
+After the decision on the value of $n$ we split $\tilde{H}_{qd}$ in $\tilde{U}$, $\tilde{S}$ and $\tilde{V}\transpose$:
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \tikzset{BarreStyle/.style = {opacity=.3,line width=4 mm,color=blue}}
+        \node (H) {$\tilde{H}_{qd} =$};
+        \matrix (U) [right of=H, node distance=2cm,matrix of math nodes, nodes in empty cells,left delimiter={[},right delimiter={]},text depth=0ex,text height=1ex,text width=1ex]
+        {
+            & & & & \\
+            & & & & \\
+            \hat{U} & & \tilde{U} & & \\
+            & & & & \\
+            & & & & \\
+        };
+        \matrix (S) [right of=U,node distance=3cm,matrix of math nodes, nodes in empty cells,left delimiter={[},right delimiter={]},text depth=0ex,text height=1ex,text width=1ex]
+        {
+            \hat{S} & & & & \\
+            & & & & \\
+            & & \tilde{S} & & \\
+            & & & & \\
+            & & & & \\
+        };
+        \matrix (V) [right of=S,node distance=3cm,matrix of math nodes, nodes in empty cells,left delimiter={[},right delimiter={]},text depth=0ex,text height=1ex,text width=1ex]
+        {
+            & & \hat{V}\transpose & & \\
+            & & & & \\
+            & & \tilde{V}\transpose & & \\
+            & & & & \\
+            & & & & \\
+        };
+
+        \draw[decoration={brace}, decorate] (1,1.2) node {} -- (1.5,1.2);
+        \node at (1.25,1.5) {$q\times n$};
+        \draw[decoration={brace}, decorate] (4,1.2) node {} -- (4.5,1.2);
+        \node at (4.25,1.5) {$n\times n$};
+        \draw[decoration={brace}, decorate] (7,1.2) node {} -- (9,1.2);
+        \node at (8,1.5) {$n\times d$};
+
+        \draw [BarreStyle] (U-1-1.north) to (U-5-1.south);
+        \draw [BarreStyle] (S-1-1.west) to (S-1-1.east);
+        \draw [BarreStyle] (V-1-1.west) to (V-1-5.east);
+    \end{tikzpicture}
+\end{figure}
+
+
+\[
+    \tilde{H}_{qd} = \underbrace{\hat{U} \hat{S} \hat{V}\transpose}_{\hat{H}_{qd}} + H_{res,qd} \qquad \rank (\tilde{H}_{qd}) = q \quad \rank (\hat{H}_{qd}) = n \quad \rank (H_{res,qd}) = q
+\]
+where $\hat{H}_{qd}$ is the \emph{"signal part"} and $H_{res,qd}$ is the \emph{"noise (or residual) part"} of $\tilde{H}_{qd}$.\\
+
+\textbf{Note:} $\hat{S}$ is now a square diagonal matrix of $\sigma_1, \dots, \sigma_q$.\\
+\textbf{Note:} from $\tilde{H}_{qd}$ to $\hat{H}_{qd}$ the rank is hugely reduced.\\
+\textbf{Note:} $\hat{H}_{qd}$ is the "cleaned" Hankel matrix.
+
+\paragraph{Step 4} Estimation of $\hat{F}$, $\hat{G}$ and $\hat{H}$ using the cleaned matrix $\hat{H}_{qd}$
+
+\[
+    \hat{H}_{qd} = \hat{U} \hat{S} \hat{V}\transpose = \hat{U} \hat{S}^{\frac{1}{2}} \hat{S}^{\frac{1}{2}} \hat{V}\transpose
+\]
+
+where $\hat{S}^{\frac{1}{2}}$ is the square diagonal matrix with elements the square roots of the elements of $\hat{S}$, that is $\hat{S}^{\frac{1}{2}}=diag(\sqrt{\sigma_1}, \dots, \sqrt{\sigma_q})$. \\
+
+Defining $\hat{O} = \hat{U}\hat{S}^{\frac{1}{2}}$ and $\hat{R} = \hat{S}^{\frac{1}{2}} \hat{V}\transpose$, $\hat{H}_{qd}$ become 
+\[\hat{H}_{qd} = \underbrace{\hat{O}}_{q\times n} \underbrace{\hat{R}}_{n\times d}\]
+
+
+We can view $\hat{O}$ as the \emph{extended observability matrix} and the $\hat{R}$ the \emph{extended reachability matrix} of the system. \\
+
+Now it is possible to estimate $\hat{H}$ with the first row of $\hat{O}$ and $\hat{G}$ with the first column of $\hat{R}$, similarly to the \nameref{step3} of the noise-free case.
+
+\begin{align*}
+    \hat{G} = \hat{R}(\texttt{:;1}) & \quad\text{(first column of $\hat{R}$)} \\
+    \hat{H} = \hat{O}(\texttt{1;:}) & \quad\text{(first row of $\hat{O}$)} \\
+\end{align*}
+
+
+
+What about the estimation of $\hat{F}$? Let's try to proceed again similarly to what we have done at the \nameref{step3} of the noise-free case.
+Consider for example $\hat{O}$ and define $\hat{O}_1$ as $\hat{O}$ without the last row, and $\hat{O}_2$ as $\hat{O}$ without the first row.
+
+Using the \emph{shift-invariance} property we have that $\hat{O}_1 \hat{F} = \hat{O}_2$, but $\hat{O}_1$ is not a square matrix so it's NOT invertible.
+To avoid this problem we can use the approximate \emph{least-squares} solution.
+
+
+\begin{remark}[Solution of Linear Systems]
+    Consider a generic system $Ax = B$ with dimension  $(h\times n) \cdot (n \times 1) = (h \times 1)$. We have 3 different cases:
+    \begin{enumerate}
+        \item $h < n$. We have less equations than variables: the system is \emph{under determined} and we have infinite solutions.
+        \item $h = n$. We have one and only one solution if $A$ is invertible.
+        \item $h > n$. We have more equations than variables: the system is \emph{over determined} and it's impossible (no solutions).
+    \end{enumerate}
+\end{remark}
+
+\begin{remark}[Least-Squares Method]
+    In case we have more equations than variable (i.e. $h>n$) we can use an approximate solution using the least-squares method, which for a generic system is as follows:
+    \begin{align*}
+        Ax &= B \\
+           &\Downarrow\\
+        A\transpose A x &= A\transpose B \implies \hat{X} = \underbrace{(A\transpose A)^{-1}A\transpose}_{A^+} B
+    \end{align*}
+    
+    $A^+$ is called \emph{pseudo-inverse}, which is ``surrogate inverse'' when $A$ is rectangular.
+\end{remark}
+
+
+Applying the least-square method to $\hat{O}_1 \hat{F} = \hat{O}_2$ we have
+\begin{align*}
+    \hat{O}_1\hat{F} = \hat{O}_2 \quad \Rightarrow \quad
+    \hat{O}_1\transpose\hat{O}_1\hat{F} = \hat{O}_1\transpose\hat{O}_2 \quad \Rightarrow \quad 
+    \hat{F} = \left(\hat{O}_1\transpose\hat{O}_1\right)^{-1} \hat{O}_1\transpose\hat{O}_2
+\end{align*}
+
+
+\paragraph{Conclusion} Starting from a noisy \gls{ir} $\{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non-parametric and constructive way.
+\[ \left\{\hat{H}, \hat{G}, \hat{F} \right\} = \left \{\hat{O}(\texttt{1;:}), \hat{R}(\texttt{:;1}), \left(\hat{O}_1\transpose\hat{O}_1\right)^{-1} \hat{O}_1\transpose\hat{O}_2\right \}\]
+
+\begin{remark}
+    This method can be extended also to the case where the input signal is generic (i.e. not an impulse).
+\end{remark}
+
+\begin{remark}[Optimality of 4SID]
+    The method is \emph{optimal} in the sense that it makes the best possible rank reduction of $\tilde{H}_{qd}$, that is from $q$ to $n$.
+    
+    However, notice that in general there are infinite ways to make a rank reduction.
+\end{remark}
+
+\begin{remark}[Rank Reduction]
+Our goal is to obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
+SVD makes exactly this: $\tilde{H}_{res,qd}$ is the minimum possible (in the sense of the \emph{Frobenius norm}).
+\[
+    \left|\tilde{H}_{res,qd}\right|_F = \sqrt{\sum_{ij} \left(\tilde{H}_{res,qd}^{(ij)} \right)^2}
+\]
+    
+\end{remark}
+
+\begin{example}[Rank Reduction]
+    \[
+        \underbrace{\begin{bmatrix}
+            2 & 5 & 3 & 6 & 5 \\
+            5 & 3 & 6 & 5 & 7 \\
+            3 & 6 & 5 & 7 & 1
+        \end{bmatrix}}_{\rank = 3}
+        =
+        \underbrace{\begin{bmatrix}
+            1 & 0 & 0 & 0 & 0 \\
+            0 & 1 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0
+        \end{bmatrix}}_{\rank = 2}
+        +
+        \underbrace{
+        \begin{bmatrix}
+            1 & 5 & 3 & 6 & 5 \\
+            5 & 2 & 6 & 5 & 7 \\
+            3 & 6 & 5 & 7 & 1
+        \end{bmatrix}}_{\rank = 3}
+    \]
+    It's not the optimal rank reduction matrix, because it factors out a matrix with lower rank but a lot of information of the original matrix is lost.
+\end{example}
+
+
+\begin{remark}
+    4SID is a constructive method that can be implemented in a fully-automatic way, except for these steps:
+    \begin{itemize}
+        \item $q$ and $d$ selection (not critical)
+        \item choice of $n$ (typically supervised by the designer). It can be made automatic using a cross-validation method.
+    \end{itemize}
+\end{remark}
+
+\begin{remark}
+    SVD was an historical turning point in machine learning algorithms because it allows:
+    \begin{itemize}
+        \item very efficient compression of information.
+        \item very efficient separation of \emph{important} information from noise.
+        \item order reduction of a model.
+    \end{itemize}
+    Notice that those are 3 different prospective of the same general problem.
+\end{remark}

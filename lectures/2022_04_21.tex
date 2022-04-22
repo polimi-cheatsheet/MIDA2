@@ -1,0 +1,557 @@
+%!TEX root = ../main.tex
+
+Dynamical systems have this layout:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [block, align=center] (sys) {$x_1(t)$\\$x_2(t)$\\$\vdots$\\$x_n(t)$};
+        \node (in1) [left of=sys, node distance=2cm, yshift=0.7cm] {$u_1(t)$};
+        \node (in2) [left of=sys, node distance=2cm] {$u_2(t)$};
+        \node (dots1) [left of=sys, node distance=2cm, yshift=-0.5cm]{$\vdots$};
+        \node (in3) [left of=sys, node distance=2cm, yshift=-1cm] {$u_m(t)$};
+        \node (out1) [right of=sys, node distance=2cm, yshift=0.7cm]{$y_1(t)$};
+        \node (out2) [right of=sys, node distance=2cm]{$y_2(t)$};
+        \node (dots2) [right of=sys, node distance=2cm, yshift=-0.5cm]{$\vdots$};
+        \node (out3) [right of=sys, node distance=2cm, yshift=-1cm]{$y_p(t)$};
+
+        \draw[->] (in1) -- (sys);
+        \draw[->] (in2) -- (sys);
+        \draw[->] (in3) -- (sys);
+        \draw[->] (sys) -- (out1);
+        \draw[->] (sys) -- (out2);
+        \draw[->] (sys) -- (out3);
+    \end{tikzpicture}
+\end{figure}
+
+MIMO system with $m$ inputs (actuators/control variables), $p$ outputs (sensors) and $n$ states.
+
+\textbf{Key problem} usually $p \ll n$, that is, physical sensors are much less than system states, because of:
+\begin{itemize}
+    \item cost
+    \item cables, power supply, installation
+    \item maintenance (faults, degradation)
+    \item existence of such sensors
+\end{itemize}
+
+That's why usually not all the states are measured (available) but it is very useful to have full ``measurement'' of states because:
+\begin{itemize}
+    \item design of control algorithms (state feedback design)
+    \item monitoring of the system (fault detection, predictive maintenance, \dots)
+\end{itemize}
+
+This problem can be solved with \emph{software sensing (SW-sensing)} (also called virtual sensing) algorithms:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [block, align=center] (sys) {$\Sys$\\\qquad$x(t)$};
+        \node (in1) [left of=sys, node distance=2cm, yshift=0.7cm] {};
+        \node (in2) [left of=sys, node distance=2.3cm] {$u(t)$};
+        \node (in3) [left of=sys, node distance=2cm, yshift=-0.7cm] {};
+        \node (out1) [right of=sys, node distance=2cm, yshift=0.7cm]{};
+        \node (out2) [right of=sys, node distance=2.3cm]{$y(t)$};
+        \node (out3) [right of=sys, node distance=2cm, yshift=-0.7cm]{};
+
+        \node [block, align=center, below of=sys] (algo) {SW-sensing algorithm};
+        \node (algoout) [right of=algo, node distance=3cm] {$\hat{x}(t)$};
+        
+        \draw[<-] (sys.north) --++ (0,1)
+            node[right, align=center] {immeasurable \\ disturbances};
+        \draw[->] (in1) -- (sys);
+        \draw[->] (in2) -- (sys);
+        \draw[->] (in3) -- (sys);
+        \draw[->] (sys) -- (out1);
+        \draw[->] (sys) -- (out2);
+        \draw[->] (sys) -- (out3);
+
+        \draw[->] (-1.4,0.8) -- (-1.4,-1) -- (algo);
+        \draw[->] (1.4,0.8) -- (1.4,-1) -- (algo);
+        \draw[->] (algo) -- (algoout);
+    \end{tikzpicture}
+\end{figure}
+
+where $\hat{x}(t)$ is an estimation (or SW-sensing) of the internal state $x(t)$.
+
+\paragraph{Designer Dilemma} When using software sensing and when physical sensing?
+\begin{itemize}
+    \item In some cases there is no option (not feasible installation of a physical sensor)
+    \item In most cases both options are viable: variable vs fixed cost
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \draw[->] (-0.5,0) -- (4,0) 
+            node[right, align=center] {Fixed development costs\\of software sensing algorithm}
+            node[right, above] {€}; 
+        \draw[->] (0,-0.5) -- (0,4) 
+            node[left, align=right] {Variable cost proportional\\to the number of sensors}
+            node[above, right] {€};
+        \draw[domain=0:2.5,samples=20,smooth,variable=\x,red] plot ({\x},{sqrt(2.5^2-\x^2)});
+        
+        \draw[red] (-0.1,2.5) --++ (0.2, 0) node[left, xshift=-0.2cm] {\color{red} break-even};
+        \draw (2.5,0.1) --++ (0, -0.2) node[below] {$c$};
+        
+        \draw [decorate,decoration={brace,amplitude=10pt}] (0,0) -- (0,2.5) node [black,midway,align=right,xshift=-0.3cm] {Low volumes production:\\better physical sensing};
+        \draw [decorate,decoration={brace,amplitude=7pt}] (0,3.5) -- (0,2.5) node [black,midway,align=left,xshift=0.3cm] {High volumes production:\\better software sensing};
+    \end{tikzpicture}
+    \caption*{Break-even analysis}
+\end{figure}
+
+Given $c$, the fixed cost of development of the software sensor, it is possible to compute the break-event point.
+The break-even point coincides with the number of products such that above that number it is more convenient to use software sensing, while below that number it is more convenient to buy and install physical sensors per each product.
+
+Anyway, in some cases we might use both physical and software sensing for redundancy (e.g. in vert safety-critical or mission-critical applications).
+
+\paragraph{Key questions for software sensing}
+
+\begin{itemize}
+    \item Is software-sensing feasible? Test is the observability of the states from measured outputs (through physical sensors).
+    \item If feasible, check if the level of noise (error) of the estimated variable is acceptable.
+\end{itemize}
+
+\begin{example}[Slip estimation for ABS/traction control]
+Now we go back to the ABS example (described in \ref{abs_ex}) where we realized that SW-sensing is needed for the estimation of $v$, the horizontal velocity of the car, since it cannot be measured with a physical sensor.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \draw (0.5,0) -- (0,0) -- (0,0.5) -- (1,0.5) -- (1.5,1) -- (2.5,1) -- (2.8,0.5) -- (3.3,0.5) -- (3.3,0) -- (3.1,0);
+            \draw (1.1,0) -- (2.5,0);
+            \draw (0.8,0) circle (0.3);
+            \draw (2.8,0) circle (0.3);
+
+            \draw[->] (-0.1,0.5) -- (-0.6,0.5) node[left] {$v$};
+            \draw[->] (0.8,0) -- (0.8,-0.3) node[below] {$r$};
+            \draw[->] (1.146,0.2) arc[radius=0.4, start angle=30, end angle=90];
+            \node at (1.3,0.5) {$\omega$};
+        \end{tikzpicture}
+    \end{figure}
+
+    
+    Indeed, measure of $v$ cannot be done with an optical sensor or a GPS:
+    they both have a problem of availability (not guaranteed). Physical sensing is not an option for industrial production.
+
+    Intuitive solution: install a longitudinal accelerometer ($a_x$) and integrate.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \draw (0.5,0) -- (0,0) -- (0,0.5) -- (1,0.5) -- (1.5,1) -- (2.5,1) -- (2.8,0.5) -- (3.3,0.5) -- (3.3,0) -- (3.1,0);
+            \draw (1.1,0) -- (2.5,0);
+            \draw (0.8,0) circle (0.3);
+            \draw (2.8,0) circle (0.3);
+
+            \draw[->] (2.3,0.5) -- (1.7,0.5) node[above] {$a_x$};
+        \end{tikzpicture}
+    \end{figure}
+    \[
+        \hat{v} = \int a_x(t) dt \qquad \iff \qquad a_x(t) \rightarrow 1/s \rightarrow \hat{v}(t)
+    \]
+
+    In discrete time domain: discretization using approximation of derivative (Eulero forward method)
+    \[
+        \frac{d}{dt} v(t) = a_x(t) \qquad \frac{dv(t)}{dt} \approx \frac{v(t+1)-v(t)}{\Delta T_s} = a_x(t)
+    \]
+
+    Where $\Delta T_s$ is the sampling interval (e.g. 10ms).
+
+    \[
+        \hat{v}(t) = \hat{v}(t-1) + \Delta T_s a_x(t-1)
+    \]
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [block] (sys) {$\frac{\Delta T_s}{1-z^{-1}}$};
+            \node (in) [left of=sys, node distance=2cm] {};
+            \node (end) [right of=sys, node distance=2cm]{};
+
+            \draw[->] (in) edge node {$a_x(t)$} (sys);
+            \draw[->] (sys) edge node {$\hat{v}(t)$} (end);
+        \end{tikzpicture}
+    \end{figure}
+
+    Unfortunately the measured signal is not $a_x(t)$ but $a_x(t)+d_{a_x}(t)$.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \begin{axis}[axis lines=none,ymax=6]
+                \addplot[color=blue,smooth]
+                    coordinates {
+                        (0.00,2.35)(0.40,2.87)(0.80,2.99)(1.20,2.75)(1.60,2.83)(2.00,2.86)(2.40,3.19)(2.80,2.76)(3.20,2.45)(3.60,2.85)(4.00,2.55)(4.40,2.50)(4.80,2.64)(5.20,2.72)(5.60,3.26)(6.00,3.68)(6.40,3.95)(6.80,3.9)(7.20,4.00)(7.60,3.51)
+                    };
+                \addplot[color=red,smooth]
+                    coordinates {
+                        (0.00,2.35)(0.40,2.91)(0.80,3.07)(1.20,2.87)(1.60,2.99)(2.00,3.06)(2.40,3.43)(2.80,3.04)(3.20,2.77)(3.60,3.21)(4.00,2.95)(4.40,2.94)(4.80,3.12)(5.20,3.24)(5.60,3.82)(6.00,4.28)(6.40,4.59)(6.80,5.17)(7.20,5.0)(7.60,5.27)
+                    };
+                \draw[->] (-0.5,0) -- (800,0) node[right] {$t$};
+                \draw[->] (0.5,-0.5) -- (0.5,300) node[left] {};
+            \end{axis}
+        \end{tikzpicture}
+    \end{figure}
+
+    Integrating noise generates a \emph{drift}. Integrator is not an asymptotic stable system.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [block] (sys) {$\frac{\Delta T_s}{1-z^{-1}}$};
+            \node [sum] (in) [left of=sys, node distance=1.5cm] {};
+            \node (in1) [above of=in, node distance=1cm] {$d_{a_x}(t)$};
+            \node (in2) [below of=in, node distance=1cm] {$a_x(t)$};
+            \node (end) [right of=sys, node distance=2cm]{};
+
+            \draw[->] (in) -- (sys);
+            \draw[->] (in1) -- (in) node[left, pos=0.8] {$+$};
+            \draw[->] (in2) -- (in) node[left, pos=0.8] {$+$};
+            \draw[->] (sys) edge node {$\hat{v}(t)$} (end);
+        \end{tikzpicture}
+    \end{figure}
+
+    \paragraph{Solution} Use a Kalman Filter.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [block, align=center, minimum width=3cm] (sys) {car};
+            \node [block, align=center, minimum width=3cm, below of=sys] (algo) {Kalman Filter};
+            \node (algoout) [right of=algo, node distance=3cm] {$\hat{v}(t)$};
+
+            \draw[->,transform canvas={xshift=-1.2cm}] (sys) -- (algo) node[pos=0.5] {$\omega_1$};
+            \draw[->,transform canvas={xshift=-0.6cm}] (sys) -- (algo) node[pos=0.5] {$\omega_2$};
+            \draw[->] (sys) -- (algo) node[pos=0.5] {$\omega_3$};
+            \draw[->,transform canvas={xshift=0.6cm}] (sys) -- (algo) node[pos=0.5] {$\omega_4$};
+            \draw[->,transform canvas={xshift=1.2cm}] (sys) -- (algo) node[pos=0.5] {$a_x$};
+
+            \draw[->] (algo) -- (algoout);
+        \end{tikzpicture}
+    \end{figure}
+\end{example}
+
+\begin{example}[State of charge estimation of a battery]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw (0,0) rectangle ++(1.5cm,3cm);
+            \draw (0.6cm,3cm) rectangle ++(0.3,0.15);
+
+            \draw [pattern=north west lines, pattern color=green] (0,0) rectangle (1.5,2);
+
+            \draw [decorate,decoration={brace,amplitude=10pt}] (0,0) -- (0,3) node [black,midway,align=right,xshift=-0.3cm] {100\%};
+            \draw [decorate,decoration={brace,amplitude=10pt}] (1.5,2) -- (1.5,0) node [black,midway,align=right,xshift=0.3cm] {SoC};
+
+            \node [block, align=center] (sys) at (6,1.5) {SoC\\internal\\state};
+            \node [left of=sys, node distance=2cm] (in1) {$i(t)$};
+            \node [above of=sys, node distance=2cm] (in2) {$T(t)$};
+            \node [right of=sys, node distance=2cm] (out) {$v(t)$};
+
+            \draw[->] (in1) -- (sys);
+            \draw[->] (in2) -- (sys);
+            \draw[->] (sys) -- (out);
+        \end{tikzpicture}
+    \end{figure}
+    \[
+        \text{SoC}(t) = 1 - \frac{\int i(t)dt}{I} \qquad 0 \le \text{SoC} \le 1
+    \]
+    Where $I$ is the total amount of \emph{current} that can be extracted by the user of the battery.
+    This solution is not feasible since it integrates the noise on $i(t)$.
+\end{example}
+
+\section{Kalman Filter on Basic Systems}
+
+\begin{itemize}
+    \item No external inputs ($\cancel{Gu(t)}$): time series
+    \item Linear systems
+    \item Time invariant systems
+\end{itemize}
+
+The basic solution of this basic system is the 1-step prediction.\\
+After that, we will make the extensions to more general systems:
+\begin{itemize}
+    \item k-step prediction
+    \item filter $\hat{x}(t|t)$
+    \item time-varying systems
+    \item systems with exogenous inputs (presence of ${Gu(t)}$)
+    \item non-linear systems (Extended Kalman Filter (EKF))
+\end{itemize}
+
+\subsection{Detailed description of Basic System}
+
+The basic system we initially consider is a MIMO system with $n$ states, ($m$ inputs) and $p$ outputs.
+
+\[
+    \Sys: \begin{cases}
+        x(t+1) = Fx(t) + \cancel{Gu(t)} + v_1(t) & \text{state equation}\\
+        y(t) = Hx(t) + \cancel{Du(t)} + v_2(t) & \text{output equation}
+    \end{cases}
+\]
+\[
+    x(t) = \begin{bmatrix}
+        x_1(t) \\
+        x_2(t) \\
+        \vdots \\
+        x_n(t)
+    \end{bmatrix}
+    \qquad
+    \left(\;u(t) = \begin{bmatrix}
+        u_1(t) \\
+        u_2(t) \\
+        \vdots \\
+        u_m(t)
+    \end{bmatrix}\;\right)
+    \qquad
+    y(t) = \begin{bmatrix}
+        y_1(t) \\
+        y_2(t) \\
+        \vdots \\
+        y_p(t)
+    \end{bmatrix}
+\]
+
+\begin{description}
+    
+    \vspace{15pt}
+    
+    \item [State Noise] $v_1(t)$ is a vector white-noise.
+    \[
+        v_1(t) \sim \WN(0, V_1) \qquad v_1(t) = \begin{bmatrix}
+            v_{11}(t) \\
+            v_{12}(t) \\
+            \vdots \\
+            v_{1n}(t)
+        \end{bmatrix}
+    \]
+    
+    and it is called \emph{state noise} or \emph{model noise}.
+    It is used to model immeasurable noises affecting the system and small modelling errors.
+    
+    \textbf{Properties of $v_1(t)$}:
+    \begin{enumerate}
+        \item $\E[v_1(t)] = \vec{0}$
+        \item $\E[v_1(t) \cdot v_1\transpose(t)] = V_1$, where $V_1$ is an $n\times n$ covariance matrix (square, symmetric and semi-definite positive by definition)
+        \item $\E[v_1(t) \cdot v_1\transpose(t-\tau)] = 0 \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
+    \end{enumerate}
+    
+    \vspace{15pt}
+    
+    \item [Output Noise] $v_2(t)$ is a vector white-noise.
+    \[
+        v_2(t) \sim \WN(0, V_2) \qquad v_2(t) = \begin{bmatrix}
+            v_{21}(t) \\
+            v_{22}(t) \\
+            \vdots \\
+            v_{2p}(t)
+        \end{bmatrix}
+    \]
+    
+    and it is called \emph{output noise} or \emph{sensor noise}. It is the noise affecting the output sensor measurements.
+    
+    \textbf{Properties of $v_2(t)$}:
+    \begin{enumerate}
+        \item $\E[v_2(t)] = \vec{0}$
+        \item $\E[v_2(t) \cdot v_2\transpose(t)] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (square, symmetric and semi-definite positive\footnote{We make the \textbf{assumption that $V_2$ is definite positive} (i.e. $V_2>0$) because we will need this property in the Riccati equation.} by definition)
+        \item $\E[v_2(t) \cdot v_2\transpose(t-\tau)] = 0 \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
+    \end{enumerate}
+
+\end{description}
+
+\textbf{Assumptions} about the relationships between $v_1(t)$ and $v_2(t)$:
+\[
+    \E[v_1(t) \cdot v_2\transpose(t-\tau)] = \begin{cases} \label{sys:corrV12} \tag*{$\clubsuit$}
+        0 & \text{if } \tau \ne 0 \\
+        V_{12} & \text{if } \tau = 0
+    \end{cases}
+\]
+
+where $V_{12}$ is a cross-correlation matrix of size $n\times p$.
+
+The system \eqref{sys:corrV12} means that $v_1$ and $v_2$ can be correlated only at the same time, but, in practice, $V_{12}=0$ is the most common assumption. Thus, in practice
+
+\[\E[v_1(t) \cdot v_2\transpose(t-\tau)] = 0 \quad \forall t \forall \tau  \qquad \qquad \text{($1^{st}$ assumption)} \]
+
+Since the system $\Sys$ is dynamic we need to define the (in this case, probabilistic) initial conditions:
+\[
+    \E[x(1)] = \underbrace{X_0}_{n\times 1} \qquad \E[\left(x(1) - X_0)\right)\left(x(1)-X_0\right)\transpose] = \underbrace{P_0}_{n\times n} \ge 0
+\]
+
+If the covariance matrix $P_0 = 0$ the initial state is perfectly known.
+
+Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated with the initial state:
+\[
+    x(1) \perp v_1(t) \qquad x(1) \perp v_2(t) \qquad \qquad \text{($2^{nd}$ assumption)}
+\]
+
+\subsection{KF Basic Solution of the Basic System}
+
+%\renewcommand\nameeq[2]{\phantom{\text{#2}}&&#1&&\text{#2}}
+
+\begin{flalign}\label{eq:KF-state}
+    \nameeq{\hat{x}(t+1|t) = F\hat{x}(t|t-1) + K(t)e(t)}{State eq.}
+\end{flalign}    
+
+\begin{flalign}\label{eq:KF-out}    
+    \nameeq{\hat{y}(t|t-1) = H\hat{x}(t|t-1)}{Output eq.}
+\end{flalign} 
+
+\begin{flalign}\label{eq:KF-pred-err}    
+    \nameeq{e(t) = y(t) - \hat{y}(t|t-1)}{Prediction output error eq.}
+\end{flalign} 
+
+\begin{flalign}\label{eq:KF-gain}    
+    \nameeq{K(t) = \left( FP(t)H\transpose+V_{12} \right) \left( HP(t)H\transpose+V_2 \right)^{-1}}{Gain of the filter}
+\end{flalign} 
+
+\begin{flalign}\label{eq:KF-DRE}    
+    \nameeq{P(t+1) = \left( FP(t)F\transpose + V_1 \right) - \left( FP(t)H\transpose + V_{12} \right)\left( HP(t)H\transpose + V_{2} \right)^{-1}\left( FP(t)H\transpose + V_{12} \right)\transpose}{DRE}
+\end{flalign}  
+    
+%\begin{align*}
+%    & \hat{x}(t+1|t) = F\hat{x}(t|t-1) + K(t)e(t) && \qquad \text{state equation} \\
+%    & \hat{y}(t|t-1) = H\hat{x}(t|t-1) &&\qquad \text{output equation} \\
+%    & e(t) = y(t) - \hat{y}(t|t-1) &&\qquad \text{output prediction error} \\
+%    & K(t) = \left( FP(t)H\transpose+V_{12} \right) \left( HP(t)H\transpose+V_2 \right)^{-1} &&\qquad \text{gain of the K.F.} \\
+%    & P(t+1) = \left( FP(t)F\transpose + V_1 \right) + &&\\
+%    & - \left( FP(t)H\transpose + V_{12} \right)\left( HP(t)H\transpose + V_{2} \right)^{-1}\left( FP(t)H\transpose + V_{12} \right)\transpose && \qquad\text{difference Riccati equation}
+%\end{align*}
+
+Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial conditions are needed:
+
+\begin{flalign}\label{eq:KF-initCond-state}    
+    \nameeq{\hat{x}(1|0) = \E[x(1)] = X_0}{Init. condition for \ref{eq:KF-state}}
+\end{flalign}  
+
+\begin{flalign}\label{eq:KF-initCond-DRE}    
+    \nameeq{P(1) = \text{var}[x(1)] = P_0}{Init. condition for \ref{eq:KF-DRE}}
+\end{flalign}  
+
+\begin{definition}[Difference Riccati Equation (DRE)]
+    The equation \ref{eq:KF-DRE} is called \emph{Difference Riccati Equation (DRE)} and it is a special type of non-linear matrix difference equation. 
+    
+    \textbf{Note} The DRE is an autonomous (i.e. there are no inputs), non-linear, discrete time, multi-variable system, described by a non-linear difference matrix equation
+    \[
+         P(t+1) = f_{NL}(P(t)) \qquad P(1) = P_0
+    \]
+\end{definition}
+
+
+\begin{remark}[Structure or $K(t)$ and DRE]
+    Notice that $K(t)$ and the DRE have  a \emph{block-structure} having this form: 
+    
+    \[ AP(t)B\transpose+N  \qquad \text{where $N$ is a noise matrix}\]
+
+    There are 3 different types of blocks:
+    \begin{align*}
+        \texttt{state:} \qquad& FP(t)F\transpose+V_1 \qquad\text{\small{(since $F$ refers to \ref{eq:KF-state})}}\\
+        \texttt{output:} \qquad& HP(t)H\transpose+V_2 \qquad\text{\small{(since $H$ refers to \ref{eq:KF-out})}}\\
+        \texttt{mix:} \qquad& FP(t)H\transpose+V_{12}
+    \end{align*}
+
+    Therefore
+    \begin{align*}
+        \text{\ref{eq:KF-gain} become:} \qquad& K(t) \equiv (\texttt{mix})(\texttt{output})^{-1} \\
+        \text{\ref{eq:KF-DRE} become:} \qquad& P(t+1) \equiv (\texttt{state}) - (\texttt{mix})(\texttt{output})^{-1}(\texttt{mix})\transpose
+    \end{align*}
+\end{remark}
+
+
+\begin{remark}[Existance of the DRE]
+    In order to guarantee the existance of the DRE for all time instant $t$, the only critical part is the inversion of the \texttt{output} block:
+    \[
+        \underbrace{(\underbrace{HP(t)H\transpose}_{\ge 0} + \underbrace{V_2}_{>0}}_{>0})^{-1} \qquad \text{thanks to $V_2>0$,  \texttt{output} is always invertible}
+    \]
+\end{remark}
+
+\begin{remark}[Meaning of $P(t)$]
+    The symmetric $n \times n$ matrix $P(t)$ has a very important meaning, indeed
+
+    \begin{align*}
+        P(t) = \E[(x(t) - \hat{x}(t|t-1))(x(t) - \hat{x}(t|t-1))\transpose] 
+        &= \text{Var}[x(t) - \hat{x}(t|t-1)] \\
+        &= \text{Var}[e_x(t)]     
+    \end{align*}
+
+    Therefore, $P(t)$ is the covariance matrix of the 1-step prediction error of the state $x(t)$.
+\end{remark}
+
+
+\subsection{Block-scheme representation of the Kalman Filter}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \node [block] (z1) at (1,6) {$z^{-1}$};
+        \node [block] (F1) at (1,5) {$F$};
+        \node [block] (K) at (1,3) {$K(t)$};
+        \node [block] (z2) at (1,1) {$z^{-1}$};
+        \node [block] (F2) at (1,0) {$F$};
+
+        \node [block] (H1) at (4,6) {$H$};
+        \node [block] (H2) at (4,1) {$H$};
+
+        \node [sum] (sum1) at (6,6) {};
+        \node [sum] (sum2) at (7,3) {};
+        \node [sum] (sum3) at (-1.5,6) {};
+        \node [sum] (sum4) at (-1.5,1) {};
+        
+        \node (v1) at (-1.5,7) {$v_1(t)$};
+        \node (v2) at (6,7) {$v_2(t)$};
+        \node[right] (yt) at (9,6) {$y(t)$};
+        \node[right] (yhat) at (9,1) {$\hat{y}(t|t-1)$};
+        \node[right] (xhat) at (9,0) {$\hat{x}(t|t-1)$};
+
+        \draw[->] (v1) -- (sum3);
+        \draw[->] (sum3) -- (z1) node[midway, above] {$x(t+1)$};
+        \draw[->] (F1) -| (sum3);
+        \draw[->] (z1) -- (H1) node[midway, above] (xt) {$x(t)$};
+        \draw[->] (H1) -- (sum1);
+        \draw[->] (v2) -- (sum1);
+        \draw[->] (xt.south) |- (F1);
+        \draw[->,red,line width=0.3mm] (K) -| (sum4)
+            node[pos=0.3, above] {\emph{feedback}};
+        \draw[->] (sum4) -- (z2) node[midway, above] {$\hat{x}(t+1|t)$};
+        \draw[->] (sum1) -- (yt) node[midway] (yt_c) {};
+        \draw[->] (yt_c) -| (sum2) node[right, pos=0.95] {$+$};
+        \draw[<-,red,line width=0.3mm] (K) -- (sum2) node[midway, above,black] {$e(t)$};
+        \draw[->] (z2) -- (H2) node[midway, above] {$\hat{x}(t|t-1)$};
+        \draw[->] (F2) -| (sum4);
+        \draw[->] (2.5,1) |- (F2);
+        \draw[->] (H2) -- (yhat);
+        \draw[->,red,line width=0.3mm] (7,1) -- (sum2) node[right, pos=0.8] {$-$};
+        \draw[->] (F2) -- (xhat);
+        
+        \draw[dashed] ($(sum3) + (-0.5, -1.5)$) rectangle ($(v2) + (0.5, 0.5)$)
+            node[left of=v1] {$\Sys$:};
+        
+        \draw[dashed, blue] ($(sum4) + (-0.5, -1.5)$) rectangle ($(sum2) + (0.5, 0.8)$)
+            node[left=2.7cm of K] {$\mathcal{KF}$:};    
+    \end{tikzpicture}
+\end{figure}
+
+The idea behind Kalman Filter is simple and intuitive:
+\begin{itemize}
+    \item we make a simulated replica (\emph{digital twin}) of the system (without noises $v_1$ and $v_2$ which are not measurable)
+    \item we compare the true measured output with the estimated/predicted output $\hat{y}(t|t-1)$
+    \item we make corrections on the KF main equation, proportional (with gain $K(t)$) to the output error $e(t)$ in order to keep KF as close as possible to the system 
+    \item we extract the state estimation $\hat{x}(t|t-1)$ from the digital twin
+\end{itemize}
+
+\begin{obs}
+    Kalman Filter is a feedback system.
+    Feedback here is not used for control, but for estimation.
+\end{obs}
+
+This general structure was known since $'30$ (before Kalman Filter development) and was called \emph{state observer}.
+Fundamental contribution of Kalman was to find the \textbf{optimal gain $K(t)$}.
+$K(t)$ is not a simple scalar gain but is a (maybe very large) $n\times p$ matrix.
+
+The selection of gain matrix $K(t)$ is very critical:
+\begin{itemize}
+    \item if $K(t)$ is \emph{too small}: the estimation is not optimal because we are \emph{under exploiting} the information in $y(t)$
+    \item if $K(t)$ is \emph{too big}: risk of over-exploiting $y(t)$ and we can get noise amplification, even risk of instability
+\end{itemize}
+
+Design of Kalman Filter does not require a \emph{training dataset}, but a complete model of the system:
+\begin{itemize}
+    \item $F$, $G$, $H$ matrixes: usually obtained with a white-box physical modelling of the system
+    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications; $V_1$ much more difficult to be designed (it's the most critical design parameter of K.F.)
+\end{itemize}
+
+ 

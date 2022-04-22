@@ -1,0 +1,468 @@
+%!TEX root = ../main.tex
+
+\begin{example}[similar to an exam exercise]
+    Consider the following S.S. model
+    \[
+    F = \begin{bmatrix}
+        \frac{1}{2} & 0 \\
+        1   & \frac{1}{4}
+    \end{bmatrix}
+    \qquad
+    G = \begin{bmatrix}
+        1 \\ 0
+    \end{bmatrix}
+    \qquad
+    H = \begin{bmatrix}
+        0 & 1
+    \end{bmatrix}
+    \qquad
+    D = 0
+    \]
+    \textbf{Note} Given the size of $F$ the system has grade $n=2$ and it is strictly-proper single-input single-output system.
+    \textbf{Note} Since $F$ is triangular, the eigenvalues are on the diagonal and $\eig (F) = \{\frac{1}{2}, \frac{1}{4}\}$ and they have both absolute value less than one, thus the system is \emph{asymptotically stable}.
+
+    \paragraph{Question 1} Write the time domain equations of the system in the state space representation.
+    \[
+        \Sys:
+        \begin{cases}
+            x_1(t+1) &= \frac{1}{2}x_1(t) + u(t) \\
+            x_2(t+1) &= x_1(t) + \frac{1}{4}x_2(t) \\
+            y(t) &= x_2(t)
+        \end{cases}
+    \]
+
+    \paragraph{Question 2} Write the block scheme of the \gls{ss} representation of the system.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node [block] (in1) {$1$};
+            \node [left of=in1] (u) {$u(t)$};
+            \node [sum, right of=in1, node distance=1.5cm] (sum1) {};
+            \node [block, right of=sum1, node distance=2.5cm] (n1) {$z^{-1}$};
+            \node [block, below of=n1, node distance=1.5cm] (fb1) {$\frac{1}{2}$};
+            \node [coordinate, right of=n1] (exit1) {};
+            \node [block, below of=fb1, node distance=1.5cm] (in2) {$1$};
+            \node [block, below of=in2, node distance=1.5cm] (n2) {$z^{-1}$};
+            \node [sum, left of=n2, node distance=2.5cm] (sum2) {};
+            \node [coordinate, right of=n2] (exit2) {};
+            \node [block, below of=n2, node distance=1.5cm] (fb2) {$\frac{1}{4}$};
+            \node [block, right of=exit2, node distance=1.5cm] (out2) {$1$};
+            \node [right of=out2, node distance=1.5cm] (y) {$y(t)$};
+
+            \draw[->] (u) -- (in1);
+            \draw[->] (in1) -- (sum1);
+            \draw[->] (sum1) edge node {$x_1(t+1)$} (n1);
+            \draw (n1) edge node {$x_1(t)$} (exit1);
+            \draw[->] (exit1) |- (fb1);
+            \draw[->] (exit1) |- (in2);
+            \draw[->] (fb1) -| (sum1);
+            \draw[->] (in2) -| (sum2);
+            \draw[->] (sum2) edge node {$x_2(t+1)$} (n2);
+            \draw (n2) edge node {$x_2(t)$} (exit2);
+            \draw[->] (exit2) |- (fb2);
+            \draw[->] (fb2) -| (sum2);
+            \draw[->] (exit2) -- (out2);
+            \draw[->] (out2) -- (y);
+        \end{tikzpicture}
+    \end{figure}
+
+
+    By visual inspection \emph{seems} that the system is fully observable and fully controllable.
+
+    \paragraph{Question 3} Make a formal verification that the system is fully observable and controllable.
+    \[
+        O = \begin{bmatrix}
+            H \\ HF
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 1 \\
+            1 & \frac{1}{4}
+        \end{bmatrix}
+        \qquad
+        \rank (O) = 2 = n
+    \]
+    \[
+        R = \begin{bmatrix}
+            G & FG
+        \end{bmatrix} = \begin{bmatrix}
+            1 & \frac{1}{2} \\
+            0 & 1
+        \end{bmatrix}
+        \qquad
+        \rank (R) = 2 = n
+    \]
+    This confirms our visual inspection.
+    
+    Let's compute the extended ($n+1 = 2+1$) $O_3$ and $R_3$:
+    \[
+        F^{2} = F F = 
+        \begin{bmatrix}
+            \frac{1}{2} & 0 \\
+            1 & \frac{1}{4} 
+        \end{bmatrix} 
+        \begin{bmatrix}
+            \frac{1}{2} & 0 \\
+            1 & \frac{1}{4} 
+        \end{bmatrix} = 
+        \begin{bmatrix}
+            \frac{1}{4} & 0 \\
+            \frac{3}{4} & \frac{1}{16} 
+        \end{bmatrix}
+    \]
+    \[
+        O_3 = \begin{bmatrix}
+            H \\ HF \\ HF^2
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 1 \\
+            1 & \frac{1}{4} \\
+            \frac{3}{4} & \frac{1}{16}
+        \end{bmatrix}
+    \]
+    \[
+        R_3 = \begin{bmatrix}
+            G & FG & F^2G
+        \end{bmatrix} = \begin{bmatrix}
+            1 & \frac{1}{2} & \frac{1}{4} \\
+            0 & 1 & \frac{3}{4} \\
+        \end{bmatrix}
+    \]
+
+    \paragraph{Question 4} Compute the transfer function representation.
+
+    First method: direct manipulation of \gls{ss} equations
+    \[
+        \Sys:
+        \begin{cases}
+            x_1(t+1) &= \frac{1}{2}x_1(t) + u(t) \\
+            x_2(t+1) &= x_1(t) + \frac{1}{4}x_2(t) \\
+            y(t) &= x_2(t)
+        \end{cases}
+    \]
+    \begin{align*}
+        zx_1(t+1) - \frac{1}{2}x_1(t) = u(t) \qquad &\implies \qquad x_1(t) = \frac{1}{z-\frac{1}{2}}u(t) \\
+        zx_2(t) - \frac{1}{4}x_2(t) = \frac{1}{z-\frac{1}{2}}u(t) \qquad &\implies \qquad x_2(t) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}u(t) \\
+        y(t) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}u(t)
+    \end{align*}
+    \[
+        W(z) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}
+    \]
+
+    There are 2 poles: $z=\frac{1}{4}$ and $z=\frac{1}{2}$. Since the system is fully observable and controllable the poles correspond to the eigenvalues of $F$.
+
+    Second method: use the formula
+    \[
+        W(z) = H(zI-F)^{-1}G = \begin{bmatrix}
+            0 & 1
+        \end{bmatrix} \begin{bmatrix}
+            z-\frac{1}{2} & 0 \\
+            -1 & z-\frac{1}{4}
+        \end{bmatrix}^{-1} \begin{bmatrix}
+            1 \\ 0
+        \end{bmatrix} = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}
+    \]
+
+    \paragraph{Question 5} Write I/O time-domain representation
+
+    \[
+        y(t) = \frac{1}{z^2-\frac{3}{4}z+\frac{1}{8}}u(t) = \frac{z^{-2}}{1-\frac{3}{4}z^{-1}+\frac{1}{8}z^{-2}}u(t) = \frac{3}{4}y(t-1) - \frac{1}{8}y(t-2) + u(t-2)
+    \]
+
+    \paragraph{Question 6} Compute the first 6 values (including $\omega(0)$) of \gls{ir}.
+
+    We decide to compute it from the \gls{tf} $\frac{z^{-2}}{1-\frac{3}{4}z^{-1}+\frac{1}{8}z^{-2}}$.
+    Performing the 5-step long division of $W(z)$ the result is $z^{-2}+\frac{3}{4}z^{-3}+\frac{7}{16}z^{-4}+\frac{15}{64}z^{-5}$.
+
+    \begin{align*}
+        \omega(0) &= 0 &
+        \omega(1) &= 0 &
+        \omega(2) &= 1 \\
+        \omega(3) &= \frac{3}{4} &
+        \omega(4) &= \frac{7}{16} &
+        \omega(5) &= \frac{15}{64}
+    \end{align*}
+
+    \textbf{Note} Also $\omega(1)=\omega(0)=0$: this means that the delay $k=2$, not just $1$.
+    
+    \paragraph{Question 7} Build the Hankel matrix and stop when the rank is not full (noise-free case).
+
+    \[
+        H_1 = \begin{bmatrix}
+            0
+        \end{bmatrix}
+        \qquad \rank (H_1) = 1
+    \]
+    \[
+        H_2 = \begin{bmatrix}
+            0 & 1 \\
+            1 & \frac{3}{4}
+        \end{bmatrix}
+        \qquad \rank (H_2) = 2
+    \]
+    \[
+        H_3 = \begin{bmatrix}
+            0 & 1 & \frac{3}{4} \\
+            1 & \frac{3}{4} & \frac{7}{16} \\
+            \frac{3}{4} & \frac{7}{16} & \frac{15}{64}
+        \end{bmatrix}
+        \qquad \rank (H_3) = 2 \neq 3
+    \]
+    $H_3$ is not full rank so the order of the system is 2 (as we already know). 
+    
+    It can be proved that $O_3R_3 = H_3$.
+\end{example}
+
+\chapter{Parametric \acrlong{bb} system identification of I/O system using a frequency domain approach}
+
+So far we have seen:
+\begin{itemize}
+    \item In MIDA1 parametric black-box identification of I/O systems (\gls{armax}) and time series (\gls{arma})
+    \item In Chapter 1 non-parametric black-box identification of I/O systems (4SID)
+\end{itemize}
+
+The \textbf{frequency domain approach} is a black-box and \textbf{parametric}, and it's very used in practice since it's very robust and reliable.
+
+Since it's parametric it uses the 4 usual steps:
+\begin{enumerate}
+    \item Experiment design and data pre-processing. A special type of experiment and data pre-processing is needed.
+    \item Selection of parametric model class ($\Mc(\theta)$)
+    \item Definition of a performance index ($J(\theta)$). A new special performance index is needed.
+    \item Optimization ($\hat{\theta} = \argmin_\theta J(\theta)$)
+\end{enumerate}
+
+1. and 2. are the special steps of this chapter.\\
+
+The general intuitive idea of the method is:
+\begin{itemize}
+    \item Make a set of ``single sinusoid'' (``single-tune'') excitation experiments
+    \item From each experiment estimate a single point of the frequency response of the system
+    \item Fit the estimated and modeled frequency response to obtain the optimal model
+\end{itemize}
+
+\clearpage
+
+\begin{example}[Car steer dynamics]
+Let's picture a top-view of a car that is steering.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \draw (0,0) rectangle ++(2,3.5);
+            
+            \draw (0.1,0.1) rectangle ++(0.3,1);
+            \draw (1.6,0.1) rectangle ++(0.3,1);
+
+            \draw[rotate around={30:(0,3.5)}] (-0.15,3) rectangle ++(0.3,1);
+            \draw[rotate around={30:(2,3.5)}] (1.85,3) rectangle ++(0.3,1);
+
+            \draw[dotted] (0,3.5) -- (0,5);
+            \draw[dotted, rotate around={30:(0,3.5)}] (0,3.5) -- (0,5);
+            \node at (-0.3,4.9) {$\delta_F$};
+
+            \draw (1,1.75) circle [radius=0.2];
+            \draw (1,2.05) -- (1,1.45);
+            \draw (0.7,1.75) -- (1.3,1.75);
+
+            \draw[->,>=stealth',semithick] (1.5,1.75) arc[radius=0.5, start angle=0, end angle=90];
+            \node at (1.5,2.25) {$\omega_z$};
+        \end{tikzpicture}
+    \end{figure}
+
+    where $\delta_F$ is the \emph{steer angle} (input) and $\omega_z$ is the \emph{rotational speed} around the vertical axis $z$.
+
+    This kind of dynamics relationship is very important for stability control systems design (ESG/ESP) and for autonomous cars.
+
+    There are 3 possible situations:
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[block] (sys1) {1};
+            \node[left of=sys1] (in1) {$\delta_F$};
+            \node[right of=sys1] (out1) {$\omega_z$};
+            \draw[->, red] (in1) -- (sys1);
+            \draw[->] (sys1) -- (out1);
+
+            \node[block, right of=sys1, node distance=4cm] (sys2) {2};
+            \node[left of=sys2] (in2) {$\delta_R$};
+            \node[above of=sys2, node distance=1cm] (in2b) {$\delta_F$};
+            \node[right of=sys2] (out2) {$\omega_z$};
+            \draw[->, red] (in2) -- (sys2);
+            \draw[->] (in2b) -- (sys2);
+            \draw[->] (sys2) -- (out2);
+
+            \node[block, right of=sys2, node distance=4cm] (sys3) {3};
+            \node[left of=sys3, yshift=0.3cm] (in3a) {$\delta_F$};
+            \node[left of=sys3, yshift=-0.3cm] (in3b) {$\delta_R$};
+            \node[right of=sys3] (out3) {$\omega_z$};
+            \draw[->, red] (in3a) -- (sys3);
+            \draw[->, red] (in3b) -- (sys3);
+            \draw[->] (sys3) -- (out3);
+        \end{tikzpicture}
+    \end{figure}
+
+    \begin{enumerate}
+        \item The control variable is the \emph{front steer} $\delta_F$. This is the case of autonomous cars
+        \item The human driver controls $\delta_F$ which is a measurable disturbance while the system controls the \emph{rear steer} $\delta_R$ 
+        \item Both $\delta_R$ and $\delta_F$ are control variables: application high performance autonomous car
+    \end{enumerate}
+    
+    Imagine to make an experiment where you make a sinusoid of the steer and you get the rotational speed as output.
+\end{example}
+
+\section{Steps of the system identification with frequency domain method }
+
+\paragraph{Step 1} In the experiment design step we first have to select a set of \emph{excitation frequencies}.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+        \draw[->] (0,0) -- (7.5,0) node[right] {$\omega$};
+        \draw (0,0.1) -- (0,-0.1) node[below] {$0$};
+        \draw (0.8,0.1) -- (0.8,-0.1) node[below] {$\omega_1$};
+        \draw (1.6,0.1) -- (1.6,-0.1) node[below] {$\omega_2$};
+        \draw (2.4,0.1) -- (2.4,-0.1) node[below] {$\omega_3$};
+        \draw (3.2,0.1) -- (3.2,-0.1) node[below] {$\ldots$};
+        \draw (4,0.1) -- (4,-0.1) node[below] {$\omega_H$};
+        \draw (4.8,0.1) -- (4.8,-0.1) node[below] {$\ldots$};
+        \draw (5.6,0.1) -- (5.6,-0.1) node[below] {$\omega_N$};
+        \draw (6.4,0.1) -- (6.4,-0.1) node[below] {$\ldots$};
+        \draw (7.2,0.1) -- (7.2,-0.1) node[below] {$\omega_S$};
+    \end{tikzpicture}
+\end{figure}
+
+where $\omega_S$ is the \emph{sampling frequency}, $\omega_N=\frac{1}{2}\omega_S$ is the \emph{Nyquist frequency} (which is the maximum frequency of a digital system) and $\omega_H$ is the maximum explored frequency.
+We have $\{\omega_1, \omega_2, \cdots, \omega_H\}$ usually evenly spaced ($\Delta \omega$ is constant).
+$\omega_H$ must be selected according to the bandwidth of the control system.
+
+We make $H$ \emph{independent} experiments.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+        \node[block] (sys) {system};
+        \node[left of=sys, node distance=3cm] (in) {};
+        \node[left of=in] (in2) {};
+        \node[right of=sys, node distance=2.5cm] (out) {};
+        \node[right of=out, node distance=2cm] (out2) {};
+        \node[below of=in, node distance=0.5cm] {$u_1(t) = A_1\sin(\omega_1t)$};
+        \draw[xshift=-4cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x] plot ({\x},{sin(\x*180/3.14)});
+
+        \node[below of=out, node distance=0.5cm] {$y_1(t)$};
+        \draw[xshift=1.5cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x] plot ({\x},{1.5*sin(\x*180/3.14+30)});
+        \draw[->] (in2) -- (sys);
+        \draw[->] (sys) -- (out2);
+    \end{tikzpicture}
+    \caption*{Experiment \#1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+        \node[block] (sys) {system};
+        \node[left of=sys, node distance=3cm] (in) {};
+        \node[left of=in] (in2) {};
+        \node[right of=sys, node distance=2.5cm] (out) {};
+        \node[right of=out, node distance=2cm] (out2) {};
+        \node[below of=in, node distance=0.5cm] {$u_2(t) = A_2\sin(\omega_2t)$};
+        \draw[xshift=-4cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x] plot ({\x},{sin(2*\x*180/3.14)});
+
+        \node[below of=out, node distance=0.5cm] {$y_2(t)$};
+        \draw[xshift=1.5cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x] plot ({\x},{1.5*sin(2*\x*180/3.14+30)});
+        \draw[->] (in2) -- (sys);
+        \draw[->] (sys) -- (out2);
+    \end{tikzpicture}
+    \caption*{Experiment \#2}
+\end{figure}
+
+\vspace{-20pt}
+\[ \vdots \]
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+        \node[block] (sys) {system};
+        \node[left of=sys, node distance=3cm] (in) {};
+        \node[left of=in] (in2) {};
+        \node[right of=sys, node distance=2.5cm] (out) {};
+        \node[right of=out, node distance=2cm] (out2) {};
+        \node[below of=in, node distance=0.5cm] {$u_H(t) = A_H\sin(\omega_Ht)$};
+        \draw[xshift=-4cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x,samples=50] plot ({\x},{sin(5*\x*180/3.14)});
+
+        \node[below of=out, node distance=0.5cm] {$y_H(t)$};
+        \draw[xshift=1.5cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x,samples=50] plot ({\x},{1.5*sin(5*\x*180/3.14+30)});
+        \draw[->] (in2) -- (sys);
+        \draw[->] (sys) -- (out2);
+    \end{tikzpicture}
+    \caption*{Experiment \#$H$}
+\end{figure}
+
+
+\begin{remark}
+    The amplitudes $A_1$, $A_2$, \ldots, $A_H$ can be equal (constant) or, more frequently in practice, they decrease as the frequency increases to fulfill the power constraint on the input.
+
+    Indeed, if $\delta(t)$ is the steering angle (moved by an actuator), the requested steer torque is proportional to $\delta$: $T(t) = K \delta(t)$.
+    Therefore the steer power is proportional to $T(t) \dot{\delta}(t) = K \delta(t)\dot{\delta}(t)$.
+    If $\delta(t) = A_i\sin(\omega_it)$ the steering power is $KA_i\sin(\omega_it)\omega_iA_i\cos(\omega_it)$ which is proportional to $KA_i^2\omega_i$.
+
+    If we have a limit to this power, this power should be constant during the $H$ experiments, thus
+    \[KA_i^2\omega_i = \text{const} \qquad \implies \qquad A_i=\sqrt{\frac{\text{const}}{K\omega_i}}\]
+    and this means that the amplitude must be inversely proportional to the frequency.
+\end{remark}
+
+Focusing on the $i$-th experiment
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+        \node[block] (sys) {system};
+        \node[left of=sys, node distance=3cm] (in) {};
+        \node[left of=in] (in2) {};
+        \node[right of=sys, node distance=2.5cm] (out) {};
+        \node[right of=out, node distance=2cm] (out2) {};
+        \node[below of=in, node distance=0.5cm] {$u_i(t) = A_i\sin(\omega_it)$};
+        \draw[xshift=-4cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x] plot ({\x},{sin(2*\x*180/3.14)});
+
+        \node[below of=out, node distance=0.5cm] {$y_i(t)$};
+        \draw[xshift=1.5cm,yshift=0.5cm,scale=0.2,domain=0:10,smooth,variable=\x,samples=100] plot ({\x},{1.5*sin(2*\x*180/3.14+30)+rand/3});
+        \draw[->] (in2) -- (sys);
+        \draw[->] (sys) -- (out2);
+    \end{tikzpicture}
+\end{figure}
+
+\begin{remark} [Frequency Response Theorem for LTI Systems]
+    If the system is LTI (linear time-invariant), the frequency response theorem says that if the input is a sine input of frequency $\omega_i$ the output must be a sine with frequency $\omega_i$ but with different amplitude or phase.
+\end{remark}
+
+However $y_i(t)$ in real applications is not a perfect sinusoid because of those non-ideal behaviours:
+\begin{itemize}
+    \item Noise on output measurements
+    \item Noise on the system not directly related to measurements (e.g. roughness of the road).
+    \item (Small) non-linear effects (that we neglect, since we will use LTI local approximations of the system)
+\end{itemize}
+
+In pre-processing of I/O data we want to extract from $y_i(t)$ a perfect sinusoid of frequency $\omega_i$.
+We force the assumption that the system is LTI, so the output must be a pure sine wave of frequency $\omega_i$ (all the remaining signal is noise).
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+    
+        \draw[red, domain=0:8,smooth,variable=\x,samples=100,scale=0.6] plot ({\x},{1.5*sin(2*\x*180/3.14+30)});
+        
+        \draw[domain=0:8,smooth,variable=\x,samples=100,scale=0.6] plot ({\x},{1.5*sin(2*\x*180/3.14+30)+rand/3});
+        
+        \draw[] (5,1.2) --++ (1,0)
+            node[midway,above] {$y(t)$};
+        \draw[red] (5,0.5) --++ (1,0)
+            node[midway,above] {$\hat{y}(t)$};    
+    \end{tikzpicture}
+\end{figure}
+
+The model of the output signal is
+\[ \hat{y}_i = B_i \sin(\omega_it+\phi_i) = a_i\sin(\omega_it) + b_i\cos(\omega_it) \]
+There are 2 unknowns: $B_i$ and $\phi_i$ (or $a_i$ and $b_i$).
+It's better to use the model with $a_i$ and $b_i$ since it's \emph{linear} in those parameters.
+
+The unknown parameters are $a_i$ and $b_i$ and we can find them by parametric identification.
+\[ \{ \hat{a}_i, \hat{b}_i \} = \argmin_{\{a_i, b_i\}} J_N(a_i, b_i) \]
+\[ J_N(a_i, b_i) = \frac{1}{N} \sum_{t=1}^N \left ( y_i(t) - \hat{y}_i(t) \right ) ^ 2 = \frac{1}{N} \sum_{t=1}^N \left( \underbrace{y_i(t)}_{\text{measurement}} \underbrace{- a_i\sin(\omega_it) - b_i\cos(\omega_it)}_\text{model output}\right)^2 \]
+
+Since the model is linear in $a_i$ and $b_i$, $J_N$, which is the \emph{sample variance of the modelling error}, is a \emph{quadratic function} of $a_i$ and $b_i$. Thus, we can solve the problem explicitly.
+
