@@ -1,0 +1,179 @@
+\documentclass[10pt,a4paper,oneside,openright]{book}
+
+% TODO
+% among us
+
+\input{style}
+
+%\usepackage[nomarginpar,margin=1in]{geometry}
+
+\usepackage[paperwidth=210mm,
+            paperheight=297mm,
+            left=1in,
+            %top=50pt,
+            textwidth=400pt,
+            marginparsep=25pt,
+            marginparwidth=1in,
+            %textheight=692pt,
+            footskip=50pt
+            ]
+           {geometry}
+
+
+% Comandi pratici
+
+
+\newcommand{\RR}{\mathbb{R}}
+
+% d nell'integrale e i rispettivi usi
+\newcommand{\de}{\,\mathrm d}
+\newcommand{\dx}{\de x}
+\newcommand{\dy}{\de y}
+\newcommand{\dl}{\de l}
+\newcommand{\dr}{\de r}
+\newcommand{\ds}{\de s}
+\newcommand{\dt}{\de t}
+\newcommand{\dv}{\de v}
+\newcommand{\dxi}{\de \xi}
+\newcommand{\drho}{\de \rho}
+
+% d nell'integrale con differenziale vettoriale
+\newcommand{\dxx}{\de \x}
+\newcommand{\dyy}{\de \y}
+\newcommand{\dsig}{\de \sigg}
+
+\allowdisplaybreaks[4] % Consente di rompere equazioni su più pagine
+
+%MIDA1 acronym
+\newacronym{sp}{SP}{stochastic process}
+\newacronym{ssp}{SSP}{stationary stochastic process}
+\newacronym{ma}{MA}{Moving Average}
+\newacronym{ar}{AR}{Auto Regressive}
+\newacronym{arma}{ARMA}{Auto Regressive Moving Average}
+\newacronym{armax}{ARMAX}{Auto Regressive Moving Average with Exogenous Input}
+\newacronym{mse}{MSE}{mean square error}
+\newacronym{wn}{WN}{White Noise}
+\newacronym{pem}{PEM}{Prediction Error Minimization}
+
+%MIDA2 acronym
+\newacronym{tf}{TF}{Transfer Function}
+\newacronym{ss}{SS}{State-Space}
+\newacronym{ir}{IR}{Impulse Response}
+\newacronym{bb}{BB}{Black-Box}
+\newacronym{wb}{WB}{White-Box}
+\newacronym{gb}{GB}{Gray-Box}
+
+%common used operator
+\DeclareMathOperator{\WN}{WN}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\rank}{rank}
+\DeclareMathOperator*{\eig}{eig}
+
+% \usepackage{xifthen}
+% 1 parametro necessario, con valore "nullo" di default (le due quadre vuote)
+% non mettere le seconde quadre equivale a dire che è obbligatorio
+% \newcommand{\ar}[1][]{\ifthenelse{\isempty{#1}}{AR}{AR($#1$)}}
+% \newcommand{\ma}[1][]{\ifthenelse{\isempty{#1}}{MA}{MA($#1$)}}
+% \newcommand{\arma}[1][]{\ifthenelse{\isempty{#1}}{ARMA}{ARMA($#1$)}}
+% \newcommand{\arx}[1][]{\ifthenelse{\isempty{#1}}{ARX}{ARX($#1$)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frontmatter
+\pagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+	{\large \textsc{Lecture Notes of}}\\
+	\vspace*{0.4cm}
+	{\Huge \textsc{Model Identification}}\\
+	\vspace*{0.4cm}
+	{\Huge \textsc{and Data Analysis}}\\
+	\vspace{0.6cm}
+	{\Huge \textsc{Part 2}}\\
+	\vspace*{1cm}
+	{\large {From Professor Sergio Savaresi's lectures}}\\
+	\vspace*{0.4cm}
+	{\large {Authors and Contributors: \textsc{Edoardo Morassutto}, \textsc{Marco Donadoni}, \textsc{Cosimo Russo}, \textsc{Federico Cazzola}}}\\
+	{\large {Reviewed and Updated for the 2022 course by \textsc{Andrea Bosisio}}}\\
+	\vspace*{3cm}
+	Politecnico di Milano\\A.Y. 2021/2022
+\end{center}
+\vspace*{\fill}
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\Large \textit{Lecture Notes of Model Identification and Data Analysis - Part 2}}
+
+\vspace*{\fill}
+
+\input{licenza}
+
+\vspace*{1cm}
+
+Revision of \today
+
+Developed by\\
+Andrea Bosisio - \texttt{andrea2.bosisio@mail.polimi.it}\\ \\
+Compiled with \ensuremath\heartsuit \\
+
+%\textbf{Prefazione}
+
+Please notify errors or changes through an email or a pull request.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% INDICE
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\tableofcontents
+%\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PAGINA VUOTA PER FAR PARTIRE IL CAPITOLO IN UNA PAGINA DISPARI
+%\myNewEmptyPage
+
+\AtEndDocument{\cleardoublepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mainmatter
+\pagestyle{fancy} % Riswitcha per riavere il numero pagina
+%\setcounter{page}{1} % Fa ripartire il contatore pagina da 1
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tikzstyle{block}      = [draw, rectangle, inner sep=6pt]
+\tikzstyle{every node} = [font=\small]
+\tikzstyle{sum}        = [draw, circle, inner sep=3pt, minimum size =0.1cm]
+
+%\tikzstyle{input} = [coordinate]
+%\tikzstyle{output} = [coordinate]
+%\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+\part{MIDA 2}
+
+\input{lectures/2022_04_06}
+\input{lectures/2022_04_07}
+\input{lectures/2022_04_11}
+\input{lectures/2022_04_12}
+\input{lectures/2022_04_14}
+\input{lectures/2022_04_20}
+\input{lectures/2022_04_21}
+
+
+\end{document}
