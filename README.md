@@ -28,4 +28,4 @@ The style has been changed in order to ease a possible merge of this repo with t
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. In few words, you are free to expand, modify, and distribute this work as you like, as long you don't make money with it, you cite the original author, and you share your work with the same license.
 
-I hope this summary will help you with whatever you are doing in your life.
+I hope this document will help you with whatever you are doing in your life.
