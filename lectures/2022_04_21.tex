@@ -476,7 +476,7 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
 \subsection{Block-scheme representation of the Kalman Filter}
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
         \node [block] (z1) at (1,6) {$z^{-1}$};
         \node [block] (F1) at (1,5) {$F$};
         \node [block] (K) at (1,3) {$K(t)$};
@@ -508,7 +508,7 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
             node[pos=0.3, above] {\emph{feedback}};
         \draw[->] (sum4) -- (z2) node[midway, above] {$\hat{x}(t+1|t)$};
         \draw[->] (sum1) -- (yt) node[midway] (yt_c) {};
-        \draw[->] (yt_c) -| (sum2) node[right, pos=0.95] {$+$};
+        \draw[->] (yt_c.south) -| (sum2) node[right, pos=0.95] {$+$};
         \draw[<-,red,line width=0.3mm] (K) -- (sum2) node[midway, above,black] {$e(t)$};
         \draw[->] (z2) -- (H2) node[midway, above] {$\hat{x}(t|t-1)$};
         \draw[->] (F2) -| (sum4);
@@ -518,7 +518,7 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
         \draw[->] (F2) -- (xhat);
         
         \draw[dashed] ($(sum3) + (-0.5, -1.5)$) rectangle ($(v2) + (0.5, 0.5)$)
-            node[left of=v1] {$\Sys$:};
+            node[left=0.5cm of v1] {$\Sys$:};
         
         \draw[dashed, blue] ($(sum4) + (-0.5, -1.5)$) rectangle ($(sum2) + (0.5, 0.8)$)
             node[left=2.7cm of K] {$\mathcal{KF}$:};    
