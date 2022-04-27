@@ -157,9 +157,30 @@ Please notify errors or changes through an email or a pull request.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%TIKZ
+
 \tikzstyle{block}      = [draw, rectangle, inner sep=6pt]
 \tikzstyle{every node} = [font=\small]
 \tikzstyle{sum}        = [draw, circle, inner sep=3pt, minimum size =0.1cm]
+
+% pattern
+\tikzset{
+  hatch distance/.store in=\hatchdistance,
+  hatch distance=10pt,
+  hatch thickness/.store in=\hatchthickness,
+  hatch thickness=0.2pt
+}
+\pgfdeclarepatternformonly[\hatchdistance,\hatchthickness]{flexible hatch}
+{\pgfqpoint{0pt}{0pt}}
+{\pgfqpoint{\hatchdistance}{\hatchdistance}}
+{\pgfpoint{\hatchdistance-1pt}{\hatchdistance-1pt}}%
+{
+  \pgfsetcolor{\tikz@pattern@color}
+  \pgfsetlinewidth{\hatchthickness}
+  \pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
+  \pgfpathlineto{\pgfqpoint{\hatchdistance}{\hatchdistance}}
+  \pgfusepath{stroke}
+}
 
 %\tikzstyle{input} = [coordinate]
 %\tikzstyle{output} = [coordinate]
