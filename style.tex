@@ -134,8 +134,6 @@
 \DeclarePairedDelimiter{\norm}{\left\lVert}{\right\rVert}
 \DeclarePairedDelimiter{\sca}{\left\langle}{\right\rangle}
 
-\newcommand{\fou}[1]{\mathcal{F}\left\{#1\right\}}
-\newcommand{\ifou}[1]{\mathcal{F}^{-1}\left\{#1\right\}}
 \newcommand{\Mc}{\mathcal{M}} %model class
 \newcommand{\Sys}{\mathcal{S}} %system
 \newcommand{\E}{\mathbb{E}}
@@ -338,6 +336,7 @@
 \theoremstyle{unnumbered}
 \newtheorem*{ossT}{Observation}
 \newtheorem*{remarkT}{Remark}
+\newtheorem*{recallT}{Recall}
 \newtheorem*{exT}{Example}
 \newtheorem*{dimT}{Proof}
 
@@ -411,11 +410,29 @@ rightmargin=0cm,
 linewidth=2pt,
 innerbottommargin=5pt]{dimBox}
 
+% recall box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=gray,
+backgroundcolor=gray!5,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=2pt,
+innerbottommargin=5pt]{recallBox}
+
 \newenvironment{theorem}{\begin{gBox}\begin{theoremT}}{\end{theoremT}\end{gBox}}	
 \newenvironment{definition}{\begin{bBox}\begin{definitionT}}{\end{definitionT}\end{bBox}}	
 \newenvironment{obs}{\begin{dimBox}\begin{ossT}}{\end{ossT}\end{dimBox}}
 \newenvironment{remark}{\begin{dimBox}\begin{remarkT}}{\end{remarkT}\end{dimBox}}
-\newenvironment{example}{\begin{dimBox}\begin{exT}}{\end{exT}\end{dimBox}}
+\newenvironment{recall}{\begin{recallBox}\begin{recallT}}{\end{recallT}\end{recallBox}}
+\newenvironment{example}{\begin{oBox}\begin{exT}}{\end{exT}\end{oBox}}
 \newenvironment{Proof}{\begin{dimBox}\begin{dimT}}{\[\qed\]\end{dimT}\end{dimBox}}
 
 %----------------------------------------------------------------------------------------

@@ -65,8 +65,8 @@ where $\tilde{U}$ and $\tilde{V}$ are \emph{square} and \emph{unitary} matrices 
 where $\sigma_1$, $\sigma_2$, $\ldots$, $\sigma_q$ are the \emph{singular values} of $\tilde{H}_{qd}$.
 Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_q$).
 
-\begin{definition}
-    A matrix $M$ is unitary if:
+\begin{definition}[Unitary matrix]
+    A matrix $M$ is \emph{unitary} if:
     \begin{itemize}
         \item $\det M = 1$ (so it's invertible)
         \item $M^{-1} = M\transpose$
@@ -78,9 +78,9 @@ Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge
     SVD is a \emph{sort of diagonalization} of a rectangular matrix.
 \end{obs}
 
-\begin{remark}
+\begin{recall}
     For a square matrix, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. If $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM\transpose)}$ (for non zero eigenvalues).
-\end{remark}
+\end{recall}
 
 \begin{remark}[How to compute SVD]
     The optimal numerical computation is not trivial. 
@@ -239,14 +239,14 @@ Using the \emph{shift-invariance} property we have that $\hat{O}_1 \hat{F} = \ha
 To avoid this problem we can use the approximate \emph{least-squares} solution.
 
 
-\begin{remark}[Solution of Linear Systems]
+\begin{recall}[Solution of Linear Systems]
     Consider a generic system $Ax = B$ with dimension  $(h\times n) \cdot (n \times 1) = (h \times 1)$. We have 3 different cases:
     \begin{enumerate}
         \item $h < n$. We have less equations than variables: the system is \emph{under determined} and we have infinite solutions.
         \item $h = n$. We have one and only one solution if $A$ is invertible.
         \item $h > n$. We have more equations than variables: the system is \emph{over determined} and it's impossible (no solutions).
     \end{enumerate}
-\end{remark}
+\end{recall}
 
 \begin{remark}[Least-Squares Method]
     In case we have more equations than variable (i.e. $h>n$) we can use an approximate solution using the least-squares method, which for a generic system is as follows:
@@ -271,9 +271,9 @@ Applying the least-square method to $\hat{O}_1 \hat{F} = \hat{O}_2$ we have
 \paragraph{Conclusion} Starting from a noisy \gls{ir} $\{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non-parametric and constructive way.
 \[ \left\{\hat{H}, \hat{G}, \hat{F} \right\} = \left \{\hat{O}(\texttt{1;:}), \hat{R}(\texttt{:;1}), \left(\hat{O}_1\transpose\hat{O}_1\right)^{-1} \hat{O}_1\transpose\hat{O}_2\right \}\]
 
-\begin{remark}
+\begin{obs}
     This method can be extended also to the case where the input signal is generic (i.e. not an impulse).
-\end{remark}
+\end{obs}
 
 \begin{remark}[Optimality of 4SID]
     The method is \emph{optimal} in the sense that it makes the best possible rank reduction of $\tilde{H}_{qd}$, that is from $q$ to $n$.

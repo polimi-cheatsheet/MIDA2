@@ -1,7 +1,6 @@
 %!TEX root = ../main.tex
 \setcounter{chapter}{-1}
 \chapter{Introduction}
-%\newlecture{Sergio Savaresi}{16/04/2020}
 
 \section{General topics of MIDA course}
 
@@ -123,7 +122,7 @@ ABS is an example of a control system since it follows this general scheme:
     
 where $\bar{y}(t)$ is the reference value of $y(t)$.\\
 
-We define the \textbf{Slip} of the wheel as $\lambda(t) = \frac{v(t)-\omega(t) r}{v(t)}$, where $v(t)$ is the horizontal velocity of the car, $\omega(t)$ is the angular velocity of the wheel and $r$ is the radius of the wheel.\\
+We define the \emph{slip} of the wheel as $\lambda(t) = \frac{v(t)-\omega(t) r}{v(t)}$, where $v(t)$ is the horizontal velocity of the car, $\omega(t)$ is the angular velocity of the wheel and $r$ is the radius of the wheel.\\
 
 During a brake $0 \le \lambda (t) \le 1$ (from free rolling wheel (i.e. $v(t) = \omega (t) r$) to locked wheel (i.e. $\omega(t) = 0)$).\\
 The curve of $F_{x}$, the braking force, is as showed below:
@@ -179,14 +178,14 @@ The system can be seen as a chain of components:
 
 It's simply deducible that such system is really difficult to model.
 
-\begin{remark}[\acrfull{wb} vs. \acrfull{bb}]
+\begin{recall}[\acrfull{wb} vs. \acrfull{bb}]
     \hfill \break
     \begin{itemize}
 	   \item \gls{wb} modelling: write the physical equations from \emph{first principles}.
 	   \item \gls{bb} modelling: experiment $\rightarrow$ collect data $\rightarrow$ build model.
         Using only I/O measured data we can \emph{learn} a mathematical model of the I/O behavior of the system.
     \end{itemize}
-\end{remark}
+\end{recall}
 
 In order to estimate the variable $v(t)$ (and so also $\lambda(t)$) we use an SW-sensing algorithm which takes as inputs other measurable variables (e.g. angular velocities of all the wheels). \\
 Thus, the scheme of a general control system become something like this: 
@@ -206,8 +205,10 @@ Thus, the scheme of a general control system become something like this:
 		\draw [-stealth] (system.south) |- (sw.east)  node[midway, right] {$\Phi(t)$};
 		\draw[-stealth] (sw.north)-|(ctrl.south) node[near end, right] {$\hat{y}(t)$};
 	\end{tikzpicture}
+    \vspace{5pt}
 	\caption*{Control System Scheme with SW-sensing}
 \end{figure}
+
 where $\Phi(t)$ are the available (measurable) variables of the system and $\hat{y}(t)$ is the estimation of the SW-sensing algorithm of $y(t)$
 
 \chapter{\acrlong{bb} non-parametric identification of I/O systems using \acrlong{ss} models in time domain}
@@ -227,7 +228,7 @@ where $\Phi(t)$ are the available (measurable) variables of the system and $\hat
 \end{figure}
 
 
-\begin{remark}[General path of a Parametric Identification Methods]
+\begin{recall}[General path of a Parametric Identification Methods]
 \hfill \break
     \begin{enumerate}
         \item Collect data: inputs: $\left\{u(1), u(2), \ldots, u(N)\right\}$, outputs: $\left\{y(1), y(2), \ldots, y(N)\right\}$
@@ -240,7 +241,7 @@ where $\Phi(t)$ are the available (measurable) variables of the system and $\hat
     
     Note: $\Mc(\theta_1)$ can be sorted, that is $\Mc(\theta)$ is better than $\Mc(\theta_2)$ if $J(\theta_1) < J(\theta_2)$.
 
-\end{remark}
+\end{recall}
 
 In this chapter we are presenting a totally different system identification approach, the \textbf{non-parametric} one, which means:
 \begin{itemize}

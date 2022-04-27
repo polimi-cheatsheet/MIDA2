@@ -57,11 +57,11 @@ Repeating the experiment and pre-processing for the $H$ experiments we can compu
 
 where each $\frac{\hat{B}_i}{A_i} e^{j\hat{\phi}_i}$ is a complex number that is the estimated point at frequency $\omega_i$ of the frequency response of the transfer function $W(z)$ from the input $u(t)$ to the output $y(t)$ of the system.
 
-\begin{remark}[Frequency Response Theorem]
+\begin{recall}[Frequency Response Theorem for LTI systems]
     If for a LTI system characterized by \gls{tf} $W(z)$ the input is $A_i \sin (\omega_i t)$ and the output is $\hat{B}_i \sin (\omega_i t + \hat{\phi}_i)$, then $W(z=e^{j \omega_i}) = \frac{\hat{B}_i}{A_i} e^{j\hat{\phi}_i}$ is the corresponding frequency response of the system at that frequency ($\omega_i$).
     
     In particular, $\frac{\hat{B}_i}{A_i}$ is the ratio between the output and input amplitude and $\hat{\phi}_i$ is the phase shift.
-\end{remark}
+\end{recall}
 
 We can now plot these H point in a classical \emph{Bode plot} exploiting that $|W(e^{j \omega_i})| = \frac{\hat{B}_i}{A_i}$ and that $\angle W(e^{j \omega_i}) = \hat{\phi}_i$.
 
@@ -92,10 +92,10 @@ At the end of \emph{step 1} we have a frequency-domain dataset ($H$ values) repr
     \end{bmatrix}
 \]
 
-\begin{remark}[Model order selection]
+\begin{obs}[Model order selection]
     In this case the order is composed by 2 parameters $n$ and $p$:
     use cross-validation approach (or visual fitting in the Bode diagram) for finding the best choice of these parameters.
-\end{remark}
+\end{obs}
 
 \paragraph{Step 3} New performance index: variance of the error in frequency domain.
 
