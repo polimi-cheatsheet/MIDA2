@@ -1,0 +1,340 @@
+%!TEX root = ../main.tex
+\setcounter{chapter}{-1}
+\chapter{Introduction}
+
+\section{General topics of MIDA course}
+
+\begin{itemize}
+    \item Collect digitally data from real systems
+    \item Build \acrfull{bb} (or \gls{gb}) models from data, with emphasis on
+    \begin{itemize}
+        \item Dynamic systems
+        \item Control/automation-oriented applications
+    \end{itemize}
+    \item Purpose of modelling (area of machine leasing focusing on ``control'')
+    \begin{itemize}
+        \item Prediction
+        \item Software-sensing
+        \item Modelling for control design
+    \end{itemize}
+\end{itemize}
+
+\subsection{Super summary of MIDA1}
+The focus is on \emph{Time Series} (output-only systems) and \emph{input/output} (I/O) systems.
+
+Models used in MIDA1:
+\begin{itemize}
+    \item \gls{arma} models for time series
+    \item \gls{armax} models for I/O systems
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{minipage}[t]{0.4\textwidth}
+	\centering
+	\begin{tikzpicture}
+
+		\node (input) at (0,0) {};
+		\draw[-] (input.east) -- (1,0)
+		    node[midway,above] {$u(t)$}
+		    node[at end] (inputR) {};
+		
+		% blocks
+		\node[block, right=0cm of inputR] (w1) {$\frac{C(z)}{A(z)}$};
+		
+		% connect block with input
+		\draw[-stealth] (inputR.center)|-(w1.west);
+		
+		\draw[-stealth] (w1.east) -- ++(1,0)
+		    node[midway, above] {$y(t)$}
+		;
+	\end{tikzpicture}
+        \caption*{ARMA model}
+    \end{minipage}
+    \begin{minipage}[t]{0.4\textwidth}
+        \centering
+	\begin{tikzpicture}
+		% place nodes
+		\node [sum] (sum) at (0,0){};
+		\node [block, left=1.5cm of sum] (wu) {$z^{-k}\frac{B(z)}{A(z)}$};
+		\node [block,above left=0.7cm and 0.5cm of sum] (we) {$\frac{C(z)}{A(z)}$};
+
+		% connect nodes
+		\draw[stealth-] (wu.west) -- ++(-1,0) node[midway, above]{$u(t)$};
+		\draw[stealth-] (we.west) -- ++(-1,0) node[midway, above]{$e(t)$};
+
+		\draw[-stealth] (wu.east) -- (sum.west)
+			node[midway, above] {$y_{1}(t)$}
+			node[very near end, below] {$+$};
+		\draw[-stealth] (we.east) -| (sum.north)
+			node[midway, above] {$y_{2}(t)$}
+			node[very near end, right] {$+$};
+
+		\draw[-stealth] (sum.east) -- ++(1,0) node[midway, above] {$y(t)$};
+	\end{tikzpicture}
+        \caption*{\gls{armax} model}
+    \end{minipage}
+\end{figure}
+We've used a \emph{\acrlong{bb} model identification} of the model, indicated as $\Mc(\theta)$ where $\theta$ is the parameter vector, which contains the coefficients of $A(z)$, $B(z)$, $C(z)$.
+
+In particular we've seen the \textbf{\gls{pem}} method, a \emph{parametric approach} based on the minimization of the \emph{performance index} defined as:
+\begin{definition}[\gls{pem} cost function]
+    $J_{N}(\theta) = \frac{1}{N} \sum_{t=1}^N \left(y(t) - \hat{y}(t|t-1, \theta)\right)^2$
+\end{definition}
+
+which is the variance of the \emph{prediction error} made by the model. The optimal $\theta$ is $\hat{\theta}_N = \argmin_\theta J_{N}(\theta)$
+
+\subsection{MIDA 2}
+
+The focus is on \emph{Dynamical System} with a special eye on control (or feedback) application (more close to real applications than time series). We can divide the course in three main blocks: \emph{Advanced Model Identification} methods, \emph{Software-Sensing (SW)} and \emph{Minimum Variance Control}.\\
+In particular: 
+
+\begin{description}
+    \item[Chapter 1] non-parametric (direct/constructive) \gls{bb} identification of I/O systems using \acrlong{ss} models
+    \item[Chapter 2] parametric identification for \gls{bb} I/O systems, with a frequency-domain approach
+    \item[Chapter 3] Kalman-filter for SW-sensing using feedback on \gls{wb} models
+    \item[Chapter 4] \gls{bb} methods for SW-sensing without feedback
+    \item[Chapter 5] \gls{gb} system identification using Kalman-filter and using \emph{simulation-error methods} (S.E.M.)
+    \item[Chapter 6] Minimum-Variance Control (M.V.C.), design of optimal feedback controllers using the theory background of the MIDA course
+    \item[Appendix] Recursive (online) implementation of algorithms for system identification
+\end{description}
+
+\section{Motivation example for the course: ABS (Anti-Lock Braking System)} \label{abs_ex}
+ABS is an example of a control system since it follows this general scheme:
+\begin{figure}[H]
+    \centering
+    	\begin{tikzpicture}
+		% place nodes
+		\node [block] (ctrl) at (0,0) {$\text{Control Algorithm}$};
+		\node [block, right=2cm of ctrl] (system) {$\text{System}$};
+
+		% connect nodes
+		\draw [stealth-] (ctrl.west) -- ++(-2,0) node[midway,above] {$\bar{y}(t)$};
+		\draw [-stealth] (ctrl.east) -- (system.west) node[midway,above] {$u(t)$};
+		\draw [-stealth] (system.east) -- ++(2,0)  
+			node[midway,above] {$y(t)$}
+			node[midway] (yt) {}; ;
+		\draw [-] (yt.center) --+(0,-1)
+			node[at end] (fb) {};
+		\draw[-stealth] (fb.center)-|(ctrl.south);
+	\end{tikzpicture}
+	\caption*{Control System Scheme}
+\end{figure}
+    
+where $\bar{y}(t)$ is the reference value of $y(t)$.\\
+
+We define the \emph{slip} of the wheel as $\lambda(t) = \frac{v(t)-\omega(t) r}{v(t)}$, where $v(t)$ is the horizontal velocity of the car, $\omega(t)$ is the angular velocity of the wheel and $r$ is the radius of the wheel.\\
+
+During a brake $0 \le \lambda (t) \le 1$ (from free rolling wheel (i.e. $v(t) = \omega (t) r$) to locked wheel (i.e. $\omega(t) = 0)$).\\
+The curve of $F_{x}$, the braking force, is as showed below:
+\vspace{-3cm}
+\begin{figure}[h!]
+    \centering
+    \resizebox{8cm}{!}{%
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex',scale=1.5]
+        \draw[->] (-0.5,0) -- (2.5,0) node[right] {$\lambda$};
+        \draw[->] (0,-0.5) -- (0,2.3) node[left] {$F_x$};
+        \begin{scope}[scale=2]
+            \draw[dotted] (0.23, 1) -- (0.23, 0) node[below] {$\bar{\lambda}$};
+            \draw[dotted] (1, 0.75) -- (1, 0) node[below] {$1$};
+            \node[red,rotate=-23] at (0.65,1) {unstable};
+            \node[green!60!black,rotate=77] at (0.13,0.5) {stable};
+            \begin{scope}
+                \clip (0,0) rectangle (0.23, 2);
+                \draw [green!60!black,line width=0.4mm] plot [smooth] coordinates {(0,0) (0.2, 1) (1, 0.75)};
+            \end{scope}
+            \begin{scope}
+                \clip (0.23, 0) rectangle (1, 2);
+                \draw [red,line width=0.4mm] plot [smooth] coordinates {(0,0) (0.2, 1) (1, 0.75)};
+            \end{scope}
+        \end{scope}
+    \end{tikzpicture}
+    }
+    \caption*{Relation between $\lambda$ and the braking force.}
+\end{figure}
+
+
+In the case of ABS, $u(t) = x(t)$ which is the voltage of the electric braking motor (control variable), $y(t) = \lambda (t)$ (controlled variable) and $\bar{y}(t) = \bar{\lambda} (t)$, which is the maximum braking point that we want to reach during an emergency brake.
+
+The problem can be divided into subproblems:
+\begin{itemize}
+    \item Model of the system
+    \item SW-estimation of $\lambda$ since $v$ is \textbf{not} directly measurable, so $\lambda$ cannot be computed
+    \item Design of the ABS control algorithm
+\end{itemize}
+
+Because of that measurement problem we have to build a \acrlong{bb} model from data.\\
+
+Why \acrlong{bb} modelling?
+The control variable $x$ (the voltage to the actuator) controls a complex systems from the actuator to $\lambda$.
+The system can be seen as a chain of components:
+\begin{itemize}
+    \item Current dynamics and electric motor
+    \item Position dynamics of the actuator
+    \item Dynamics of the hydraulic circuit of the braking system
+    \item Tire dynamics
+    \item Wheel rotational dynamics
+    \item Vehicle full dynamics
+\end{itemize}
+
+It's simply deducible that such system is really difficult to model.
+
+\begin{recall}[\acrfull{wb} vs. \acrfull{bb}]
+    \hfill \break
+    \begin{itemize}
+	   \item \gls{wb} modelling: write the physical equations from \emph{first principles}.
+	   \item \gls{bb} modelling: experiment $\rightarrow$ collect data $\rightarrow$ build model.
+        Using only I/O measured data we can \emph{learn} a mathematical model of the I/O behavior of the system.
+    \end{itemize}
+\end{recall}
+
+In order to estimate the variable $v(t)$ (and so also $\lambda(t)$) we use an SW-sensing algorithm which takes as inputs other measurable variables (e.g. angular velocities of all the wheels). \\
+Thus, the scheme of a general control system become something like this: 
+
+\begin{figure}[H]
+    \centering
+    	\begin{tikzpicture}
+		% place nodes
+		\node [block] (ctrl) at (0,0) {$\text{Control Algorithm}$};
+		\node [block, right=2cm of ctrl] (system) {$\text{System}$};
+		\node [block, below=1.5cm of ctrl] (sw) {$\text{SW-sensing Algorithm}$};
+
+		% connect nodes
+		\draw [stealth-] (ctrl.west) -- ++(-2,0) node[midway,above] {$\bar{y}(t)$};
+		\draw [-stealth] (ctrl.east) -- (system.west) node[midway,above] {$u(t)$};
+		\draw [-stealth] (system.east) -- ++(2,0)  node[midway,above] {$y(t)$};
+		\draw [-stealth] (system.south) |- (sw.east)  node[midway, right] {$\Phi(t)$};
+		\draw[-stealth] (sw.north)-|(ctrl.south) node[near end, right] {$\hat{y}(t)$};
+	\end{tikzpicture}
+    \vspace{5pt}
+	\caption*{Control System Scheme with SW-sensing}
+\end{figure}
+
+where $\Phi(t)$ are the available (measurable) variables of the system and $\hat{y}(t)$ is the estimation of the SW-sensing algorithm of $y(t)$
+
+\chapter{\acrlong{bb} non-parametric identification of I/O systems using \acrlong{ss} models in time domain}
+
+\vspace{-12pt}
+\begin{figure}[H]
+    \centering
+    	\begin{tikzpicture}
+    		% place nodes
+		\node [block] (sys) at (0,0) {System};
+	
+		% connect nodes
+		\draw [stealth-] (sys.west) -- ++(-1,0) node[midway,below] {$u(t)$};
+		\draw [-stealth] (sys.east) -- ++(1,0) node[midway,below] {$y(t)$};
+         	\draw[dashed, stealth-] (sys.north) -- ++(0,1) node[midway,right] {$d(t)$ (not measured disturbance)};
+    \end{tikzpicture}
+\end{figure}
+
+
+\begin{recall}[General path of a Parametric Identification Methods]
+\hfill \break
+    \begin{enumerate}
+        \item Collect data: inputs: $\left\{u(1), u(2), \ldots, u(N)\right\}$, outputs: $\left\{y(1), y(2), \ldots, y(N)\right\}$
+        \item Select \textbf{a-priori} a class/family of \textbf{parametric models}: $\Mc(\theta)$
+        \item Select \textbf{a-priori} a performance index $J(\theta)$ (which gives an order to the quality of the models)
+        \item Optimization step (minimize $J(\theta)$ w.r.t $\theta$): $\hat{\theta}_N = \argmin_\theta J(\theta)$ $\rightarrow$ optimal model $\Mc(\hat{\theta}_N)$ characterized by the \textbf{optimal parameters} $\hat{\theta}_N$
+    \end{enumerate}
+    
+    Note:    $J(\theta): \RR^{n_\theta} \rightarrow \RR^+$ (where $n_\theta$ is the order of the model).
+    
+    Note: $\Mc(\theta_1)$ can be sorted, that is $\Mc(\theta)$ is better than $\Mc(\theta_2)$ if $J(\theta_1) < J(\theta_2)$.
+
+\end{recall}
+
+In this chapter we are presenting a totally different system identification approach, the \textbf{non-parametric} one, which means:
+\begin{itemize}
+    \item No a-priori model-class selection
+    \item No performance index definition
+    \item No optimization task
+\end{itemize}
+
+Before entering in the system identification algorithm we need to recall the three main mathematical representation of \textbf{Discrete-time Dynamic Linear Systems} which are characterized by their internal variables called \emph{states} and indicated with $x(t)$.
+
+
+\section{Representations}
+
+\subsection{Representation \#1: \acrfull{ss}}
+
+\[
+\Sys: 
+\begin{cases}
+    x(t+1) = F x(t) + G u(t) & \qquad \text{state equations} \\
+    y(t+1) = H x(t) + D u(t) & \qquad \text{output equations}
+\end{cases}
+\]
+
+where $F$, $G$, $H$ and $D$ are matrices defined a follows:
+\begin{align*}
+    F = \begin{bmatrix}
+        \\
+        n \times n \\
+        \text{state matrix} \\ \\
+    \end{bmatrix}
+    &
+    \qquad
+    G = \begin{bmatrix}
+        \\
+        \\
+        n \times 1 \\
+        \text{input} \\
+        \text{matrix} \\ \\
+    \end{bmatrix}
+    \\ \\
+    H = \begin{bmatrix}
+        1 \times n \;\;\; \text{output matrix}
+    \end{bmatrix}
+    &
+    \qquad
+    D = \begin{bmatrix}
+        1 \times 1 \;\;\; \text{i/o matrix}
+    \end{bmatrix}
+\end{align*}
+
+In this case we have 1 input and 1 output (i.e. \emph{SISO} system), but those \emph{difference equations} can be extended for multiple inputs and outputs systems. Usually $D=0$ since we can say that the majority of real systems have this property. 
+
+\begin{definition} [Strictly-proper system]
+A system is called \emph{strictly-proper} when the output of the system doesn't directly depend on the input (i.e. $D=0$). 
+\end{definition}
+
+\begin{obs}
+$n$ is the \emph{order} of the system.
+\end{obs}
+
+\begin{example}[SISO system of order $n=2$]
+    \[
+    \Sys: 
+        \begin{cases}
+            x_1(t+1) = \frac{1}{2} x_1(t) + 2u(t) \\
+            x_2(t+1) = x_1(t) + 2x_2(t) + u(t) \\
+            y(t) = \frac{1}{4}x_1(t) + \frac{1}{2}x_2(t)
+        \end{cases}
+    \]
+    In this case $n=2$, $x(t) = \begin{bmatrix}
+        x_1(t) \\
+        x_2(t)
+    \end{bmatrix}$, one input $u(t)$ and one output $y(t)$.
+
+    \begin{align*}
+        F = \begin{bmatrix}
+            \frac{1}{2} & 0 \\
+            1 & 2
+        \end{bmatrix}
+        & \qquad
+        G = \begin{bmatrix}
+            2 \\ 1
+        \end{bmatrix}
+        \\
+        H = \begin{bmatrix}
+            \frac{1}{4} & \frac{1}{2}
+        \end{bmatrix}
+        & \qquad
+        D = 0
+    \end{align*}
+\end{example}
+
+
+\begin{remark}[\acrlong{ss} representation is not unique]
+    $F_1 = TFT^{-1}$, $G_1 = TG$, $H_1 = HT^{-1}$, $D_1 = D$ for any invertible $(n\times n)$ matrix $T$. The system $\{F, G, H, D\}$ is equivalent to $\{F_1, G_1, H_1, D_1\}$.
+\end{remark}

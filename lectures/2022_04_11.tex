@@ -1,0 +1,647 @@
+%!TEX root = ../main.tex
+\subsection{Summary of transformations}
+Notice that the \gls{ir} representation is very easy to obtain experimentally, since we only need to measure the system response to the impulse signal.
+However, given the \gls{ir} representation, it is difficult to get to the other representations, since the transformation from \gls{ir} to \gls{tf} is only theoretical.
+Moving from the \gls{ir} to the \gls{ss} representation is the key task of the \emph{Subspace-based \acrlong{ss} System Identification}, also known as \emph{4SID method}.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node (n1) [draw, circle, align=center]{\#1\\\acrshort{ss}};
+        \node (n2) [draw, circle, align=center, below of=n1, xshift=-1.8cm] {\#2\\\gls{tf}};
+        \node (n3) [draw, circle, align=center, below of=n1, xshift= 1.8cm] {\#3\\\gls{ir}};
+        
+        %legend
+        \draw[-stealth, line width=0.4mm] (3,0) -- (5, 0)
+            node[midway, above] {useful and feasible};
+        \draw[-stealth] (3,-0.8) -- (5, -0.8)
+            node[midway, above] {feasible};
+        \draw[-stealth, dashed] (3,-1.6) -- (5, -1.6)
+        node[midway, above] {not feasible};
+
+        \draw[->, line width=0.4mm] (n1) edge[bend right] (n2);
+        \draw[->, line width=0.4mm] (n2) edge[bend right] (n3);
+        \draw[->, line width=0.4mm] (n1) edge[bend left] (n3);
+        \draw[->] (n2) edge[bend right=20] (n1);
+        \draw[->, dashed] (n3) edge[bend right=20] (n2);
+        \draw[->, line width=0.4mm, red] (n3) edge[bend left=20] node {?} (n1);
+    \end{tikzpicture}
+    \caption*{Transformations between representations in practice}
+\end{figure}
+
+
+Before moving to the topic of \emph{4SID method}, a recall of the \emph{observability} and \emph{controllability} properties for a linear dynamic system is needed.
+
+\section{Fundamental concepts of Observability and Controllability}
+
+\[
+    \Sys: 
+    \begin{cases}
+        x(t+1) = Fx(t) + Gu(t) \\
+        y(t) = Hx(t)
+    \end{cases}
+\]
+
+\begin{definition}[Fully Observable]
+The system is fully observable (from the output) if and only if the \textbf{observability matrix} is full rank:
+\[
+    O = \begin{bmatrix}
+        H \\
+        HF \\
+        \vdots \\
+        HF^{n-1}
+    \end{bmatrix}
+    \qquad
+    \rank (O) = n
+\]
+where $n$ is the order of the system.
+\end{definition}
+
+\begin{obs}[Observability]
+Observability is a property of the system: by observing the output $y(t)$ it's possible to observe the state $x(t)$.\\
+\textbf{Note}: It refers only to state and output (i.e. $F$ and $H$).
+\end{obs}
+
+\begin{definition}[Fully Controllable]
+The system is fully controllable (from the input) if and only if the \textbf{controllability matrix} is full rank:
+\[
+    R = \begin{bmatrix}
+        G & FG & \cdots & F^{n-1}G
+    \end{bmatrix}
+    \qquad
+    \rank (R) = n
+\]
+where, again, $n$ is the order of the system.\\
+$R$ is also called \emph{reachability} matrix.
+\end{definition}
+
+\begin{obs}[Controllability]
+Controllability is a property of the system: by driving (or move) the input $u(t)$ it's possible to control the state $x(t)$.\\
+\textbf{Note}: It refers only to input and state (i.e. $F$ and $G$).\\
+\textbf{Note}: Controllability and Reachability are synonyms.
+\end{obs}
+
+\begin{example}[SISO system of order $n=2$]
+    \begin{align*}
+    \Sys: 
+        \begin{cases}
+            x_1(t+1) = \frac{1}{2} x_1(t) + u(t) \\
+            x_2(t+1) = \frac{1}{3}x_2(t) \\
+            y(t) = \frac{1}{4}x_1(t)
+        \end{cases}
+        \qquad
+        F = \begin{bmatrix}
+            \frac{1}{2} & 0 \\
+            0 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        H = \begin{bmatrix}
+            \frac{1}{4} & 0
+        \end{bmatrix}
+        \qquad
+        G = \begin{bmatrix}
+            1 \\
+            0
+        \end{bmatrix}
+    \end{align*}
+
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF
+        \end{bmatrix} = \begin{bmatrix}
+            \frac{1}{4} & 0 \\
+            \frac{1}{8} & 0
+        \end{bmatrix}
+        \qquad
+        \rank (O) = 1 < n = 2
+        \quad\implies\quad \text{not fully observable}
+    \]
+
+    \[
+        R = \begin{bmatrix}
+            G & FG
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 0 \\
+            1 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        \rank (R) = 1 < n = 2
+        \quad\implies\quad \text{not fully controllable}
+    \]
+    If $\Sys$ become 
+    \begin{align*}
+    \mathcal{S'}: 
+        \begin{cases}
+            x_1(t+1) = \frac{1}{2} x_1(t) + u(t) + \color{blue}\frac{1}{6} x_2(t)\\
+            x_2(t+1) = \frac{1}{3}x_2(t) \\
+            y(t) = \frac{1}{4}x_1(t)
+        \end{cases}
+        \qquad
+        \text{only $F$ change and become}\quad
+        F = \begin{bmatrix}
+            \frac{1}{2} & \color{blue}\frac{1}{6} \\
+            0 & \frac{1}{3}
+        \end{bmatrix}
+    \end{align*} 
+    And     
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF
+        \end{bmatrix} = \begin{bmatrix}
+            \frac{1}{4} & 0 \\
+            \frac{1}{8} & \color{blue}\frac{1}{24}
+        \end{bmatrix}
+        \qquad
+        \rank (O) = 2 = n         \quad\implies\quad \text{fully observable}
+    \]
+    
+    Observability and Controllability can also be checked graphically by building the block scheme 
+    
+      \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[block, align=center] (z1) {$z^{-1}$};
+            \node[block, align=center, below of=z1] (12) {$\frac{1}{2}$};
+            \node[block, align=center, right=2cm of z1] (14) {$\frac{1}{4}$};
+            \node[sum, align=center, left=2cm of z1] (sum1) {};
+            
+            \node[coordinate] at (0,-2.5cm) (block2) {};
+            \node[block, align=center, below of=block2] (z1_2) {$z^{-1}$};
+            \node[block, align=center, below of=z1_2] (13) {$\frac{1}{3}$};
+            \node[sum, align=center, left=2cm of z1_2] (sum2) {};
+            
+            \node[block, align=center, below right = 2cm and 0.5cm of sum1, blue] (16) {$\frac{1}{6}$};
+            
+            \draw[->] (sum1) -- (z1)
+                node[midway, above] {$x_1(t+1)$};;
+            \draw[->] (z1) -- (14)
+                node[midway,above] (x1t) {$x_1(t)$};
+            \draw[->] (x1t.south) |- (12.east);
+            \draw[->] (12) -| (sum1)
+                node[very near end, right] {$+$};
+            \draw[<-] (sum1) --++ (-2,0)
+                node[near start,above] {$+$}
+                node[very near end, above] (ut) {$u(t)$};
+            \draw[->] (14) --++ (2,0)
+                node[near end,above] (yt) {$y(t)$};
+                
+            \draw[->] (sum2) -- (z1_2)
+                node[midway, above] {$x_2(t+1)$};
+            \draw[->] (13) -| (sum2)
+                node[very near end, right] {$+$};
+            \draw[->] (z1_2) --++ (2,0)
+                node[midway,above] (x2t) {$x_2(t)$};
+            \draw[->] (x2t.south) |- (13.east);    
+
+            \draw[->, blue] (x2t.west)+(0,-0.25cm) |- (16.east);
+            \draw[->, blue] (16.west) -| (sum1.west)
+                node[very near end, left] {$+$};
+                
+            \draw[black, dashed] ([yshift=3mm]14.north)-|(ut.east)|-([yshift=-3mm]13.south)-|(yt.west)|-([yshift=3mm]14.north);
+        \end{tikzpicture}
+    \end{figure}
+    From this block scheme it can be seen that $x_1$ is \emph{directly} observable and reachable; $x_2$ become only \emph{indirectly} observable through $x_1(t)$ with the introduction of the blue block that correspond to the term $\color{blue}\frac{1}{6} x_2(t)$ in $\mathcal{S'}$.
+\end{example}
+
+\begin{example}[SISO system of order $n=2$]
+    \begin{align*}
+    \Sys: 
+        \begin{cases}
+            x_1(t+1) = \frac{1}{2} x_1(t)\\
+            x_2(t+1) = \frac{1}{3}x_2(t) + u(t)\\
+            y(t) = \frac{1}{4}x_1(t)
+        \end{cases}
+        \qquad
+        F = \begin{bmatrix}
+            \frac{1}{2} & 0\\
+            0 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        H = \begin{bmatrix}
+            \frac{1}{4} & 0
+        \end{bmatrix}
+        \qquad
+        G = \begin{bmatrix}
+            0 \\
+            1
+        \end{bmatrix}
+    \end{align*}
+
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF
+        \end{bmatrix} = \begin{bmatrix}
+            \frac{1}{4} & 0 \\
+            \frac{1}{8} & 0
+        \end{bmatrix}
+        \qquad
+        \rank (O) = 1 < n = 2
+        \quad\implies\quad \text{not fully observable}
+    \]
+
+    \[
+        R = \begin{bmatrix}
+            G & FG
+        \end{bmatrix} = \begin{bmatrix}
+            0 & 0 \\
+            1 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        \rank (R) = 1 < n = 2
+        \quad\implies\quad \text{not fully controllable}
+    \]
+    
+    If $\Sys$ become 
+    \begin{align*}
+    \mathcal{S'}: 
+        \begin{cases}
+            x_1(t+1) = \frac{1}{2} x_1(t) + \color{blue} \frac{1}{6} x_2(t)\\
+            x_2(t+1) = \frac{1}{3}x_2(t) + u(t)\\
+            y(t) = \frac{1}{4}x_1(t)
+        \end{cases}
+        \qquad
+        \text{only $F$ change and become}\quad
+        F = \begin{bmatrix}
+            \frac{1}{2} & \color{blue} \frac{1}{6} \\
+            0 & \frac{1}{3}
+        \end{bmatrix}
+    \end{align*} 
+    And  
+    
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF
+        \end{bmatrix} = \begin{bmatrix}
+            \frac{1}{4} & 0 \\
+            \frac{1}{8} & \color{blue} \frac{1}{24}
+        \end{bmatrix}
+        \qquad
+        \rank (O) = 2 = n = 2
+        \quad\implies\quad \text{fully observable}
+    \]
+    
+    \[
+        R = \begin{bmatrix}
+            G & FG
+        \end{bmatrix} = \begin{bmatrix}
+            0 & \color{blue} \frac{1}{6} \\
+            1 & \frac{1}{3}
+        \end{bmatrix}
+        \qquad
+        \rank (R) = 2 = n = 2
+        \quad\implies\quad \text{fully controllable}
+    \]
+    
+    Again, this properties can be also check using the block scheme
+    
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[block, align=center] (z1) {$z^{-1}$};
+            \node[block, align=center, below of=z1] (12) {$\frac{1}{2}$};
+            \node[block, align=center, right=2cm of z1] (14) {$\frac{1}{4}$};
+            \node[sum, align=center, left=2cm of z1] (sum1) {};
+            
+            \node[coordinate] at (0,-2.5cm) (block2) {};
+            \node[block, align=center, below of=block2] (z1_2) {$z^{-1}$};
+            \node[block, align=center, below of=z1_2] (13) {$\frac{1}{3}$};
+            \node[sum, align=center, left=2cm of z1_2] (sum2) {};
+            
+            \node[block, align=center, below right = 2cm and 0.5cm of sum1, blue] (16) {$\frac{1}{6}$};
+            
+            \draw[->] (sum1) -- (z1)
+                node[midway, above] {$x_1(t+1)$};;
+            \draw[->] (z1) -- (14)
+                node[midway,above] (x1t) {$x_1(t)$};
+            \draw[->] (x1t.south) |- (12.east);
+            \draw[->] (12) -| (sum1)
+                node[very near end, right] {$+$};
+            \draw[<-] (sum2) --++ (-2,0)
+                node[near start,above] {$+$}
+                node[very near end, above] (ut) {$u(t)$};
+            \draw[->] (14) --++ (2,0)
+                node[near end,above] (yt) {$y(t)$};
+                
+            \draw[->] (sum2) -- (z1_2)
+                node[midway, above] {$x_2(t+1)$};
+            \draw[->] (13) -| (sum2)
+                node[very near end, right] {$+$};
+            \draw[->] (z1_2) --++ (2,0)
+                node[midway,above] (x2t) {$x_2(t)$};
+            \draw[->] (x2t.south) |- (13.east);    
+
+            \draw[->, blue] (x2t.west)+(0,-0.25cm) |- (16.east);
+            \draw[->, blue] (16.west) -| (sum1.west)
+                node[very near end, left] {$+$};
+                
+            \draw[black, dashed] ([yshift=3mm]14.north)-|(ut.east)|-([yshift=-3mm]13.south)-|(yt.west)|-([yshift=3mm]14.north);
+        \end{tikzpicture}
+    \end{figure}
+    
+    It can be noticed that $x_1(t)$ is \emph{directly} observable but not reachable and $x_2(t)$ is \emph{directly} controllable. In $\mathcal{S'}$, with the introduction of the same blue block, the system become fully observable and controllable; in particular, $x_2(t)$ become also \emph{indirectly} observable and $x_1(t)$ become also \emph{indirectly} controllable.
+    
+\end{example}
+
+\vspace{100pt}
+
+\begin{remark}[4 sub-systems]
+\hfill \break
+    Any \acrlong{ss} system can be \textbf{internally} seen as 4 sub-systems as follows:
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[block, align=center] (noc) {NO\\C};
+            \node[block, align=center, below of=noc] (onc) {O\\NC};
+            \node[block, align=center, below of=onc] (oc) {O\\C};
+            \node[block, align=center, below of=oc] (nonc) {NO\\NC};
+            
+            %legend
+            \node[coordinate] at (5cm, 0cm) (lgnd) {};
+            \node[align=center, right of=lgnd]{O: observable\\C: controllable\\NX: not X};
+
+            \node at (-5cm,-1.5cm) (u) {$u$};
+            \node[coordinate] at (-3cm,-1.5cm) (input) {};
+            \node at (5cm,-2.5cm) (y) {$y$};
+            \node[coordinate] at (3cm,-2.5cm) (output) {};
+            \node[right of=noc] (noc_out) {};
+            \node[right of=nonc] (nonc_out) {};
+            \node[left of=onc] (onc_in) {};
+
+            \draw[-Rays] (noc) -- (noc_out);
+            \draw[-Rays] (nonc) -- (nonc_out);
+            \draw[Rays-] (onc_in) -- (onc);
+            \draw (input) edge[->, bend left=10] (noc);
+            \draw[line width=0.5mm] (input) edge[->, bend right=10] (oc);
+            \draw[line width=0.5mm] (u) edge (input);
+            \draw (onc) edge[bend left=10] (output);
+            \draw[line width=0.5mm] (oc) edge[bend right=10] (output);
+            \draw[line width=0.5mm] (output) edge[->] (y);
+
+            \draw[draw=black] (-4cm,-5.5cm) rectangle ++(8cm,6.5cm);
+        \end{tikzpicture}
+    \end{figure}
+
+    Which \textbf{externally} is equivalent to a systems like this:
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[block, align=center, blue] (oc) {O\\C};
+            \node[left of=oc] (in) {$u$};
+            \node[right of=oc] (out) {$y$};
+            
+            \node[align=center, below=0.1cm of oc, blue] {$\uparrow$\\$W(z)$};
+
+            \draw[->] (in) -- (oc);
+            \draw[->] (oc) -- (out);
+        \end{tikzpicture}
+    \end{figure}
+    
+    \vspace{-15pt}
+    
+    Hence, this is graphically proves of the fact that the I/O representation of a system through the \acrlong{tf} can only represent the \emph{observable} and \emph{controllable} part of the system; all the other sub-systems remains \textbf{hidden} with this representation. For this reason, the \gls{ss} representation is "more complete" than the \gls{tf} one when the system is not fully observable or not fully controllable.
+\end{remark}
+
+Another final definition is needed before presenting the 4SID algorithm.
+
+\begin{definition}[Hankel matrix of order n]
+    Starting from $\gls{ir} = \{\omega(1), \omega(2), \ldots, \omega(N)\}$ we can build the Hankel matrix of order $n$.
+
+\[
+    H_n = \begin{bmatrix}
+        \omega(1) & \omega(2) & \omega(3) & \cdots & \omega(n) \\
+        \omega(2) & \omega(3) & \omega(4) & \cdots & \omega(n+1) \\
+        \omega(3) & \omega(4) & \omega(5) & \cdots & \omega(n+2) \\
+        \vdots    & \vdots    & \vdots    & \ddots & \vdots \\
+        \omega(n) & \omega(n+1) & \omega(n+2) & \ldots & \omega(2n-1)
+    \end{bmatrix}
+\]
+
+    \textbf{Note}: it is a square matrix of size $n\times n$.
+
+    \textbf{Note}: we need IR up to time $2n-1$.
+
+    \textbf{Note}: it starts from $\omega(1)$ and not from $\omega(0)$ (since, for strictly-proper systems, $\omega(0)=0$).
+
+    \textbf{Note}: the anti-diagonals all have the same element repeated.
+    
+    We know that $\omega(t) = \begin{cases}
+    0 &\quad \text{if } t = 0 \\
+    HF^{t-1}G &\quad \text{if } t > 0
+    \end{cases}$ ,\qquad therefore $H_n$ can be rewritten as
+
+    \[
+        H_n = \begin{bmatrix}
+            HG     & HFG    & HF^2G  & \cdots & HF^{n-1}G \\
+            \vdots & \ddots &        &        & \vdots \\
+            \vdots &        & \ddots &        & \vdots \\
+            \vdots &        &        & \ddots & \vdots \\
+            HF^{n-1}G & \cdots & \cdots & \cdots & HF^{2n-2}G
+        \end{bmatrix} = \begin{bmatrix}
+            H \\
+            HF \\
+            \vdots \\
+            HF^{n-1}
+        \end{bmatrix} \cdot \begin{bmatrix}
+            G & FG & \cdots & F^{n-1}G
+        \end{bmatrix} = O \cdot R
+    \]
+    
+    \[
+        \Rightarrow H_n = O \cdot R
+    \]
+    
+    where $O$ is the observability matrix and $R$ is the reachability matrix.
+\end{definition}
+
+
+
+
+\section{Subspace-based \acrlong{ss} System Identification (4SID)}
+The original 4SID method starts from the measurement of the system output in a very simple experiment, that is the \emph{impulse experiment}.
+
+\begin{figure}[H]
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-1) -- (0,2) node[left] {$u(t)$};
+            \draw[domain=-0.3:0,smooth,variable=\x,red] plot ({\x},{0});
+            \draw[domain=0:0.2,smooth,variable=\x,red] plot ({\x},{1.5});
+            \draw[domain=0.2:2.5,smooth,variable=\x,red] plot ({\x},{0});
+            \draw[mark=*, mark options={fill=blue},blue,samples=1,domain=0:0.00001,only marks,variable=\x] plot ({\x},{1.5});
+            \draw[mark=*, mark options={fill=blue},blue,samples=10,domain=0.25:2.5,only marks,variable=\x] plot ({\x},{0});
+        \end{tikzpicture}
+        \caption*{Impulse in input}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-1) -- (0,2) node[left] {$y(t)$};
+            \draw[domain=0:2.5,smooth,variable=\x,red] plot ({\x},{2*sin(\x*180/3.14*5)*e^(-\x)});
+            \draw[mark=*, mark options={fill=blue},blue,samples=15,domain=0:2.5,only marks,variable=\x] plot ({\x},{2*sin(\x*180/3.14*5)*e^(-\x)});
+        \end{tikzpicture}
+        \caption*{\gls{ir} in output}
+    \end{minipage}
+\end{figure}
+
+\vspace{-15pt}
+
+The fundamental idea of this experiment is that it is very simple to measure the output of system given an impulse signal as the input.
+Since the goal of the method is to identify an \gls{ss} model $\left\{ \hat{F}, \hat{G}, \hat{H} \right\}$ starting from the $\gls{ir} = \left\{ \omega(0), \omega(1), \omega(2), \cdots \right\}$, it can be said that it is a \acrlong{bb} system identification method.
+
+We will see the solution of the problem with two different assumptions:
+\begin{description}
+    \item [Basic problem] \gls{ir} measurement is assumed to be \textbf{noise-free}. Easier and not realistic problem. Described in \ref{4sid-noisefree}.
+    \item [Real problem] \gls{ir} is measured with noise
+    \[ \widetilde{\omega}(t) = \omega(t) + \eta(t) \quad t = 0, 1,\dots, N \] where
+        $\widetilde{\omega}(t)$ is the measured noisy \gls{ir},
+        $\omega(t)$ is the ``true'' noise-free \gls{ir} and
+        $\eta(t)$ is the measurement noise (e.g. \gls{wn}). Described in \ref{4sid-noise}.
+\end{description}
+
+\begin{remark}
+    We will see in detail only the original version of 4SID, that is that the experiment is an impulse-experiment.
+    However 4SID can be extended to any generic input signal $\left\{ u(1), u(2), \cdots, u(N) \right\}$ that is sufficiently exciting.
+\end{remark}
+
+\begin{remark}[Unstable System]
+    In case of an unstable system the measurements must be collected in a closed-loop experiment.
+    Indeed, if the experiment was open-loop, the experiment would be unfeasible.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [block,align=center] (stab) {stability\\controller};
+            \node [sum] (sum) [right of=stab, node distance=2cm] {};
+            \node [block] (sys) [right of=sum, node distance=2cm]{system};
+            \node [coordinate] (split) [right of=sys, node distance=1cm]{};
+            \node [coordinate] (end) [right of=split, node distance=1cm]{};
+            \node (in) [above of=sum, node distance=1.5cm] {};
+            \node [coordinate] (mid) [below of=sum, node distance=1cm] {};
+
+            \draw[->] (in) edge node[align=left] {experimental\\excitation input} (sum);
+            \draw[->] (stab) edge node {} (sum);
+            \draw[->] (sum) edge node {} (sys);
+            \draw (sys) edge (split);
+            \draw[->] (split) -- (end);
+            \draw (split) |- (mid);
+            \draw[->] (mid) -| (stab);
+        \end{tikzpicture}
+        %\vspace{3pt}
+        %\caption*{Closed Loop System}
+    \end{figure}
+\end{remark}
+
+\section{4SID procedure (noise-free)} \label{4sid-noisefree}
+
+\paragraph{Step 1} \label{step1} Build the Hankel matrix in increasing order and each time compute the rank of the matrix.
+
+\[
+    H_1 = \begin{bmatrix}
+        \omega(1)
+    \end{bmatrix}
+    \qquad
+    H_2 = \begin{bmatrix}
+        \omega(1) & \omega(2) \\
+        \omega(2) & \omega(3)
+    \end{bmatrix}
+    \qquad
+    H_3 = \ldots
+    \qquad
+    \cdots
+    \qquad
+    H_n = \ldots
+\]
+
+Suppose that $\rank (H_i) = i \quad \forall i \in \{1, \dots, n\}$ \quad and $\rank (H_{n+1}) = n$.\\
+If this happens, it means that we found the first Hankel matrix which in not full rank and it also means that we have estimated (found) the order of the system.
+
+\paragraph{Step 2} Take $H_{n+1}$ (\textbf{recall}: $\rank (H_{n+1}) = n$) and factorize it in two rectangular matrices of size $(n+1) \times n$ and $n \times (n+1)$.
+
+\[
+    H_{n+1} = \begin{bmatrix}
+        \text{extended} \\
+        \text{observability} \\
+        \text{matrix:} \\
+        O_{n+1}
+    \end{bmatrix} \cdot \begin{bmatrix}
+        \text{extended} \\
+        \text{controllability} \\
+        \text{matrix:} \\
+        R_{n+1}
+    \end{bmatrix}
+\]
+
+where $O_{n+1} = \begin{bmatrix}
+    \color{blue}H \\ HF \\ \vdots \\ HF^n
+\end{bmatrix}$ of size $(n+1)\times n$ and $R_{n+1} = \begin{bmatrix}
+    \color{red}G & FG & \cdots & F^nG
+\end{bmatrix}$ of size $n\times (n+1)$.
+
+\paragraph{Step 3} \label{step3} $H$, $F$, $G$ estimation.
+
+Using $O_{n+1}$ and $R_{n+1}$ we can easily find:
+\begin{align*}
+    \hat{G} =  \color{red} R_{n+1}(\texttt{:;1}) & \quad\text{(first column of $R_{n+1}$)} \\
+    \hat{H} =  \color{blue} O_{n+1}(\texttt{1;:}) & \quad\text{(first row of $O_{n+1}$)} \\
+\end{align*}
+
+To estimate $\hat{F}$ consider $O_{n+1}$ (or, similarly, $R_{n+1}$):\\
+define $O_1$ as $O_{n+1}$ without the last row, and $O_2$ as $O_{n+1}$ without the first row, that is
+\[O_1 = O_{n+1}\texttt{(1:n;:)} \qquad O_2 = O_{n+1}\texttt{(2:n+1;:)}\]
+
+\textbf{Note:} $O_1$ and $O_2$ are $n\times n$ matrices.
+This is called \emph{shift-invariance} property.
+
+\textbf{Note:} $O_1$ is invertible since it's an observability matrix and the subsystem is fully observable.\\
+
+Moreover $O_2 = O_1 F$, so $\hat{F} = O_1^{-1}O_2$.
+
+In conclusion in a simple and \emph{constructive} (i.e NON parametric) way we have estimated a \acrlong{ss} model of the system starting from measured \emph{noise-free} \gls{ir}, using only $2n+1$ samples of \gls{ir}. \\
+In practice $n \ll N$, where, again, $n$ is the order of the system and $N$ the number of sample in the dataset.
+
+\textbf{Conclusion}
+
+\[ \left\{\hat{H}, \hat{G}, \hat{F}\right\} = \left\{O_{n+1}(\texttt{1;:}), R_{n+1}(\texttt{:;1}), O_1^{-1}O_2\right\}\]
+
+\begin{remark}
+    If the measurement is noisy all this process is \textbf{useless}. Also, if $n$ is unknown, \nameref{step1} could never stop.
+\end{remark}
+
+\section{4SID procedure (with Noise)} \label{4sid-noise}
+
+In reality, the measurements of \gls{ir} are noisy: $\tilde{\omega}(t) = \omega(t) + \eta(t)$. Therefore, the \textbf{real problem} is the estimation of the system taking into account the noise; indeed, the available dataset will be $\gls{ir} = \tilde{\omega}(t) = \{\tilde{\omega}(0), \tilde{\omega}(1), \cdots, \tilde{\omega}(N)\}$.  
+
+\vspace{-7pt}
+
+\begin{figure}[H]
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-0.5) -- (0,1.7) node[left] {$u(t)$};
+            \draw[domain=-0.3:0,smooth,variable=\x,red] plot ({\x},{0});
+            \draw[domain=0:0.2,smooth,variable=\x,red] plot ({\x},{1.5});
+            \draw[domain=0.2:2.5,smooth,variable=\x,red] plot ({\x},{0});
+        \end{tikzpicture}
+        \caption*{Impulse in input}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-0.5) -- (0,1.7) node[left] {$y(t)$};
+            \draw[domain=0:2.5,smooth,variable=\x,red] plot ({\x},{cos(\x*180/3.14*5)*e^(-\x)});
+            \draw[samples=100, domain=0:2.5,smooth,variable=\x,blue] plot ({\x},{cos(\x*180/3.14*5)*e^(-\x)+rand/4});
+        \end{tikzpicture}
+        \caption*{\gls{ir}}
+    \end{minipage}
+\end{figure}
+
+
