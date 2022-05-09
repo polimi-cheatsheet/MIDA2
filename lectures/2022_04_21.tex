@@ -380,7 +380,7 @@ Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated wit
     x(1) \perp v_1(t) \qquad x(1) \perp v_2(t) \qquad \qquad \text{($2^{nd}$ assumption)}
 \]
 
-\subsection{KF Basic Solution of the Basic System}
+\subsection{KF Basic Solution of the Basic System}\label{subsec:KF-basic_sol}
 
 %\renewcommand\nameeq[2]{\phantom{\text{#2}}&&#1&&\text{#2}}
 
@@ -551,7 +551,7 @@ The selection of gain matrix $K(t)$ is very critical:
 Design of a Kalman Filter does not require a \emph{training dataset}, but a complete model of the system:
 \begin{itemize}
     \item $F$, $G$, $H$ matrixes: usually obtained with a white-box physical modelling of the system
-    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of KF)
+    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of KF). For what concerns $V_{12}$, we recall that in practice $V_{12}=0$. 
 \end{itemize}
 
  
