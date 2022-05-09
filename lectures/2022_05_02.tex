@@ -1,0 +1,767 @@
+%!TEX root = ../main.tex
+
+\externaldocument{2022_04_27}
+
+\begin{example}
+    \[
+        S: \begin{cases}
+            x(t+1) = \frac{1}{2}x(t) + v_1(t) \quad& v_1 \sim WN(0, \frac{19}{20}) \\
+            y(t) = 2x(t) + v_2(t) \quad& v_2 \sim WN(0, 1)
+        \end{cases}
+        \qquad
+        v_1 \perp v_2
+    \]
+
+    \paragraph{Question} Find (if exists) the steady state (asymp.) K.F. $\hat{x}(t+1|t)$ and $\hat{x}(t|t)$.
+
+    \[
+        n = 1 \qquad F = \frac{1}{2} \qquad G = 0 \qquad H = 2 \qquad V_1 = \frac{19}{20} \qquad V_2 = 1 \qquad V_{12} = 0
+    \]
+
+    Since $V_{12} = 0$ we can try to use the asymptotic theorems.
+
+    \paragraph{First step} Compute the \gls{dre}
+    \begin{align*}
+        P(t+1) &= \left( FP(t)F^T+V_1 \right) - \left( FP(t)H^T+V_{12} \right) \left( HP(t)H^T+V_2 \right)^{-1}\left( FP(t)H^T+V_{12} \right)^T \\
+        &= \frac{1}{4}P(t) + \frac{19}{20} - \frac{ \left(\frac{1}{\cancel{2}}P(t)\cancel{2}\right)^2 }{4P(t)+1} \\
+        &= \frac{\cancel{P(t)^2} + \frac{1}{4}P(t) + \frac{19}{5} P(t) + \frac{19}{20} - \cancel{P(t)^2} }{4P(t) + 1}
+    \end{align*}
+
+    \textbf{Note} The second order terms must cancel out.
+
+    \[
+        P(t+1) = \frac{81P(t) + 19}{80P(t)+20}
+    \]
+
+    \paragraph{Second step} Compute and solve the \gls{are}
+
+    \[
+        \overline{P} = \frac{81\overline{P} + 19}{80\overline{P}+20} \quad \implies \quad 80\overline{P}^2 + 20\overline{P}-81\overline{P}-19 = 0
+    \]
+    \[
+        \overline{P}_1 = 1 \qquad \cancel{\overline{P}_2 = -\frac{19}{80}} < 0
+    \]
+
+
+    $\overline{P}=1$ is the only definite positive solution of \gls{are}
+
+    \paragraph{Question} Does \gls{dre} converges to $\overline{P}=1$, $\forall P_0 \ge 0$?
+
+    There are 2 methods for addressing this question:
+    \begin{itemize}
+        \item Direct analysis of \gls{dre}
+        \item Using asymptotic theorems
+    \end{itemize}
+
+    \paragraph{First methods} Direct analysis of \gls{dre}
+
+    \begin{align*}
+        P(t+1) = f(P(t)) \qquad \text{we need to plot $f(\cdot)$ in the $P(t)$ -- $P(t+1)$ plane}
+    \end{align*}
+
+    \[
+        \overline{P} = \frac{81\overline{P} + 19}{80\overline{P}+20}
+        \qquad
+        \begin{cases}
+            \text{vertical asy. value} & P(t) = -\frac{20}{80} = -\frac{1}{4} \\
+            \text{horizontal asy. value} & P(t) = \frac{81}{80}
+        \end{cases}
+    \]
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \fill [pattern=flexible hatch, pattern color=gray!40] (-2.5,-2) -- (5.5,-2) -- (5.5,0) -- (0,0) -- (0,4.9) -- (-2.5,4.9) -- (-2.5,-2);
+            \draw[->] (-2.5,0) -- (6,0) node[below] {$P(t)$};
+            \draw[->] (0,-2) -- (0,5) node[above] {$P(t+1)$};
+            \draw[domain=-1.25:5,smooth,variable=\x,red] plot ({\x},{5*(\x+1)/(\x+2)});
+
+            \draw[dashed] (-1.5,-2) -- (-1.5,4.9);
+            \node[above left] at (-1.5,0) {$-\frac{1}{4}$};
+            \draw[dashed] (-2.5,4.5) -- (5.5,4.5);
+            \node[below left] at (0,4.5) {$\frac{81}{80}$};
+            \node[above left] at (0,2.5) {$\frac{19}{20}$};
+
+            \draw (-1.8,-1.8) -- (5,5) node[left] {$P(t+1) = P(t)$};
+
+            \draw[->,dotted] (1,0) -- (1,3.3);
+            \draw[->,dotted] (1,3.3) -- (3.3,3.3);
+            \draw[->,dotted] (3.3,3.3) -- (3.3,4.0);
+            \draw[->,dotted] (3.3,4.0) -- (4.0,4.0);
+            \draw[->,dotted] (4.0,4.0) -- (4.0,4.2);
+            \draw[mark=*,red] plot coordinates {(4.2,4.2)} node[black,below] {$\overline{P}_1$};
+            \draw[mark=*,red] plot coordinates {(-1.2,-1.2)} node[black,below right] {$\overline{P}_2$};
+            \draw[mark=*,blue] plot coordinates {(1,3.35)} node[black,above] {\tiny$P(2)$};
+            \draw[mark=*,blue] plot coordinates {(3.3,4.05)} node[black,above] {\tiny$P(3)$};
+            \draw[mark=*,blue] plot coordinates {(4,4.2)};
+            \node[below] at (1,0) {\tiny$P(1) = P_0 \ge 0$};
+
+            \draw[->,red] (1.3,3.9) arc[radius=5,start angle=115,end angle=95];
+            \node[red,rotate=15] at (2,4.3) {\tiny converges};
+        \end{tikzpicture}
+    \end{figure}
+
+    By direct analysis/inspection of \gls{dre} dynamics we can conclude that $\forall P_0\ge 0$, \gls{dre} always converges to $\overline{P}_1=1$.
+
+    If $n=1$ the direct inspection is feasible, but it's very difficult for $n\ge2$.
+
+    \paragraph{Second method} Use theorems
+
+    \[
+        V_{12} = 0 \qquad F = \frac{1}{2} \text{ ($S$ is stable)} \quad \implies \quad \text{First theorem is fulfilled}
+    \]
+
+    The observability matrix of $\{F, H\}$ is $O=\begin{bmatrix} 2 \end{bmatrix}$ with full $\rank O = 1$, the system is fully observable.
+
+    Controllability from noise $v_1(t)$
+    \[
+        V_1 = \frac{19}{20} \qquad \Gamma=\sqrt{\frac{19}{20}}
+    \]
+    The controllability matrix of $\{F, \Gamma\}$ is $R = \begin{bmatrix} \sqrt{\frac{19}{20}} \end{bmatrix}$ with full $\rank R = 1$, the system is fully controllable from noise.
+
+    Both theorems are fulfilled, so \gls{are} has one and only one solution $\overline{P} > 0$, \gls{dre} converges to $\overline{P}$, $\forall P_0\ge0$ and $\overline{K}$ makes the K.F. asymptotically stable.
+
+    \paragraph{Third step} Compute $\overline{K}$
+    \[
+        \overline{K} = \left(F\overline{P}H^T + V_{12}\right)\left(H\overline{P}H^T+V_2\right) = \left(\frac{1}{2}\cdot 1 \cdot 2 + 0\right) \left(2\cdot 1 \cdot 2 + 1\right)^{-1} = \frac{1}{5}
+    \]
+
+    Double-check the asymptotical stability of K.F.
+    \[
+        F - \overline{K}H = \frac{1}{2} - \frac{1}{5}\cdot 2 = \frac{5-4}{10} = \frac{1}{10}
+    \]
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [block] (z1) at (1,4) {$z^{-1}$};
+            \node [block] (F1) at (1,3) {$\frac{1}{2}$};
+            \node [block] (K) at (1,2) {$\frac{1}{5}$};
+            \node [block] (z2) at (1,1) {$z^{-1}$};
+            \node [block] (F2) at (1,0) {$\frac{1}{2}$};
+
+            \node [block] (H1) at (4,4) {$2$};
+            \node [block] (H2) at (4,1) {$2$};
+
+            \node [sum] (sum1) at (6,4) {};
+            \node [sum] (sum2) at (7,2) {};
+            \node [sum] (sum3) at (-1.5,4) {};
+            \node [sum] (sum4) at (-1.5,1) {};
+
+            \node (v1) at (-1.5,5) {$v_1(t)$};
+            \node (v2) at (6,5) {$v_2(t)$};
+            \node[right] (y) at (8,4) {$y(t)$};
+            \node[right] (yhat) at (8,1) {$\hat{y}(t|t-1)$};
+            \node[right] (xhat) at (8,0) {$\hat{x}(t|t-1)$};
+
+            \draw[->] (v1) -- (sum3);
+            \draw[->] (sum3) -- (z1) node[pos=0.5] {$x(t+1)$};
+            \draw[->] (F1) -| (sum3);
+            \draw[->] (z1) -- (H1) node[pos=0.5] {$x(t)$};
+            \draw[->] (H1) -- (sum1);
+            \draw[->] (v2) -- (sum1);
+            \draw[->] (2.5,4) |- (F1);
+            \draw[->] (K) -| (sum4);
+            \draw[->] (sum4) -- (z2) node[pos=0.5] {$\hat{x}(t+1|t)$};
+            \draw[->] (7,4) -- (sum2) node[pos=0.8] {$+$};
+            \draw[->] (sum1) -- (y);
+            \draw[<-] (K) -- (sum2) node[pos=0.5,black] {$e(t)$};
+            \draw[->] (z2) -- (H2) node[pos=0.5] {$\hat{x}(t|t-1)$};
+            \draw[->] (F2) -| (sum4);
+            \draw[->] (2.5,1) |- (F2);
+            \draw[->] (H2) |- (yhat);
+            \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
+            \draw[->] (F2) -- (xhat);
+        \end{tikzpicture}
+    \end{figure}
+
+    \paragraph{Question} Find T.F. from $y(t)$ to $\hat{x}(t|t-1)$
+
+    \textbf{Recall} T.F. from block schemes of feedback systems.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node[block] (G1) at (0,1) {$G_1(z)$};
+            \node[block] (G2) at (0,0) {$G_2(z)$};
+            \node[sum] (sum) at (-1.5,1) {};
+            \node (u) at (-3,1) {$u(t)$};
+            \node (y) at (2.5,1) {$y(t)$};
+
+            \draw[->] (u) -- (sum) node[pos=0.8] {$+$};
+            \draw[->] (sum) -- (G1);
+            \draw[->] (G1) -- (y);
+            \draw[->] (G2) -| (sum) node[pos=0.8] {$\mp$};
+            \draw[->] (1.5,1) |- (G2);
+        \end{tikzpicture}
+    \end{figure}
+
+    \[
+        y(t) = G_1(z) \left(u(t) \mp G_2(z)y(t)\right) \quad \implies \quad y(t) = \frac{G_1(z)}{1 \pm G_1(z)G_2(z)}u(t)
+    \]
+
+    The K.F. is composed of 2 nested loops.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node [block] (z1) at (1,4) {$z^{-1}$};
+            \node [block] (F1) at (1,3) {$\frac{1}{2}$};
+            \node [block] (K) at (1,2) {$\frac{1}{5}$};
+            \node [block] (z2) at (1,1) {$z^{-1}$};
+            \node [block] (F2) at (1,0) {$\frac{1}{2}$};
+
+            \node [block] (H1) at (4,4) {$2$};
+            \node [block] (H2) at (4,1) {$2$};
+
+            \node [sum] (sum1) at (6,4) {};
+            \node [sum] (sum2) at (7,2) {};
+            \node [sum] (sum3) at (-1.5,4) {};
+            \node [sum] (sum4) at (-1.5,1) {};
+
+            \node (v1) at (-1.5,5) {$v_1(t)$};
+            \node (v2) at (6,5) {$v_2(t)$};
+            \node[right] (y) at (8,4) {$y(t)$};
+            \node[right] (yhat) at (8,1) {$\hat{y}(t|t-1)$};
+            \node[right] (xhat) at (8,0) {$\hat{x}(t|t-1)$};
+
+            \draw[->] (v1) -- (sum3);
+            \draw[->] (sum3) -- (z1) node[pos=0.5] {$x(t+1)$};
+            \draw[->] (F1) -| (sum3);
+            \draw[->] (z1) -- (H1) node[pos=0.5] {$x(t)$};
+            \draw[->] (H1) -- (sum1);
+            \draw[->] (v2) -- (sum1);
+            \draw[->] (2.5,4) |- (F1);
+            \draw[->,red,line width=0.5mm] (K) -| (sum4);
+            \draw[->,red,line width=0.5mm] (sum4) -- (z2) node[pos=0.5,black] {$\hat{x}(t+1|t)$};
+            \draw[->] (7,4) -- (sum2) node[pos=0.8] {$+$};
+            \draw[->] (sum1) -- (y);
+            \draw[<-] (K) -- (sum2) node[pos=0.5,black] {$e(t)$};
+            \draw[->,red,line width=0.5mm] (z2) -- (H2) node[pos=0.5,black] {$\hat{x}(t|t-1)$};
+            \draw[->,red,line width=0.5mm] (F2) -| (sum4);
+            \draw[->,red,line width=0.5mm] (2.5,1) |- (F2);
+            \draw[->] (H2) |- (yhat);
+            \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
+            \draw[->] (2.5,0) -- (xhat);
+
+            \node[red] at (-0.5,0.5) {$\frac{z^{-1}}{1-\frac{1}{2}z^{-1}}$};
+        \end{tikzpicture}
+    \end{figure}
+
+    Predictor of state:
+    \[
+        \hat{x}(t|t-1) = \frac{ \frac{1}{5} \frac{z^{-1}}{1-\frac{1}{2}z^{-1}} }{ 1 + \frac{1}{5} \frac{z^{-1}}{1-\frac{1}{2}z^{-1}} 2 }y(t) = \frac{ \frac{1}{5}z^{-1} }{1-\frac{1}{10}z^{-1}}y(t)
+    \]
+
+    Predictor of output:
+    \[
+        \hat{y}(t|t-1) = H\hat{x}(t|t-1) = \frac{2}{5} \frac{ 1 }{1-\frac{1}{10}z^{-1}}y(t-1)
+    \]
+
+    Filter of state:
+    \[
+        \hat{x}(t|t) = F^{-1}\hat{x}(t+1|t) = \frac{2}{5} \frac{ 1 }{1-\frac{1}{10}z^{-1}}y(t)
+    \]
+\end{example}
+
+
+\begin{remark}[White noise]
+    In the formulas of Kalman Filter there is a requirement that $v_1(t)$ and $v_2(t)$ must be white noises.
+    In many practical applications this assumption can be too demanding.
+
+    We need a workaround to deal with practical applications where this assumption is not valid.
+    The workaround is a simple trick called \emph{state extension} and it consists on extending the model of $\Sys$ to incorporate the \emph{noise dynamics}.
+
+    Let's see how it works with a numerical example.
+
+    \paragraph{Example}
+
+    Given a system $\Sys$ of order $n=1$
+    \[
+        \Sys:
+        \begin{cases}
+            x(t+1) = ax(t) + \eta(t) \qquad & \eta(t) \text{ is not a white noise}\\
+            y(t) = bx(t) + v_2(t) \qquad & v_2(t) \sim \WN(0,1)
+        \end{cases}
+    \]
+
+    and a model of $\eta(t)$ (\acrshort{ar}(1) stochastic model)
+    \[
+        \eta(t) = \frac{1}{1-cz^{-1}}e(t) \qquad e(t) \sim \WN(0,1) \qquad e \perp v_2
+    \]
+   
+    We cannot apply \gls{kf} formula to this system, since $\eta(t)$ is not a \gls{wn}, but we can proceed as follows
+    \begin{align*}
+        \eta(t) = c\eta(t-1) + e(t) \xRightarrow{z} \eta(t+1) &= c\eta(t) + e(t+1) \\
+        \eta(t+1) &= c\eta(t) + v(t)
+    \end{align*}
+    where $v(t) = e(t+1), \quad v \sim \WN(0,1) \text{and} \quad v \perp v_2$.
+
+    \paragraph{Trick} Extension of the state vector.
+
+    \begin{align*}
+        x(t) \mapsto x_1(t) \\
+        \eta(t) \mapsto x_2(t)
+    \end{align*}
+
+    Now $n=2$ and $\Sys$ becomes $\Sys'$
+
+    \[
+        \Sys':
+        \begin{cases}
+            x_1(t+1) = ax_1(t) + x_2(t) \\
+            x_2(t+1) = cx_2(t) + v(t) \\
+            y(t) = bx_1(t) + v_2(t)
+        \end{cases}
+    \]
+
+    \[
+        F\begin{bmatrix}
+            a & 1 \\
+            0 & c
+        \end{bmatrix}
+        \quad H = \begin{bmatrix}
+            b & 0
+        \end{bmatrix}
+        \quad v_1 = \begin{bmatrix}
+            0 \\ v(t)
+        \end{bmatrix}
+        \quad V_1 = \begin{bmatrix}
+            0 & 0 \\
+            0 & 1
+        \end{bmatrix}
+        \quad v_2 \sim WN(0,1)
+        \quad V_{12} = 0
+    \]
+
+    Now we can apply \gls{kf} solution equations (\ref{subsec:KF-basic_sol}) to this system.
+\end{remark}
+
+\subsection{Extension to Non-Linear systems}\label{subsec:KF_non-lin_ext}
+Coming back to extensions of the \gls{kf} for the basic system (section \ref{sec:KF-extensions}), we consider a system with non-linear dynamics:
+\[
+    S: \begin{cases}
+        x(t+1) = f(x(t), u(t)) + v_1(t) \\
+        y(t) = h(x(t)) + v_2(t)
+    \end{cases}
+\]
+
+where $f$ and $h$ are non-linear functions of $x(t)$ and $u(t)$ (smoothness class $C^1$ or higher), for example
+
+\vspace{-15pt}
+
+\[
+    f(x(t), u(t)) = \frac{1}{2} x^5(t) + u^3(t)  , \qquad h(x(t)) = e^{x(t)} + v_2(t)
+\]
+
+How can we design a Kalman Filter in this case? We can follow the general idea of the \emph{state observer}. 
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [block] (z1) at (1,4) {$z^{-1}$};
+        \node [block, double, double distance=0.5mm] (F1) at (-1.5,3) {$f$};
+        \node [block, red] (K) at (1,2) {$?$};
+        \node [block] (z2) at (1,1) {$z^{-1}$};
+        \node [block, double, double distance=0.5mm] (F2) at (-1.5,0) {$f$};
+
+        \node [block, double, double distance=0.5mm] (H1) at (4,4) {$h$};
+        \node [block, double, double distance=0.5mm] (H2) at (4,1) {$h$};
+
+        \node [sum] (sum1) at (6,4) {};
+        \node [sum] (sum2) at (7,2) {};
+        \node [sum] (sum3) at (-1.5,4) {};
+        \node [sum] (sum4) at (-1.5,1) {};
+
+        \node (v1) at (-1.5,5) {$v_1(t)$};
+        \node (v2) at (6,5) {$v_2(t)$};
+        \node[right] (y) at (8,4) {$y(t)$};
+        \node[right] (yhat) at (8,1) {$\hat{y}(t|t-1)$};
+        \node[right] (xhat) at (8,0) {$\hat{x}(t|t-1)$};
+
+        \draw[<-] (F1) -- ++(-2, 0)
+            node[above, midway] (u_t) {$u(t)$};
+        \draw[->] (u_t.south) |- (F2.west);
+        \draw[->] (v1) -- (sum3);
+        \draw[->] (sum3) -- (z1) node[pos=0.5] {$x(t+1)$};
+        \draw[->] (F1) -- (sum3);
+        \draw[->] (z1) -- (H1) node[pos=0.5] {$x(t)$};
+        \draw[->] (H1) -- (sum1);
+        \draw[->] (v2) -- (sum1);
+        \draw[->] (2.5,4) |- (F1);
+        \draw[->] (K) -| (sum4);
+        \draw[->] (sum4) -- (z2) node[pos=0.5] {$\hat{x}(t+1|t)$};
+        \draw[->] (7,4) -- (sum2) node[pos=0.8] {$+$};
+        \draw[->] (sum1) -- (y);
+        \draw[<-] (K) -- (sum2) node[pos=0.5,black] {$e(t)$};
+        \draw[->] (z2) -- (H2) node[pos=0.5] {$\hat{x}(t|t-1)$};
+        \draw[->] (F2) -- (sum4);
+        \draw[->] (2.5,1) |- (F2);
+        \draw[->] (H2) -- (yhat);
+        \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
+        \draw[->] (F2) -- (xhat);
+
+        \draw[blue, dashed] ($(F2) + (-1,-1)$) rectangle ($(sum2) + (0.5, 0.5)$) 
+            node[above left = 1.7cm and 1cm of F2] {$\mathcal{EKF}$:};
+    \end{tikzpicture}
+\end{figure}
+
+For the gain block of \gls{kf} we have 2 different types of solutions:
+\begin{enumerate}
+    \item The gain is a non-linear function of $e(t)$ (most natural and intuitive solution)
+    \item The gain is a linear time-varying function
+\end{enumerate}
+
+The second solution is less intuitive but is the most effective: we can reuse most of the \gls{kf} theory's formulas for the LTV domain.
+
+In practice, Extended Kalman Filter (EKF) idea is to make a time-varying local linearization (approximation) of the non-linear time-invariant system at each sampling time.
+
+The gain equation $K(t)$ in Extended Kalman Filter can be computed as:
+\[
+    K(t) = \left( F(t) P(t) H(t)^T + V_{12} \right) \left( H(t) P(t) H(t)^T + V_2 \right)^{-1}
+\]
+and $P(t)$ can be computed from the \gls{dre}:
+\[
+    P(t+1) = \left( F(t)P(t)F(t)^T+V_1 \right) - \left( F(t)P(t)H(t)^T + V_{12}\right)\left( H(t)P(t)H(t)^T + V_2\right)^{-1}\left( F(t)P(t)H(t)^T + V_{12}\right)^T
+\]
+
+\begin{obs}
+    Equations of $K$ and \gls{dre} are the usual formulas of \gls{kf} (\ref{subsec:KF-basic_sol}) with the introduction of time-varying parameters (as said in \ref{subsec:time-varying_extension}).
+\end{obs}
+
+\paragraph{Linearization of the system}
+We linearize $f$ and $h$ by computing at each sampling time, respectively, $F(t)$ and $H(t)$ as:
+
+\begin{align*}
+    F(t) &=  \left.\frac{ \partial f(x(t), u(t))}{\partial x(t)} \right|_{x(t) = \hat{x}(t|t-1)} \\
+    H(t) &= \left. \frac{\partial h(x(t))}{\partial x(t)} \right|_{x(t) = \hat{x}(t|t-1)}
+\end{align*}
+
+Therefore, EKF is the time-varying solution of \gls{kf} where $F(t)$ and $H(t)$ are local linearized matrices computed around the last available state prediction $\hat{x}(t|t-1)$.
+
+\paragraph{Summary}
+Procedure to implement EKF at time $t$:
+\begin{enumerate}
+    \item take last available state prediction $\hat{x}(t|t-1)$
+    \item using $\hat{x}(t|t-1)$, linearize the system by computing $F(t)$ and $H(t)$
+    \item compute $K(t)$ and update the \gls{dre}
+    \item compute $\hat{x}(t+1|t)$
+\end{enumerate}
+
+\begin{remark}
+    Main issues of EKF (same of LTV \gls{kf}):
+    \begin{itemize}
+        \item Very difficult (almost impossible) to have a theoretical guarantee of EKF stability (in practice extensive empirical testing is used).
+        \item Computational load (at each time $F(t)$, $H(t)$, $K(t)$ and $P(t)$ must be computed at run-time).
+    \end{itemize}
+
+    However, EKF is largely used today with some limitations in:
+    \begin{itemize}
+        \item safety-critical applications
+        \item mission-critical applications
+    \end{itemize}
+\end{remark}
+
+{\Huge todo}
+
+\begin{example}[\gls{kf} full procedure]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw[decoration={aspect=0.3, segment length=1.5mm, amplitude=3mm,coil},decorate] (-1,1) -- (-1,2);
+            \draw (0,2) -- (0,2.5);
+            \draw (-1,2) -- (1,2);
+            \draw (-1,1) -- (1,1);
+
+            \draw (1,2) -- (1,1.5);
+            \draw (0.8, 1.7) -- (0.8, 1.3) -- (1.2, 1.3) -- (1.2, 1.7);
+            \draw (1,1) -- (1,1.3);
+            \draw (0,0.7) -- (0,1);
+
+            \fill (-0.2,0.5) rectangle (0.2,0.7);
+            \draw (-1.5,2.5) -- (1.5,2.5) -- (1.5,5.5) -- (1.1,5.5) -- (1.1,2.9) -- (-1.5,2.9) -- (-1.5,2.5);
+
+            \draw[pattern=north east lines] (-3,0) rectangle (3,0.5);
+            \draw (-3,0.5) arc[radius=6,start angle=180, end angle=90] -- (3,0.5);
+
+            \draw[->] (0.4,0.55) -- (0.4,0.9) node[right,pos=0.5] {\footnotesize vertical acc.};
+            \draw[->] (-1.4,0.55) -- (-1.4,2.45) node[left,pos=0.5] {\footnotesize elongation};
+        \end{tikzpicture}
+    \end{figure}
+
+    Suspended seat in the cabin of an off-highway vehicle (agr. tractor, earth-moving machine, etc\dots).
+
+    The physical sensors are:
+    \begin{itemize}
+        \item Vertical accelerometer placed at the basis of the cabin
+        \item Elongation sensor between the basis of the cabin and the seat
+    \end{itemize}
+
+    \paragraph{Problem} Estimation of the seat vertical speed.
+
+    Move from a pictorial representation to a schematic representation of it:
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \draw (-1,2.5) rectangle (1,3.5);
+            \draw[decoration={aspect=0.3, segment length=1.5mm, amplitude=3mm,coil},decorate] (-1,1) -- (-1,2);
+            \draw (0,2) -- (0,2.5);
+            \draw (-1,2) -- (1,2);
+            \draw (-1,1) -- (1,1);
+
+            \draw (1,2) -- (1,1.5);
+            \draw (0.8, 1.7) -- (0.8, 1.3) -- (1.2, 1.3) -- (1.2, 1.7);
+            \draw (1,1) -- (1,1.3);
+            \draw (0,0.7) -- (0,1);
+
+            \draw plot[smooth, tension=1] coordinates {(-2, 0) (0,0.7) (2,0)};
+
+            \fill [pattern=north east lines] (2.1,0) rectangle (2.7,-0.1);
+
+            \draw (2.1,0) -- (2.7,0);
+            \draw[dotted] (0,1) -- (2.2,1);
+            \draw[dotted] (0,2.5) -- (2.6,2.5);
+
+            \draw [->] (2.2,0) -- (2.2,1);
+            \draw [->] (2.6,0) -- (2.6,2.5);
+
+            \node at (0,3) {$M$};
+            \node[right] at (1.1,3.7) {\footnotesize full mass of seat+driver};
+
+            \node at (-1.7,1.5) {$K$};
+            \node[left] at (-1.4,1.8) {\footnotesize spring stiffness};
+
+            \node at (1.5,1.5) {$C$};
+            \node[right] at (1.3,1.8) {\footnotesize damping ratio};
+
+            \node[left] at (2.2,0.5) {$z_d$};
+            \node[right] at (2.6,1.25) {$z$};
+        \end{tikzpicture}
+    \end{figure}
+
+    The sensor are:
+    \begin{itemize}
+        \item Acceleration $\ddot{z}_d$ (+noise)
+        \item Elongation $z-z_d$ (+noise)
+    \end{itemize}
+
+    Model of the system dynamics (physical white-box model in continuous time domain).
+
+    Core model equation (force balance in vertical direction):
+    \begin{align*}
+        M\ddot{z} &= \underbrace{-C\frac{d}{dt}(z-z_d)}_\text{damping} \underbrace{-K(z-z_d)}_{spring} \cancel{+ \text{gravity} - Mg} \\
+                  &= -C(\dot{z} - \dot{z}_d) - K(z-z_d)
+    \end{align*}
+
+    Since we measure $\ddot{z}_d$ the overall dimension of the system is 4.
+    The vector of state variables is:
+    \[
+        x(t) = \begin{bmatrix}
+            z \\
+            \dot{z} \\
+            z_d \\
+            \dot{z}_d
+        \end{bmatrix} = \begin{bmatrix}
+            x_1(t) \\
+            x_2(t) \\
+            x_3(t) \\
+            x_4(t) \\
+        \end{bmatrix}
+        \qquad
+        u(t) = \ddot{z}_d
+        \qquad
+        y(t) = z-z_d
+    \]
+
+    We can write the full model in state space form
+    \[
+        \begin{cases}
+            \dot{x}_1 = x_2 \\
+            \dot{x}_2 = -\frac{C}{M} (x_2-x_4) - \frac{K}{M}(x_1-x_3) \\
+            \dot{x}_3 = x_4 \\
+            \dot{x}_4 = u \\
+            y = x_1-x_3
+        \end{cases}
+        \quad\Rightarrow\quad
+        \begin{cases}
+            \dot{x}_1 = x_2 \\
+            \dot{x}_2 = -\frac{K}{M}x_1 - \frac{C}{M}x_2 + \frac{K}{M}x_3 + \frac{C}{M} x_4 \\
+            \dot{x}_3 = x_4 \\
+            \dot{x}_4 = u \\
+            y = x_1-x_3
+        \end{cases}
+    \]
+    \[
+        A = \begin{bmatrix}
+            0 & 1 & 0 & 0 \\
+            -\frac{K}{M} & -\frac{C}{M} & \frac{K}{M} & \frac{C}{M} \\
+            0 & 0 & 0 & 1 \\
+            0 & 0 & 0 & 0
+        \end{bmatrix}
+        \quad
+        B = \begin{bmatrix}
+            0 \\ 0 \\ 0 \\ 1
+        \end{bmatrix}
+        \quad
+        C = \begin{bmatrix}
+            1 & 0 & -1 & 0
+        \end{bmatrix}
+    \]
+
+    Next is discretization (we use digital systems), choice of sampling time $\Delta$ (for this application can be 5ms).
+
+    Using Eulero-forward approximation of time derivative $\dot{x}(t) \approx \frac{x(t+1)-x(t)}{\Delta}$.
+
+    Example for the first equation:
+    \[
+        \frac{x_1(t+1)-x_1(t)}{\Delta} = x_2(t) \quad\Rightarrow\quad x_1(t+1) = x_1(t) + \Delta x_2(t)
+    \]
+
+    \[
+        \begin{cases}
+            x_1(t+1) = x_1(t) + \Delta x_2(t) + v_{11}(t) \\
+            x_2(t+1) = -\frac{\Delta K}{M} x_1(t) + \left( -\frac{\Delta C}{M} + 1 \right)x_2(t) + \frac{\Delta K}{M} x_3(t) + \frac{\Delta C}{M} x_4(t) + v_{12}(t) \\
+            x_3(t+1) = x_3(t) + \Delta x_4(t) + v_{13}(t) \\
+            x_4(t+1) = x_4(t) + \Delta u(t) + v_{14}(t) \\
+            y(t) = x_1(t) - x_3(t) + v_2(t)
+        \end{cases}
+    \]
+
+    This is normal state-space for in discrete time:
+    \[
+        \begin{cases}
+            x(t+1) = Fx(t) + Gu(t) \\
+            y(t) = Hx(t)
+        \end{cases}
+    \]
+    \[
+        F = \begin{bmatrix}
+            1 & \Delta & 0 & 0 \\
+            -\frac{\Delta K}{M} & -\frac{\Delta C}{M}+1 & \frac{\Delta K}{M} & \frac{\Delta C}{M} \\
+            0 & 0 & 1 & \Delta \\
+            0 & 0 & 0 & 1
+        \end{bmatrix}
+        \quad G = \begin{bmatrix}
+            0 \\ 0 \\ 0 \\ \Delta
+        \end{bmatrix}
+        \quad H = \begin{bmatrix}
+            1 & 0 & -1 & 0
+        \end{bmatrix}
+    \]
+
+    Noise on the state equations:
+    \[
+        v_1(t) = \begin{bmatrix}
+            v_{11}(t) \\
+            v_{12}(t) \\
+            v_{13}(t) \\
+            v_{14}(t)
+        \end{bmatrix}
+        \sim WN(0, V_1)
+        \qquad
+        V_1 = \begin{bmatrix}
+            \lambda_1^2 & 0 & 0 & 0\\
+            0 & \lambda_1^2 & 0 & 0 \\
+            0 & 0 & \lambda_1^2 & 0 \\
+            0 & 0 & 0 & \lambda_1^2 \\
+        \end{bmatrix}
+        \qquad
+        v_2(t) \sim WN(0, V_2)
+    \]
+    Assumptions:
+    \begin{itemize}
+        \item All white-noises
+        \item All uncorrelated
+    \end{itemize}
+
+    $V_2$ can be estimated by datasheet of elongation sensor, $\lambda_4$ can be estimated by datasheet of accelerometer.
+    We expect $\lambda_1$, $\lambda_2$ and $\lambda_3$ to be small, and we can use the simplifying assumption $\lambda_1^2=\lambda_2^2=\lambda_3^2 =\lambda^2$, estimated empirically.
+
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node[left] (u) at (0,0) {$u(t)$};
+            \node[block] (d1) at (1,0) {$\Delta$};
+            \node[sum] (s1) at (2,0) {};
+            \node[above] (v14) at (2,0.5) {$v_{14}(t)$};
+            \node[block] (z4) at (4,0) {$z^{-1}$};
+            \node[block] (b4) at (6,1) {$\frac{\Delta C}{M}$};
+            \node[block] (d2) at (4,1) {$\Delta$};
+
+            \node[sum] (s2) at (2,2.5) {};
+            \node[above] (v13) at (2,3) {$v_{13}(t)$};
+            \node[block] (z3) at (4,2.5) {$z^{-1}$};
+            \node[block] (b3) at (6,4.5) {$\frac{\Delta K}{M}$};
+
+            \node[sum] (s3) at (7.5,4.5) {};
+            \node[above] (v12) at (7.5,5) {$v_{12}(t)$};
+            \node[block] (z2) at (9.5,4.5) {$z^{-1}$};
+            \node[block] (b2) at (9.5,3.5) {$-\frac{\Delta C}{M}+1$};
+
+            \node[sum] (s4) at (2,8) {};
+            \node[above] (v11) at (2,8.5) {$v_{11}(t)$};
+            \node[block] (z1) at (4,8) {$z^{-1}$};
+            \node[block] (b1) at (6,5.5) {$-\frac{\Delta K}{M}$};
+            \node[block] (d3) at (4,6.5) {$\Delta$};
+
+            \node[sum] (s5) at (11.5,2.5) {};
+            \node[below] (v2) at (11.5,2) {$v_2(t)$};
+            \node[right] (y) at (12,2.5) {$y(t)$};
+
+            \draw[->] (u) -- (d1);
+            \draw[->] (d1) -- (s1);
+            \draw[->] (v14) -- (s1);
+            \draw[->] (s1) -- (z4) node[pos=0.5] {\footnotesize $x_4(t+1)$};
+            \draw[->] (z4) -- (8,0) node[above] {\footnotesize $x_4(t)$};
+            \draw[->] (4.7,0) -- (4.7,-0.5) -- (2,-0.5) -- (s1);
+            \draw[->] (4.7,0) |- (d2);
+            \draw[->] (6,0) -- (b4);
+
+            \draw[->] (d2) -| (s2);
+            \draw[->] (v13) -- (s2);
+            \draw[->] (s2) -- (z3) node[pos=0.5] {\footnotesize $x_3(t+1)$};
+            \draw[->] (z3) -- (s5) node[pos=0.1] {\footnotesize $x_3(t)$};
+            \draw[->] (4.7,2.5) -- (4.7,2) -- (2.5,2) -- (s2);
+            \draw[->] (6,2.5) -- (b3);
+
+            \draw[->] (b3) -- (s3);
+            \draw[->] (v12) -- (s3);
+            \draw[->] (b4) -- (7,1) -- (7,4) -- (s3);
+            \draw[->] (b1) -- (7,5.5) -- (7,5) -- (s3);
+            \draw[->] (s3) -- (z2) node[pos=0.5] {\footnotesize $x_2(t+1)$};
+            \draw[->] (z2) -- (11,4.5) node[above] {\footnotesize $x_2(t)$};
+            \draw[->] (10.5,4.5) |- (b2);
+            \draw[->] (b2) -| (s3);
+
+            \draw[->] (v11) -- (s4);
+            \draw[->] (s4) -- (z1) node[pos=0.5] {\footnotesize $x_1(t+1)$};
+            \draw[->] (10.5,4.5) |- (d3);
+            \draw[->] (d3) -| (s4);
+            \draw[->] (4.7,8) -- (4.7,7.5) -- (2.5,7.5) -- (s4);
+            \draw[->] (z1) -| (s5) node[pos=0.05] {\footnotesize $x_1(t)$};
+            \draw[->] (6,8) -- (b1);
+
+            \draw[->] (v2) -- (s5);
+            \draw[->] (s5) -- (y);
+        \end{tikzpicture}
+    \end{figure}
+
+    We can compute
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF \\
+            HF^2 \\
+            HF^3
+        \end{bmatrix}
+        \qquad
+        R = \begin{bmatrix}
+            G & FG & F^2G & F^3G
+        \end{bmatrix}
+    \]
+    From visual inspection of the block schema we expect full observability from output and full controllability from input.
+
+    K.F. at this point can be applied.
+    Theorem 1 and 2 are valid, we can directly jump to A.R.E. solution.
+\end{example}    

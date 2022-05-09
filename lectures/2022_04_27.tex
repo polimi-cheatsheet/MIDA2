@@ -1,8 +1,9 @@
 %!TEX root = ../main.tex
 
 \externaldocument{2022_04_21}
+\externaldocument{2022_05_02}
 
-\section{Extensions of Basic Problem of Basic System}
+\section{Extensions of Basic Problem of Basic System}\label{sec:KF-extensions}
 
 \subsection{Exogenous input}
 \begin{figure}[H]
@@ -123,12 +124,12 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
 \end{obs}
 
 
-\subsection{Time-varying systems}
+\subsection{Time-varying systems}\label{subsec:time-varying_extension}
 
 \begin{align*}
-    F \rightarrow F(t) \\
-    G \rightarrow G(t) \\
-    H \rightarrow H(t)
+    F \mapsto F(t) \\
+    G \mapsto G(t) \\
+    H \mapsto H(t)
 \end{align*}
 
 Therefore
@@ -145,9 +146,9 @@ Therefore
 
 Kalman Filter equations remain of the same form as the ones described in \ref{subsec:KF-basic_sol}: we just need to replace the parameter matrices ($F,G,H$) with the time-varying ones ($F(t),G(t),H(t)$).
 
-\subsection{Non Linear Systems}
+\subsection{Non-Linear Systems}
 
-This extensions is much more complicated: Extended Kalman Filter (EKF).
+This extensions is much more complicated. We will see Extended Kalman Filter (EKF) in section \ref{subsec:KF_non-lin_ext}.
 
 \section{Asymptotic Solution of Kalman Filter}
 
