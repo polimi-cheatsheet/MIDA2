@@ -4,8 +4,6 @@
 
 \section{Extensions of Basic Problem of Basic System}
 
-{\huge TODO DRE, A.R.E acron. gls... + rivedere}
-
 \subsection{Exogenous input}
 \begin{figure}[H]
     \centering
@@ -89,7 +87,7 @@ Assuming that $\hat{x}(t+1|t)$ is known from the basic solution, we can simply o
     \hat{x}(t+1|t) = F\hat{x}(t|t) \quad \implies \quad \hat{x}(t|t) = F^{-1}\hat{x}(t+1|t)
 \]
 This formula can be used only if $F$ is invertible.
-If $F$ is not invertible, the filter can be obtained with a specific \emph{filter} formulation of K.F.
+If $F$ is not invertible, the filter can be obtained with a specific \emph{filter} formulation of \gls{kf}
 
 \begin{definition}[Kalman Filter in Filter Form] \label{KF-Filter_Form_sol}
     Reformulation of the equations described in \ref{subsec:KF-basic_sol}.\\
@@ -98,7 +96,7 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
         \hat{x}(t|t) &= F\hat{x}(t-1|t-1) + Gu(t-1) + K_0(t)e(t) \\
         K_0(t) &= \left(P(t)H\transpose\right) \left(HP(t)H\transpose+V_2\right)^{-1} \\
     \end{align*}
-    while the DRE equation (\ref{eq:KF-DRE}) remains unchanged.\\
+    while the \gls{dre} equation (\ref{eq:KF-DRE}) remains unchanged.\\
     
     The initial condition for the new State equation is 
     \begin{align*}
@@ -111,12 +109,12 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
 \end{remark}
 
 \begin{obs}
-    Gain of K.F. in prediction form (eq. \ref{eq:KF-gain} assuming $V_{12}=0$):
+    Gain of \gls{kf} in prediction form (eq. \ref{eq:KF-gain} assuming $V_{12}=0$):
     \[
         K(t) = \left( FP(t)H\transpose \right) \left( HP(t)H\transpose+V_2 \right)^{-1}
     \]
 
-    Gain of K.F. in filter form:
+    Gain of \gls{kf} in filter form:
     \[
         K_0(t) = \left(\textcolor{gray}{\cancel{F}} P(t)H\transpose \right) \left( HP(t)H\transpose+V_2 \right)^{-1}
     \]
@@ -158,10 +156,10 @@ This extensions is much more complicated: Extended Kalman Filter (EKF).
 \end{obs}
 
 
-The fact that K.F. is an LTV system is the source of 2 problems:
+The fact that \gls{kf} is an LTV system is the source of 2 problems:
 \begin{itemize}
-    \item Checking the asymptotic stability of K.F. algorithm is very difficult, since the stability check of an LTV system is not simple as the stability check for LTI.
-    \item Computational problem: $K(t)$ must be computed at each sampling time (e.g. every 5ms), including the inversion of $HP(t)H\transpose+V_2$ ($p\times p$ matrix) and the computation of $P(t)$ using the DRE.
+    \item Checking the asymptotic stability of \gls{kf} algorithm is very difficult, since the stability check of an LTV system is not simple as the stability check for LTI.
+    \item Computational problem: $K(t)$ must be computed at each sampling time (e.g. every 5ms), including the inversion of $HP(t)H\transpose+V_2$ ($p\times p$ matrix) and the computation of $P(t)$ using the \gls{dre}.
 \end{itemize}
 
 \begin{recall}[Asymptotic Stability of a system]
@@ -178,14 +176,14 @@ The fact that K.F. is an LTV system is the source of 2 problems:
 
 \end{recall}
 
-Because of those problems in real/practical applications the asymptotic version of K.F. is preferred.
+Because of those problems in real/practical applications the asymptotic version of \gls{kf} is preferred.
 
 \paragraph{Basic idea}
 Since the dependency on $t$ of $K(t)$ derives from the presence of $P(t)$, if $P(t)$ converges to a constant value $\bar{P}$ (steady-state value of $P(t)$), then also $K(t)$ will converge to $\bar{K}$ (steady-state value of $K(t)$).
 \\
-Using $\bar{K}$ the K.F. becomes an LTI system.
+Using $\bar{K}$ the \gls{kf} becomes an LTI system.
 
-Let's analyze the asymptotic stability of the State equation (eq. \ref{eq:KF-state}) of the asymptotic K.F. when $\bar{K}$ is used (assuming it exists).
+Let's analyze the asymptotic stability of the State equation (eq. \ref{eq:KF-state}) of the asymptotic \gls{kf} when $\bar{K}$ is used (assuming it exists).
 
 \begin{align*}
     \hat{x}(t+1|t) &= F\hat{x}(t|t-1) + Gu(t) + \bar{K}e(t) \\
@@ -218,14 +216,14 @@ Let's analyze the asymptotic stability of the State equation (eq. \ref{eq:KF-sta
     \caption*{Asymptotic Kalman Filter with Exogenous input}
 \end{figure}
 
-\paragraph{Condition for Asymptotic Stability of KF}
+\paragraph{Condition for Asymptotic Stability of \gls{kf}}
 
- If $\bar{K}$ exists, the K.F. is asymptotically stable if and only if all the eigenvalues of $F-\bar{K}H$ are strictly inside the unit circle.
+ If $\bar{K}$ exists, the \gls{kf} is asymptotically stable if and only if all the eigenvalues of $F-\bar{K}H$ are strictly inside the unit circle.
 
 \begin{obs}
-    The stability of the system $\Sys$ is related to matrix $F$, whereas the stability of K.F. is related to matrix $F-\bar{K}H$.
+    The stability of the system $\Sys$ is related to matrix $F$, whereas the stability of \gls{kf} is related to matrix $F-\bar{K}H$.
 
-    Therefore, K.F. can be asymptotically stable even if the system is unstable.
+    Therefore, \gls{kf} can be asymptotically stable even if the system is unstable.
 \end{obs}
 
 \paragraph{Existance of $\bar{K}$}
@@ -237,7 +235,7 @@ Starting from the equation \ref{eq:KF-gain}, if exists $P(t)$ such that $P(t) = 
 
 Thus, $\bar{K}$ exists if $\bar{P}$ exists.\\
 
-In order to check that, we need to check the converge properties of D.R.E.
+In order to check that, we need to check the converge properties of \gls{dre}
 
 \begin{recall}[Stability of a dynamical autonomous system]
     How to find the equilibrium points of a dynamical autonomous system?
@@ -253,42 +251,42 @@ In order to check that, we need to check the converge properties of D.R.E.
         \end{tabular}
     \end{center}
 \end{recall}
-D.R.E. is an autonomous discrete time system, thus we impose $\bar{P} = f(\bar{P})$, where $f(\bar{P})$ is the DRE (eq. \ref{eq:KF-DRE}) evaluated in $\bar{P}$:
+\gls{dre} is an autonomous discrete time system, thus we impose $\bar{P} = f(\bar{P})$, where $f(\bar{P})$ is the \gls{dre} (eq. \ref{eq:KF-DRE}) evaluated in $\bar{P}$:
 
 \begin{flalign}\label{eq:KF-ARE}
-    \nameeq{\bar{P} = \left( F\bar{P}F\transpose + V_1 \right)-\left(F\bar{P}H\transpose + V_{12}\right)\left(H\bar{P}H\transpose + V_2\right)^{-1}\left(F\bar{P}H\transpose+V_{12}\right)\transpose}{ARE}
+    \nameeq{\bar{P} = \left( F\bar{P}F\transpose + V_1 \right)-\left(F\bar{P}H\transpose + V_{12}\right)\left(H\bar{P}H\transpose + V_2\right)^{-1}\left(F\bar{P}H\transpose+V_{12}\right)\transpose}{\acrshort{are}}
 \end{flalign}
 
 \begin{definition}[Algebraic Riccati Equation (ARE)]
-    The equation \ref{eq:KF-ARE} is a non-linear, matrix, static algebraic equation, known as \emph{Algebraic Riccati Equation (ARE)}.
+    The equation \ref{eq:KF-ARE} is a non-linear, matrix, static algebraic equation, known as \emph{\acrfull{are}}.
 \end{definition}
 
-If a steady state $\bar{P}$ solution of D.R.E. (eq. \ref{eq:KF-DRE}) does exists, it must be a solution of A.R.E (eq. \ref{eq:KF-ARE}).
+If a steady state $\bar{P}$ solution of \gls{dre} (eq. \ref{eq:KF-DRE}) does exists, it must be a solution of A.R.E (eq. \ref{eq:KF-ARE}).
 There remains 3 questions:
 \begin{enumerate}
-    \item \textbf{Existence}: does A.R.E. have a semi-definite positive solution?
-    \item \textbf{Convergence}: if exists, does the D.R.E. converges to $\bar{P}$?
-    \item \textbf{Stability}: is the corresponding $\bar{K}$ such that the K.F. is asymptotically stable?
+    \item \textbf{Existence}: does \gls{are} have a semi-definite positive solution?
+    \item \textbf{Convergence}: if exists, does the \gls{dre} converges to $\bar{P}$?
+    \item \textbf{Stability}: is the corresponding $\bar{K}$ such that the \gls{kf} is asymptotically stable?
 \end{enumerate}
 
 
-To answer those questions we need two fundamental theorems (K.F. asymptotic theorems).
+To answer those questions we need two fundamental theorems (\gls{kf} asymptotic theorems).
 
 \subsection{Asymptotic Kalman Filter Theorems}
 The two Asymptotic Kalman Filter Theorems that we are going to introduce provide \emph{sufficient} conditions only.
 
-\begin{theorem}[First Asymptotic KF Theorem]\label{th:1KF_as}
+\begin{theorem}[First Asymptotic \gls{kf} Theorem]\label{th:1KF_as}
     Assumptions: $V_{12} = 0$ and the system is asymptotically stable (i.e. all eigenvalues of $F$ are strictly inside the unit circle).
     Then:
     \begin{enumerate}
-        \item A.R.E. has one and only one semi-definite positive solution: $\bar{P} \ge 0$.
-        \item D.R.E. converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
-        \item The corresponding $\bar{K}$ is s.t. the K.F. is asymptotically stable.
+        \item \gls{are} has one and only one semi-definite positive solution: $\bar{P} \ge 0$.
+        \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
+        \item The corresponding $\bar{K}$ is s.t. the \gls{kf} is asymptotically stable.
     \end{enumerate}
 \end{theorem}
 
 \begin{recall}[Observability and Controllability]
-    Recall on Observability and Controllability needed for the introduction of the Second Asymptotic KF Theorem (\ref{th:2KF_as}). 
+    Recall on Observability and Controllability needed for the introduction of the Second Asymptotic \gls{kf} Theorem (\ref{th:2KF_as}). 
 
     \paragraph{Observability of the state through the output} 
 
@@ -332,13 +330,13 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
 \end{recall}
 
 
-\begin{theorem}[Second Asymptotic KF Theorem]\label{th:2KF_as}
+\begin{theorem}[Second Asymptotic \gls{kf} Theorem]\label{th:2KF_as}
     Assumptions: $V_{12} = 0$, $(F, H)$ is observable and $(F, \Gamma)$ is controllable.
     Then:
     \begin{enumerate}
-        \item A.R.E. has one and only one definite positive solution $\bar{P} > 0$.
-        \item D.R.E. converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
-        \item The corresponding $\bar{K}$ is such that the K.F. is asymptotically stable.
+        \item \gls{are} has one and only one definite positive solution $\bar{P} > 0$.
+        \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
+        \item The corresponding $\bar{K}$ is such that the \gls{kf} is asymptotically stable.
     \end{enumerate}
 \end{theorem}
 
@@ -346,6 +344,6 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
     The difference between theorems \ref{th:1KF_as} and \ref{th:2KF_as} is that the first one ensures that $\bar{P} \ge 0$ while the second one ensures that $\bar{P} > 0$. 
 \end{obs}
 
-These two theorems are very useful in practice because we can fully avoid the (very difficult) direct convergence analysis of D.R.E.
+These two theorems are very useful in practice because we can fully avoid the (very difficult) direct convergence analysis of \gls{dre}.
 
 

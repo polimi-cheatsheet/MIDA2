@@ -380,7 +380,7 @@ Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated wit
     x(1) \perp v_1(t) \qquad x(1) \perp v_2(t) \qquad \qquad \text{($2^{nd}$ assumption)}
 \]
 
-\subsection{KF Basic Solution of the Basic System}\label{subsec:KF-basic_sol}
+\subsection{\gls{kf} Basic Solution of the Basic System}\label{subsec:KF-basic_sol}
 
 %\renewcommand\nameeq[2]{\phantom{\text{#2}}&&#1&&\text{#2}}
 
@@ -401,7 +401,7 @@ Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated wit
 \end{flalign} 
 
 \begin{flalign}\label{eq:KF-DRE}    
-    \nameeq{P(t+1) = \left( FP(t)F\transpose + V_1 \right) - \left( FP(t)H\transpose + V_{12} \right)\left( HP(t)H\transpose + V_{2} \right)^{-1}\left( FP(t)H\transpose + V_{12} \right)\transpose}{DRE}
+    \nameeq{P(t+1) = \left( FP(t)F\transpose + V_1 \right) - \left( FP(t)H\transpose + V_{12} \right)\left( HP(t)H\transpose + V_{2} \right)^{-1}\left( FP(t)H\transpose + V_{12} \right)\transpose}{\acrshort{dre}}
 \end{flalign}  
     
 %\begin{align*}
@@ -424,17 +424,17 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
 \end{flalign}  
 
 \begin{definition}[Difference Riccati Equation (DRE)]
-    The equation \ref{eq:KF-DRE} is called \emph{Difference Riccati Equation (DRE)} and it is a special type of non-linear matrix difference equation. 
+    The equation \ref{eq:KF-DRE} is called \emph{\acrfull{dre}} and it is a special type of non-linear matrix difference equation. 
     
-    \quad \textbf{Note} The DRE is an autonomous (i.e. there are no inputs), non-linear, discrete time, multi-variable system, described by a non-linear difference matrix equation
+    \quad \textbf{Note} The \gls{dre} is an autonomous (i.e. there are no inputs), non-linear, discrete time, multi-variable system, described by a non-linear difference matrix equation
     \[
          P(t+1) = f_{NL}(P(t)) \qquad P(1) = P_0
     \]
 \end{definition}
 
 
-\begin{remark}[Structure or $K(t)$ and DRE]
-    Notice that $K(t)$ and the DRE have  a \emph{block-structure} having this form: 
+\begin{remark}[Structure or $K(t)$ and \gls{dre}]
+    Notice that $K(t)$ and the \gls{dre} have  a \emph{block-structure} having this form: 
     
     \[ AP(t)B\transpose+N  \qquad \text{where $N$ is a noise matrix}\]
 
@@ -453,8 +453,8 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
 \end{remark}
 
 
-\begin{remark}[Existance of the DRE]
-    In order to guarantee the existance of the DRE for all time instant $t$, the only critical part is the inversion of the \texttt{output} block:
+\begin{remark}[Existance of the \gls{dre}]
+    In order to guarantee the existance of the \gls{dre} for all time instant $t$, the only critical part is the inversion of the \texttt{output} block:
     \[
         \underbrace{(\underbrace{HP(t)H\transpose}_{\ge 0} + \underbrace{V_2}_{>0}}_{>0})^{-1} \qquad \text{thanks to $V_2>0$,  \texttt{output} is always invertible}
     \]
@@ -529,7 +529,7 @@ The idea behind Kalman Filter is simple and intuitive:
 \begin{itemize}
     \item we make a simulated replica (\emph{digital twin}) of the system (without noises $v_1$ and $v_2$ which are not measurable)
     \item we compare the true measured output with the estimated/predicted output $\hat{y}(t|t-1)$
-    \item we make corrections on the KF main equation, proportional (with gain $K(t)$) to the output error $e(t)$ in order to keep KF as close as possible to the system 
+    \item we make corrections on the \gls{kf} main equation, proportional (with gain $K(t)$) to the output error $e(t)$ in order to keep \gls{kf} as close as possible to the system 
     \item we extract the state estimation $\hat{x}(t|t-1)$ from the digital twin
 \end{itemize}
 
@@ -551,7 +551,7 @@ The selection of gain matrix $K(t)$ is very critical:
 Design of a Kalman Filter does not require a \emph{training dataset}, but a complete model of the system:
 \begin{itemize}
     \item $F$, $G$, $H$ matrixes: usually obtained with a white-box physical modelling of the system
-    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of KF). For what concerns $V_{12}$, we recall that in practice $V_{12}=0$. 
+    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of \gls{kf}). For what concerns $V_{12}$, we recall that in practice $V_{12}=0$. 
 \end{itemize}
 
  
