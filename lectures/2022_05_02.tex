@@ -462,9 +462,10 @@ Procedure to implement EKF at time $t$:
     \end{itemize}
 \end{remark}
 
-{\Huge todo}
-
 \begin{example}[\gls{kf} full procedure]
+
+Suspended seat in the cabin of an off-highway vehicle (agriculture tractor, earth-moving machine, etc\dots).
+
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
@@ -489,8 +490,6 @@ Procedure to implement EKF at time $t$:
         \end{tikzpicture}
     \end{figure}
 
-    Suspended seat in the cabin of an off-highway vehicle (agr. tractor, earth-moving machine, etc\dots).
-
     The physical sensors are:
     \begin{itemize}
         \item Vertical accelerometer placed at the basis of the cabin
@@ -499,7 +498,7 @@ Procedure to implement EKF at time $t$:
 
     \paragraph{Problem} Estimation of the seat vertical speed.
 
-    Move from a pictorial representation to a schematic representation of it:
+    \paragraph{Step 1: System Modeling} Move from a pictorial representation to a schematic representation of it:
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
@@ -608,16 +607,21 @@ Procedure to implement EKF at time $t$:
         \end{bmatrix}
     \]
 
+    \paragraph{Step 2: Discretization}
     Next is discretization (we use digital systems), choice of sampling time $\Delta$ (for this application can be 5ms).
 
-    Using Eulero-forward approximation of time derivative $\dot{x}(t) \approx \frac{x(t+1)-x(t)}{\Delta}$.
+    Using \emph{Eulero-forward approximation} of time derivative $\dot{x}(t) \approx \frac{x(t+1)-x(t)}{\Delta}$.
 
     Example for the first equation:
     \[
         \frac{x_1(t+1)-x_1(t)}{\Delta} = x_2(t) \quad\Rightarrow\quad x_1(t+1) = x_1(t) + \Delta x_2(t)
     \]
 
-    \[
+    \paragraph{Step 3: Add Noises} In order to apply \gls{kf} formulas we need to add noises $v_1, v_2$ to the model. 
+    The discretized system with noises is:
+
+    \[  
+        \Sys:
         \begin{cases}
             x_1(t+1) = x_1(t) + \Delta x_2(t) + v_{11}(t) \\
             x_2(t+1) = -\frac{\Delta K}{M} x_1(t) + \left( -\frac{\Delta C}{M} + 1 \right)x_2(t) + \frac{\Delta K}{M} x_3(t) + \frac{\Delta C}{M} x_4(t) + v_{12}(t) \\
@@ -627,11 +631,12 @@ Procedure to implement EKF at time $t$:
         \end{cases}
     \]
 
-    This is normal state-space for in discrete time:
-    \[
+    This is normal state-space in discrete time:
+    \[  
+        \Sys:
         \begin{cases}
             x(t+1) = Fx(t) + Gu(t) \\
-            y(t) = Hx(t)
+            y(t) = Hx(t) + \cancelto{0}{D}u(t)
         \end{cases}
     \]
     \[
@@ -762,6 +767,6 @@ Procedure to implement EKF at time $t$:
     \]
     From visual inspection of the block schema we expect full observability from output and full controllability from input.
 
-    K.F. at this point can be applied.
-    Theorem 1 and 2 are valid, we can directly jump to A.R.E. solution.
+    \gls{kf} at this point can be applied.
+    Theorem \ref{th:1KF_as} and \ref{th:2KF_as} are applicable, thus we can directly jump to ARE solution.
 \end{example}    
