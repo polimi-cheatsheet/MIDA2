@@ -2,6 +2,8 @@
 
 Lecture notes of the [Model Identification and Data Analysis - Part 2 (051589)](https://www11.ceda.polimi.it/schedaincarico/schedaincarico/controller/scheda_pubblica/SchedaPublic.do?&evn_default=evento&c_classe=765794&polij_device_category=DESKTOP&__pj0=0&__pj1=42d68cc1050be0569561dabe2a5df40b) course at Politecnico di Milano, A.Y. 2021-2022.
 
+Last version of the compiled pdf lecture notes available [here](https://github.com/andreabosisio/MIDA2_AY2022/blob/master/main.pdf).
+
 > **_CREDITS:_**  This is an updated version of the MIDA2 class notes of the A.Y. 2019-2020 whose repository can be found here: [original repo](https://github.com/polimi-cheatsheet/MIDA2)
 
 
