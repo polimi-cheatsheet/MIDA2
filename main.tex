@@ -21,6 +21,7 @@
             ]
            {geometry}
 
+\usepackage[toc,page]{appendix} 
 
 % Comandi pratici
 
@@ -106,7 +107,8 @@
 	{\large {From Professor Sergio Savaresi's lectures}}\\
 	\vspace*{0.4cm}
 	{\large {Authors and Contributors: \textsc{Edoardo Morassutto}, \textsc{Marco Donadoni}, \textsc{Cosimo Russo}, \textsc{Federico Cazzola}}}\\
-	{\large {Reviewed and Updated for the 2022 version of the course by \\ \textsc{Andrea Bosisio}}}\\
+  \vspace{20pt}
+	{{Reviewed and Updated for the 2022 version of the course by \\ \textsc{Andrea Bosisio}}}\\
 	\vspace*{3cm}
 	Politecnico di Milano\\A.Y. 2021/2022
 \end{center}
@@ -168,6 +170,11 @@ Please notify errors or changes through an email or a pull request.
 \tikzstyle{every node} = [font=\small]
 \tikzstyle{sum}        = [draw, circle, inner sep=3pt, minimum size =0.1cm]
 
+% Cross
+\tikzset{cross/.style={cross out, draw=black, minimum size=2*(#1-\pgflinewidth), inner sep=0pt, outer sep=0pt},
+  %default radius will be 1pt.
+  cross/.default={0.1cm}}
+
 % pattern
 \tikzset{
   hatch distance/.store in=\hatchdistance,
@@ -203,6 +210,7 @@ Please notify errors or changes through an email or a pull request.
 \input{lectures/2022_04_27}
 \input{lectures/2022_05_02}
 \input{lectures/2022_05_09}
+\input{lectures/2022_05_12}
 
 
 \end{document}

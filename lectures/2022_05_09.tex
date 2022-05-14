@@ -1,9 +1,9 @@
 %!TEX root = ../main.tex
 
-\chapter{Chapter 4: BB SW-Sensing}
+\chapter{BB SW-Sensing}
 Content of chapter 4 (short)
 
-\chapter{Chapter 5: Gray-Box System Identification}
+\chapter{Gray-Box System Identification}
 Content of chapter 5 (short)
 
 \chapter{Minimum Variance Control}
@@ -70,7 +70,7 @@ Assumptions:
 
     Also for human it's difficult, for example \emph{steer to roll} dynamics in a bicycle: if you want to steer left, you must first steer a little to the right and then turn left.
 
-    Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but \emph{generalized MVC (GMVC)}).
+    Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but \emph{generalized MVC (GMVC)}, described in \ref{subsec:GMVC}).
 \end{remark}
 
 Some additional (small) technical assumptions:
@@ -198,7 +198,7 @@ The block scheme representation of the MVC system is
 
 \section{Analysis of the MVC System}
 
-\subsection{Stability of the MVC System}
+\subsection{Stability of the MVC System}\label{subsec:MVC_stability}
 
 \begin{recall}
     For stability let's recall a result of \emph{negative feedback system}:
@@ -243,12 +243,12 @@ where we used the following result of the long division between $C(z)$ and $A(z)
 The MVC system is always guaranteed asymptotically stable, since the roots of $\chi(z)$ are the roots of $B(z)$ and $C(z)$ and:
 \begin{itemize}
     \item all roots of $B(z)$ are strictly inside the unit circle (thanks to minimum phase assumption on $\frac{B(z)}{A(z)}$)
-    \item all roots of $C(z)$ are ?? inside the unit circle (thanks to the assumption of canonical representation of $\frac{C(z)}{A(z)}$)
+    \item all roots of $C(z)$ are \textcolor{red}{?? inside the unit circle (thanks to the assumption of canonical representation of $\frac{C(z)}{A(z)}$)}
 \end{itemize}
 
-{\large roots of $C(z)$ are (NOT strictly) inside the unit circle!}
+\textcolor{red}{\large roots of $C(z)$ are (NOT strictly) inside the unit circle!}
 
-\subsection{Performance of the MVC System}
+\subsection{Performance of the MVC System}\label{subsec:MVC_performance}
 
 The system can be rewritten as follows considering the two inputs: $y^0(t)$ and $e(t)$ (non-measurable input)
 \[ 
@@ -285,7 +285,7 @@ Therefore, the \gls{tf} from $y^0(t)$ to $y(t)$ is
 	=& \dots \\
 	=& z^{-k}
 \end{align*}
-where we remind that $L(z)$ has been already computed for the stability check. 
+where we remind that $L(z)$ has been already computed for the stability check (\ref{subsec:MVC_stability}). 
 
 Similarly, the \gls{tf} from $e(t)$ to $y(t)$ is 
 \begin{align*}
@@ -298,7 +298,8 @@ Thus we can say that
 
 \begin{align*}
 	y(t) =& F_{y^0y}(z) y^0(t) + F_{ey}(z) e(t) \\
-		 =& z^{-k} y^0(t) + E(z) e(t)
+		 =& z^{-k} y^0(t) + E(z) e(t) \\
+         =& y^0(t-k) + E(z) e(t)
 \end{align*}
  
 which is the very simple closed-loop relationship between input and output in a MVC system.

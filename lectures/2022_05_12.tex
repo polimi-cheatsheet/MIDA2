@@ -1,0 +1,644 @@
+%!TEX root = ../main.tex
+
+\externaldocument{2022_05_09}
+
+\begin{remark}
+    The closed-loop behavior is very simple. Visually:
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node[block] at (0,1.5) (c) {$C(z)$};
+            \node[sum] at (1,1.5) (s1) {};
+            \node[block, right=0.3cm of s1] (b1) {$\frac{1}{B(z) E(z)}$};
+            \node[block, right=0.7cm of b1] (b2) {$\frac{z^{-k} B(z)}{A(z)}$};
+            \node[sum, right=0.5cm of b2] (s2) {};
+            \node[block] at (2,0) (b3) {$\tilde{R}(z)$};
+            \node[block, above=0.5cm of s2] (b4) {$\frac{C(z)}{A(z)}$};
+
+            \draw[<-] (c) -- ++(-1,0) node[left] {$y^0(t)$};
+            \draw[->] (c) -- (s1) node[pos=0.8] {+};
+            \draw[->] (s1) -- (b1);
+            \draw[->] (b1) -- (b2) node[above, midway] {$\scriptstyle u(t)$};
+            \draw[->] (b2) -- (s2);
+            \draw[->] (b3) -| (s1) node[pos=0.9] {-};
+            \draw[->] (b4) -- (s2);
+            \draw[->] (s2) -- ++(1,0) node[right] {$y(t)$};
+            \draw[<-] (b4) -- ++(0,1) node[above] (in_noise_1) {$e(t)$};
+            \draw[->] ($(s2) + (0.5,0)$) |- (b3);
+
+            \node[block] at (11,1.5) (z) {$z^{-k}$};
+            \node[block] at (12,3) (e) {$E(z)$};
+            \node[sum] at (12,1.5) (s3) {};
+
+            \draw[<-] (z) -- ++(-1,0) node[left] (y0_2) {$y^0(t)$};
+            \draw[->] (s3) -- ++(1,0) node[right] (out_2) {$y(t)$};
+            \draw[->] (z) -- (s3);
+            \draw[->] (e) -- (s3);
+            \draw[<-] (e) -- ++(0,1) node[above] {$e(t)$};
+
+            \draw[dashed] (-0.7,-0.7) rectangle ($(in_noise_1) + (0.7, 0.5)$);
+            \draw[dashed] ($(y0_2) + (0.6, -0.5)$) rectangle ($(out_2) + (-0.6, 3)$);
+
+            \node[right=1.5cm of b4] (equiv) {$\equiv$};
+            \node[below=0.001cm of equiv] {(closed-loop)};
+        \end{tikzpicture}
+    \end{figure}
+
+    In principle the \emph{ideal} desired behavior would be $y(t) = y^0(t) + \cancelto{0}{E(z)}e(t)$, but, since the system has internally $k$-step delay and the reference $y^0(t)$ is not predictable, the \emph{optimal} result is the one found in \ref{subsec:MVC_performance}, that is:
+
+    \[
+    	y(t) = y^0(t-k) + E(z) e(t)
+    \]
+
+    \textbf{Note} Where are all the poles of the original system?
+
+    MVC \emph{pushes} all the system poles into the non-observable and/or non-controllable parts of the system (it makes internal cancellations). However,
+    this is something wanted and therefore it is not a problem since we verified it's internally asymptotically stable.
+\end{remark}
+
+\section{Main limitations of MVC}
+
+\begin{itemize}
+    \item Can be applied only to minimum-phase systems.
+    \item We cannot moderate the control/actuation effort.
+    \item We cannot design a specific behavior from $y^0(t)$ to $y(t)$.
+\end{itemize}
+
+
+\subsection{Generalized Minimum Variance Control (GMVC)}\label{subsec:GMVC}
+
+To overcome these limits there is an extension called \emph{Generalized Minimum Variance Control (GMVC)}.
+The main difference w.r.t. MVC is the extension of the performance index:
+
+\begin{align*}
+    \text{MVC: } J &= E\left[ \left(y(t) - y^0(t)\right)^2 \right] \\
+    \text{GMVC: } J &= E\left[ \left(P(z)y(t) - y^0(t) + Q(z)u(t)\right)^2 \right]
+\end{align*}
+where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
+\begin{itemize}
+    \item $P(z)$ is the \emph{reference model}
+    \item $Q(z) u(z)$ is used to penalize the usage of control action, which has to be moderated since it's expensive in terms of energy, power, aging, ...
+\end{itemize}
+
+\begin{obs}
+	The performance index $J$ of the MVC is just a special case of the GMVC's one, where $P(z) = 1$ and $Q(z) = 0$.
+\end{obs}
+
+\begin{remark}[Another important difference w.r.t. MVC]
+	GMVC can be applied also to non-minimum phase systems.
+\end{remark}
+
+\begin{remark}[Reference model $P(t)$]
+	In a generic feedback control system
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node[block] at (0,1.5) (c) {C};
+            \node[block] at (2,1.5) (s) {S};
+
+            \draw[->] (c) -- (s) node[pos=0.5] {$u(t)$};
+            \draw[->] (c) -- (s);
+            \draw[<-] (c) -- ++(-1,0) node[left] {$y^0(t)$};
+            \draw[->] (s) -- ++(2,0) node[right] {$y(t)$};
+            \draw[->] (3,1.5) -- (3,0.5) -| (c);
+        \end{tikzpicture}
+    \end{figure}
+
+    the typical goal is to obtain the best possible tracking $y(t) = y^0(t)$. However, perfect tracking may not be the best solution: sometimes the best solution is to track a \emph{reference model} or \emph{reference behavior} from $y^0(t)$ to $y(t)$:
+    \[
+    	y(t) = P(z)y^0(t)
+    \]
+\end{remark}
+
+\begin{example}[Cruise control in a car]
+	Cruise control is a typical example of \emph{reference model}'s usage.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node[block] at (0,1.5) (c) {Cruise Control};
+            \node[block] at (4,1.5) (s) {Car};
+
+            \draw[->] (c) -- (s) node[pos=0.5] {};
+            \draw[->] (c) -- (s) node[above, midway, align=center] {engine torque\\$u(t)$};
+            \draw[<-] (c) -- ++(-2,0) node[left, align=center] {desired\\speed\\$v^0(t)$};
+            \draw[->] (s) -- ++(2,0) node[right, align=center] {speed\\$v(t)$};
+            \draw[->] (3,1.5) -- (3,0.5) -| (c);
+        \end{tikzpicture}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[
+                node distance=2cm,auto,>=latex',
+                declare function={
+                    f(\x) =  (\x < 0.5) * 1 +
+                            (\x >= 0.5) * (\x < 2) * 2 +
+                            (\x >= 2) * (\x < 4) * 3 +
+                            (\x >= 4) * 1.5;
+                    f2(\x) = f(\x) - (
+                                (f(\x) - f(\x-0*0.1)) * 0.8 +
+                                (f(\x) - f(\x-1*0.1)) * 0.4 +
+                                (f(\x) - f(\x-2*0.1)) * 0.2 +
+                                (f(\x) - f(\x-3*0.1)) * 0.1
+                            ) / 1.5;
+                    f3(\x) = f(\x) - (
+                                (f(\x) - f(\x-0*0.1)) * 0.5 +
+                                (f(\x) - f(\x-1*0.1)) * 0.4 +
+                                (f(\x) - f(\x-2*0.1)) * 0.4 +
+                                (f(\x) - f(\x-3*0.1)) * 0.3 +
+                                (f(\x) - f(\x-4*0.1)) * 0.3 +
+                                (f(\x) - f(\x-5*0.1)) * 0.2 +
+                                (f(\x) - f(\x-6*0.1)) * 0.2 +
+                                (f(\x) - f(\x-7*0.1)) * 0.2 +
+                                (f(\x) - f(\x-8*0.1)) * 0.1 +
+                                (f(\x) - f(\x-9*0.1)) * 0.1 +
+                                (f(\x) - f(\x-10*0.1))* 0.05
+                            ) / 2.75;
+                }
+            ]
+            \draw[->] (0,0) -- (0,3.5) node[above] {$v(t)$};
+            \draw[->] (0,0) -- (5,0) node[below] {$t$};
+            \draw[domain=0:5,variable=\x,blue,samples=100] plot ({\x},{f(\x)}) node[right, blue] {$v^0(t)$};
+            \draw[domain=0:5,variable=\x,red,smooth,samples=50] plot ({\x},{f2(\x)});
+            \draw[domain=0:5,variable=\x,green,smooth,samples=50] plot ({\x},{f3(\x)});
+            \node[red, right]   at (3,1) {$\scriptstyle P(z) \approx 1$};
+            \node[green, right] at (3,0.7) {$\scriptstyle P(z)$ \footnotesize to smooth the behavior};
+        \end{tikzpicture}
+    \end{figure}
+
+    In this scenario it is intuitive that a very aggressive tracking (i.e. $P(z) \approx 1$) is unwanted since it is uncomfortable and dangerous. A smoother reference behavior is preferred (i.e. $P(z)$ is a low-pass filter).
+\end{example}
+
+\begin{appendices}
+
+\chapter{Discretization of Analog Dynamical systems}\label{appendix:discr}
+Discretization allows us to do modeling, SW-sensing and control in a digital context. 
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block,ellipse,align=center] at (0,0) (controller) {Control\\algorithm\\(discrete time)};
+        \node[block,align=center] at (6,0) (system) {Physical\\system\\(analog)};
+        \node[block] at (3.5,0) (DAC) {D/A};
+        \node[block] at (3.5,-2) (ADC) {A/D};
+
+        \draw[->] (controller) -- (DAC);
+        \draw[->] (DAC) -- (system) node[pos=0.5] {$\scriptstyle u(t)$};
+        \draw[->] (system) -- ++(2,0) node[above] {$y(t)$};
+        \draw[->] (7.3,0) |- (ADC);
+        \draw[->] (ADC) -| (controller);
+    \end{tikzpicture}
+\end{figure}
+
+\subsection*{Analog to Digital Converter (A/D)}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+            f(\x) = sin(180*\x/3.14)+1.2;
+        }]
+        \draw[->] (0,0) -- (5,0) node[below] {$t$};
+        \draw[->] (0,0) -- (0,3) node[left] {$y(t)$};
+
+        \draw[domain=0:5,variable=\x,smooth] plot ({\x},{f(\x)});
+        \foreach \x in {0,...,9} {
+            \draw[dotted] (\x/2,0) -- (\x/2,3);
+            \draw[fill, blue] (\x/2,{round(2*f(\x/2))/2}) circle (0.03);
+        }
+        \foreach \y in {0,...,5} {
+            \draw[dotted] (0,\y/2) -- (5,\y/2);
+        }
+
+        \draw[<->] (0.5,-0.1) -- (1,-0.1) node[pos=0.5,below] {$\scriptstyle\Delta T$};
+        \node[right] at (1.05,-0.33) {\footnotesize (sampling time)};
+        \draw[<->] (-0.1,1.5) -- (-0.1,2);
+        \node[left,align=right] at (-0.1,1.75) {\footnotesize amplitude\\\footnotesize discretization \\\footnotesize step};
+    \end{tikzpicture}
+\end{figure}
+
+\begin{description}
+    \item[Time discretization] $\Delta T$ is the sampling time
+    \item[Amplitude discretization step] Number of levels used for discretization, e.g. \emph{10-bit discretization} uses $2^{10}$ levels of amplitude
+\end{description}
+
+An high quality A/D converter:
+\begin{itemize}
+    \item small $\Delta T$
+    \item high number of levels (e.g. 16-bits)
+\end{itemize}
+
+
+\subsection*{Digital to Analog Converter (D/A)}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+            f(\x) = sin(180*\x/3.14)+1.2;
+        }]
+        \draw[->] (0,0) -- (5,0) node[below] {$t$};
+        \draw[->] (0,0) -- (0,3) node[left] {$u(t)$};
+
+        \foreach \x in {0,...,9} {
+            \draw[dotted] (\x/2,0) -- (\x/2,3);
+            \draw[fill] (\x/2,{round(2*f(\x/2))/2}) circle (0.03);
+        }
+        \foreach \x in {0,...,8} {
+            \draw[blue] (\x/2,{round(2*f(\x/2))/2}) -- (\x/2+0.5,{round(2*f(\x/2))/2});
+            \draw[blue] (\x/2+0.5,{round(2*f(\x/2))/2}) -- (\x/2+0.5,{round(2*f(\x/2+0.5))/2});
+        }
+        \foreach \y in {0,...,5} {
+            \draw[dotted] (0,\y/2) -- (5,\y/2);
+        }
+    \end{tikzpicture}
+\end{figure}
+
+If $\Delta T$ is sufficiently small, the step-wise analog signal is very similar to a smooth analog signal (the steps become "invisible").
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+            f(\x) = sin(180*\x/3.14)+1.2;
+        }]
+        \draw[->] (0,0) -- (5,0) node[below] {$t$};
+        \draw[->] (0,0) -- (0,3) node[left] {$u(t)$};
+
+        \foreach \x in {0,...,49} {
+            \draw[fill] (\x/10,{round(20*f(\x/10))/20}) circle (0.01);
+        }
+        \foreach \x in {0,...,49} {
+            \draw[blue] (\x/10,{round(20*f(\x/10))/20}) -- (\x/10+0.1,{round(20*f(\x/10))/20});
+            \draw[blue] (\x/10+0.1,{round(20*f(\x/10))/20}) -- (\x/10+0.1,{round(20*f(\x/10+0.1))/20});
+        }
+    \end{tikzpicture}
+\end{figure}
+
+\subsection*{Model of the Digital Perspective}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block,align=center,minimum height=2cm] at (0,0) (cont) {Digital\\controller};
+        \node[block,align=center,minimum height=2cm] at (6,0) (sys) {Analog\\system};
+        \node[block] at (3,0.5) (DAC) {D/A};
+        \node[block] at (3,-0.5) (ADC) {A/D};
+
+        \draw[->] (cont.east|-DAC) -- (DAC) node[pos=0.2] (u_t) {$\scriptstyle u(t)$};
+        \draw[<-] (cont.east|-ADC) -- (ADC) node[pos=0.2] {$\scriptstyle y(t)$};
+        \draw[->] (DAC) -- (DAC-|sys.west);
+        \draw[<-] (ADC) -- (ADC-|sys.west);
+
+        \draw[dashed,red] (1.7,-1.5) rectangle (7.5,1.5) 
+        	node[above=0.3cm of u_t] {\color{red} $\Sys$:};
+        \node[below] at (4.6,-1.5) {\footnotesize System from a digital perspective};
+    \end{tikzpicture}
+\end{figure}
+
+\textbf{Note} Both $u(t)$ and $y(t)$ are digital signal.
+
+We can obtain a discrete-time model from $u(t)$ to $y(t)$ for the system \textcolor{red}{$\Sys$}:
+
+\begin{figure}[H]
+	\centering 
+	\begin{tikzpicture}[node distance=2cm,auto,>=latex']
+		\node[block, red] (s) {$\Sys$};
+
+		\draw[<-] (s) --++ (-1,0) node[left] {$u(t)$}; 
+		\draw[->] (s) --++ (1,0) node[right] {$y(t)$}; 
+	\end{tikzpicture}
+\end{figure}
+
+and we can either:
+
+\begin{itemize}
+    \item make \gls{bb} system identification starting from measured data: directly estimate a discrete-time model
+    \item starting from a physical \gls{wb} model (continuous time) that we need to discretize 
+\end{itemize}
+
+Let's analyze the latter method.
+
+\subsubsection*{Discretization of a physical \gls{wb} model}
+We introduce two methods for discretize a physical \gls{wb} model.
+
+\paragraph{1) \acrlong{ss} Transformation}
+
+The most used approach is the \emph{\acrlong{ss} Transformation}.
+
+\[
+    \Sys: \begin{cases}
+        \dot{x} = Ax + Bu \\
+        y = Cx + (Du) \\
+        \qquad \text{($A$, $B$, $C$, $D$ cont. time)}
+    \end{cases}
+    \quad
+    \xRightarrow[\Delta T]{\text{discretization}}
+    \quad
+    \Sys: \begin{cases}
+        x(t+1) = Fx(t) + Gu(t) \\
+        y(t) = Hu(t) + (Du(t)) \\
+        \qquad \text{($F$, $G$, $H$, $D$ discrete time)}
+    \end{cases}
+\]
+
+Discretization is done via those transformation formulas:
+\begin{align*}
+    F &= e^{A\Delta T} \\
+    G &= \int_0^{\Delta T} e^{A\delta}B\, d\delta \\
+    H &= C \\
+    D &= D
+\end{align*}
+
+\begin{recall}[$s$-domain] Let's recall the transformation from the $s$-domain to the $z$-domain.
+	
+	\paragraph{Poles}
+    How the poles of the continuous time system are transformed?
+
+    It can be proved that the eigenvalues (poles) follow the \emph{sampling transformation rule}.
+    \[
+        z = e^{s\Delta T} \qquad \lambda_F = e^{\lambda_A \Delta T}
+    \]
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \draw[->] (-2,0) -- (2,0) node[above] {$\operatorname{Re}$};
+            \draw[->] (0,-2) -- (0,2) node[left] (im1) {$\operatorname{Im}$};
+
+            \draw[->] (4,0) -- (8,0) node[above] {$\operatorname{Re}$};
+            \draw[->] (6,-2) -- (6,2) node[left] (im2) {$\operatorname{Im}$};
+
+            \draw[dashed, red, line width=0.4mm] (0,-2) -- (0,1.9);
+            \fill[green, opacity=0.1] (-2,-2) rectangle (0,2);
+
+            \draw[dashed, red, line width=0.4mm] (6,0) circle (1cm);
+            \fill[green, opacity=0.1] (6,0) circle (1cm);
+
+            \node[align=center] at (0,2.8) {\textbf{$s$-domain}\\(cont. time)};
+            \node[align=center] at (6,2.8) {\textbf{$z$-domain}\\(discrete time)};
+
+            \draw[fill,blue] (0,0) circle (0.05);
+            \draw[fill,blue] (7,0) circle (0.05);
+
+            \draw[->] (2,1) -- (4,1) node[pos=0.5] {$z=e^{s\Delta T}$};
+
+            \fill[green, opacity=0.1] ($(im2) + (3.2,0)$) rectangle ++(2,1) 
+            	node[pos=0.5, above=0.005cm, align=center, black, opacity=1] {as. stable\\part};
+        \end{tikzpicture}
+    \end{figure}
+
+    \paragraph{Zeroes}
+    How the zeroes of the continuous time system are transformed?
+
+    Unfortunately there is no simple rule like the poles. We can only say:
+    \[
+        G(s) = \frac{\text{polynomial in $s$ with $h$ zeros}}{\text{polynomial in $s$ with $k$ poles}} \qquad \text{if $G(s)$ is strictly proper:  (i.e. $k > h$) }
+    \]
+    \[
+        G(z) = \frac{\text{polynomial in $z$ with $k-1$ zeros}}{\text{polynomial in $z$ with $k$ poles}} \qquad \text{$G(z)$ with relative degree 1}
+    \]
+
+    We have new $k-h-1$ zeros that are generated by the discretization.
+    They are called \emph{hidden zeros}.
+
+    Unfortunately these hidden zeros are frequently outside the unit circle, which means that $G(z)$ is not minimum phase even if $G(s)$ is minimum phase.
+
+    Therefore, we need for instance GMVC to design the control system.
+\end{recall}
+
+\paragraph{2) Time-derivative discretization}
+
+Another simple discretization technique frequently used is the discretization of time-derivative $\dot{x}$.
+
+\begin{align*}
+    \text{\textbf{Eulero backward}} &\qquad \dot{x} \approx \frac{x(t)-x(t-1)}{\Delta T} = \frac{x(t)-z^{-1}x(t)}{\Delta T} = \frac{z-1}{z\Delta T} x(t) \\
+    \text{\textbf{Eulero forward}} &\qquad \dot{x} \approx \frac{x(t+1)-x(t)}{\Delta T} = \frac{zx(t)-x(t)}{\Delta T} = \frac{z-1}{\Delta T} x(t)
+\end{align*}
+
+General formula
+\[
+    \dot{x}(t) \approx \left[ \frac{z-1}{\Delta T} \frac{1}{\alpha z + (1-\alpha)} \right]x(t) \qquad \text{with } 0 \le \alpha \le 1
+\]
+We consider three special cases:
+\begin{itemize}
+    \item if $\alpha = 0$ it's Eulero Forward
+    \item if $\alpha = 1$ it's Eulero Backward
+    \item if $\alpha = \frac{1}{2}$ it's Tustin method (mostly used)
+\end{itemize}
+
+The critical choice is $\Delta T$ (sampling time).
+The general intuitive rule is: the smaller $\Delta T$, the better.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+        a(\x) = (\x-0.5)^2+2;
+        b(\x) = -(\x-1)^2+2.125;
+        c(\x) = 2*(\x-2.5)^2+0.625;
+        d(\x) = -(\x-3)^2+0.794;
+        f(\x) = e^(-\x+2.9517);
+        z(\x) = (\x < 0.5) * 2 +
+                (0.5 <= \x) * (\x < 0.75) * a(\x) +
+                (0.75 <= \x) * (\x < 2) * b(\x) +
+                (2 <= \x) * (\x < 2.64) * c(\x) +
+                (2.64 <= \x) * (\x < 3.35) * d(\x) +
+                (3.35 <= \x) * f(\x);
+        z2(\x) = z(\x) * (\x < 1) + z(\x) * (\x >= 1) * (\x < 2.5) * (1-(\x-1)^2/1.5/4);
+    }]
+        \draw[->] (0,0) -- (5.5,0) node[below] {$\omega$};
+        \draw[->] (0,0) -- (0,3) node[left] {$|G|$};
+        \draw[samples=50,domain=0:5,variable=\x,smooth] plot ({\x},{z(\x)});
+        \draw[samples=50,red,domain=0:2.5,variable=\x,smooth] plot ({\x},{z2(\x)});
+        \draw[dotted] (2.5,0.625) -- (2.5,0) node[below] {$\scriptstyle \omega_N$};
+        \draw (3.5,0.1) -- (3.5,0) node[below] {$\scriptstyle \omega_S$};
+        \draw (3.5,0) edge[bend right=30,->] (2.5,0);
+        \node at (3,0.3) {$\scriptstyle 1/2$};
+
+        \node[right] at (3,2) {\footnotesize Continuous time};
+        \node[right,red] at (3,1.7) {\footnotesize Discrete time};
+    \end{tikzpicture}
+\end{figure}
+
+If $\Delta T$ is smaller, $\omega_S$ larger:
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+        a(\x) = (\x-0.5)^2+2;
+        b(\x) = -(\x-1)^2+2.125;
+        c(\x) = 2*(\x-2.5)^2+0.625;
+        d(\x) = -(\x-3)^2+0.794;
+        f(\x) = e^(-\x+2.9517);
+        z(\x) = (\x < 0.5) * 2 +
+                (0.5 <= \x) * (\x < 0.75) * a(\x) +
+                (0.75 <= \x) * (\x < 2) * b(\x) +
+                (2 <= \x) * (\x < 2.64) * c(\x) +
+                (2.64 <= \x) * (\x < 3.35) * d(\x) +
+                (3.35 <= \x) * f(\x);
+        z2(\x) = z(\x) * (\x < 2.5) + z(\x) * (\x >= 2.5) * (\x < 4) * (1-(\x-2.5)^2/1.5/4);
+    }]
+        \draw[->] (0,0) -- (5.5,0) node[below] {$\omega$};
+        \draw[->] (0,0) -- (0,3) node[left] {$|G|$};
+        \draw[samples=50,domain=0:5,variable=\x,smooth] plot ({\x},{z(\x)});
+        \draw[samples=50,red,domain=0:4,variable=\x,smooth] plot ({\x},{z2(\x)});
+
+        \draw[dotted] (4,0.35) -- (4,0) node[below] {$\scriptstyle \omega_N$};
+        \draw (4.8,0.1) -- (4.8,0) node[below] {$\scriptstyle \omega_S$};
+        \draw (4.8,0) edge[bend right=30,->] (4,0);
+
+        \node[align=center] at (4,3) {\footnotesize The discrete time approximation\\\footnotesize is valid over a larger bandwidth};
+    \end{tikzpicture}
+\end{figure}
+
+\[
+    \Delta T \rightarrow f_S = \frac{1}{\Delta T} \qquad \omega_S = \frac{2\pi}{\Delta T} \qquad f_N = \frac{1}{2} f_S \qquad \omega_N = \frac{1}{2} \omega_S
+\]
+
+Hidden problems of a too-small $\Delta T$:
+\begin{itemize}
+    \item Sampling devices (A/D and D/A) cost
+    \item Computational cost: update an algorithm every $1 \mu s$ is much heavier than every $1 ms$
+    \item Cost of memory (if data logging is needed)
+    \item Numerical precision \emph{cost} (hidden computational cost)
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \draw[->] (-2,0) -- (2,0) node[above] {$\operatorname{Re}$};
+        \draw[->] (0,-2) -- (0,2) node[left] {$\operatorname{Im}$};
+
+        \draw[->] (4,0) -- (8,0) node[above] {$\operatorname{Re}$};
+        \draw[->] (6,-2) -- (6,2) node[left] {$\operatorname{Im}$};
+
+        \draw (6,0) circle (1cm);
+
+        \node[cross] at (-0.5,0) {};
+        \node[cross] at (-1,0) {};
+
+        \draw (-0.5,0) edge[dotted, bend left=30,->] (6.99,0);
+        \draw (-1,0) edge[dotted, bend left=30,->] (6.98,0);
+        \node[right] at (7,-0.2) {$\scriptstyle 0.99995$};
+        \node[right] at (7,-0.4) {$\scriptstyle 0.99996$};
+
+        \node at (0,2.5) {$s$-domain};
+        \node at (6,2.5) {$z$-domain};
+
+        \draw[->] (2,2) -- (4,2) node[pos=0.5] {$\lambda_F=e^{\lambda_A\Delta T}$};
+    \end{tikzpicture}
+\end{figure}
+
+If $\Delta T$ is very small (tends to zero), we squeeze all the poles very closed to $(1,0)$. We need very high numerical precision (use a lot of digits) to avoid instability.
+
+Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system bandwidth we are interested in.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+        a(\x) = (\x-0.5)^2+2;
+        b(\x) = -(\x-1)^2+2.125;
+        c(\x) = 2*(\x-2.5)^2+0.625;
+        d(\x) = -(\x-3)^2+0.794;
+        f(\x) = e^(-\x+2.9517);
+        z(\x) = (\x < 0.5) * 2 +
+                (0.5 <= \x) * (\x < 0.75) * a(\x) +
+                (0.75 <= \x) * (\x < 2) * b(\x) +
+                (2 <= \x) * (\x < 2.64) * c(\x) +
+                (2.64 <= \x) * (\x < 3.35) * d(\x) +
+                (3.35 <= \x) * f(\x);
+    }]
+        \draw[->] (0,0) -- (5.5,0) node[below] {$\omega$};
+        \draw[->] (0,0) -- (0,3) node[left] {$|G|$};
+        \draw[samples=50,domain=0:5,variable=\x,smooth] plot ({\x},{z(\x)});
+
+        \draw[dotted] (1.5,1.875) -- (1.5,0) node[below] {};
+        \node[below] at (0.75,0) {\footnotesize B.W. of interest};
+        \draw (4,0.1) -- (4,0) node[below] {$\scriptstyle \omega_S$};
+        \draw (1.5,0) edge[bend left=20,->] (4,0);
+        \node at (2.75,0.45) {$\scriptstyle \times 10$};
+    \end{tikzpicture}
+\end{figure}
+
+\begin{remark}[Another way of managing the choice of $\Delta T$ w.r.t. the aliasing problem]
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+            f(\x) = 2.7 * (1 - \x/4) + rand^2/4;
+        }]
+            \draw[->] (0,0) -- (5.5,0) node[below] {$\omega$};
+            \draw[->] (0,0) -- (0,3) node[left] {$\Gamma_{\tilde{x}}(\omega)$};
+            \draw[domain=0:4,samples=40,variable=\x,smooth] plot ({\x},{f(\x)});
+            \node[below, align=center] at (2,0) {BW of the full spectral\\content of $\tilde{x}(t)$};
+            \draw (4,0.05) -- (4,-0.05);
+        \end{tikzpicture}
+    \end{figure}
+
+    The classical way to deal with aliasing is to use anti-alias analog filters
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node[block,align=center] at (0,0) (sys) {Analog\\anti-alias\\low-pass\\filter};
+            \node[block] at (2.5,0) (ADC) {A/D};
+
+            \draw[->] (-2,0) -- (sys) node[pos=0.5] {$\tilde{x}(t)$};
+            \draw[->] (sys) -- (ADC);
+            \draw[->] (ADC) -- ++(1.5,0);
+        \end{tikzpicture}
+    \end{figure}
+
+    For example, if A/D is at $1KHz$ ($\Delta T = 1ms$)
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+            f(\x) = 2.7 * (1 - \x/3) + rand^2/3;
+        }]
+            \pgfmathsetseed{43}
+            \draw[->] (0,0) -- (4,0) node[below] {$\omega$};
+            \draw[->] (0,0) -- (0,3);
+            \draw[domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{f(\x)});
+            \draw (3,0.05) -- (3,-0.05) node[below] {$\scriptstyle 2KHz$};
+
+            \pgfmathsetseed{43}
+            \draw[->] (5,0) -- (9,0) node[below] {$\omega$};
+            \draw[->] (5,0) -- (5,3);
+            \draw[domain=0:1,samples=13,variable=\x,smooth] plot ({\x+5},{f(\x)});
+            \draw (6,0.05) -- (6,-0.05) node[below] {$\scriptstyle 0.5KHz$};
+            \draw[dotted] (6,0) -- (6,2.1);
+
+            \node[align=center] at (9,2) {Nyquist generates no\\alias at 1KHz};
+        \end{tikzpicture}
+    \end{figure}
+
+    \paragraph{Full Digital Approach} without analog anti-alias filter
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+            f(\x) = 2.7 * (1 - \x/3) + rand^2/3;
+        }]
+            \node[block] at (0,5) (ADC) {A/D};
+            \node[block,align=center] at (3,5) (filter) {Digital low\\pass filter};
+            \node[block,align=center] at (6,5) (sampl) {Under\\sampling};
+
+            \draw[->] (-1.5,5) -- (ADC) node[pos=0.5] {$\tilde{x}(t)$};
+            \draw[->] (ADC) -- (filter);
+            \draw[->] (filter) -- (sampl);
+            \draw[->] (sampl) -- ++(2,0);
+
+            \node at (0,6) {$f_S=4KHz$};
+            \node at (3,6) {Cutoff $0.5KHz$};
+            \node at (6,6) {$f_S=1KHz$};
+
+            \draw [decorate,decoration={brace,amplitude=10pt},yshift=-0.1cm] (7,4.5) -- (-0.5,4.5) node [black,midway,yshift=-0.4cm] {\footnotesize fully digital};
+
+            \pgfmathsetseed{43}
+            \draw[->] (0,0) -- (7,0) node[below] {};
+            \draw[->] (0,0) -- (0,3);
+            \draw[domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{f(\x)});
+            \draw (3,0.05) -- (3,-0.05) node[below] {$\scriptstyle 2KHz$};
+            \draw (6.5,0.05) -- (6.5,-0.05) node[below] {$f_S$};
+        \end{tikzpicture}
+    \end{figure}
+\end{remark}
+
+\end{appendices}
