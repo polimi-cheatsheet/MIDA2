@@ -174,6 +174,26 @@ Andrea Bosisio - \texttt{andrea2.bosisio@mail.polimi.it}\\
   %default radius will be 1pt.
   cross/.default={0.1cm}}
 
+% double border
+\tikzstyle{double border} = [double, double distance=0.5mm]
+% pattern in border
+\newcounter{tmp}
+\newif\ifpathisclosed
+\tikzset{dashed border/.style={
+    preaction={decoration={contour lineto closed, contour distance=2pt},
+      decorate,
+    },
+    postaction={
+      insert path={%
+        \pgfextra{%
+          \pgfinterruptpath
+          \path[pattern=north west lines, pattern color=black,even odd rule]
+          \mySecondList \myList
+          ;
+        \endpgfinterruptpath}
+    }},
+}}  
+
 % pattern
 \tikzset{
   hatch distance/.store in=\hatchdistance,

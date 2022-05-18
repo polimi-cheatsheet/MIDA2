@@ -425,8 +425,25 @@ We consider three special cases:
     \item if $\alpha = \frac{1}{2}$ it's Tustin method (mostly used)
 \end{itemize}
 
+\subsection*{Choice of the sampling time}
+
 The critical choice is $\Delta T$ (sampling time).
+
+\paragraph{Simple idea}
 The general intuitive rule is: the smaller $\Delta T$, the better.
+
+\begin{recall}[Sampling and Nyquist frequency] If $\Delta T$ is sampling time, then
+    \paragraph{Notation} 
+    \[
+        f_S = \frac{1}{\Delta T} [\text{Hz}] \qquad \omega_S = \frac{2\pi}{\Delta T} [\text{rad/s}] \qquad f_N = \frac{1}{2} f_S [\text{Hz}] \qquad \omega_N = \frac{1}{2} \omega_S [\text{rad/s}]
+    \]
+    where $f_S$ is the \emph{sampling frequency} and $f_N$ is the \emph{Nyquist frequency}.
+
+    \paragraph{Spectrum of a discretized signal}
+    For a discretized signal its spectrum is limited and it ranges over $[0, \omega_N]$; as a result, the fitting between the spectrum of the discretized signal and the one of the original signal is very close at low frequencies and becomes more inaccurate as we approach $\omega_N$.
+\end{recall}
+
+If $\Delta T$ is large, $f_S$ is small (and accordingly,  $f_N$ too). 
 
 \begin{figure}[H]
     \centering
@@ -448,17 +465,17 @@ The general intuitive rule is: the smaller $\Delta T$, the better.
         \draw[->] (0,0) -- (0,3) node[left] {$|G|$};
         \draw[samples=50,domain=0:5,variable=\x,smooth] plot ({\x},{z(\x)});
         \draw[samples=50,red,domain=0:2.5,variable=\x,smooth] plot ({\x},{z2(\x)});
-        \draw[dotted] (2.5,0.625) -- (2.5,0) node[below] {$\scriptstyle \omega_N$};
-        \draw (3.5,0.1) -- (3.5,0) node[below] {$\scriptstyle \omega_S$};
-        \draw (3.5,0) edge[bend right=30,->] (2.5,0);
-        \node at (3,0.3) {$\scriptstyle 1/2$};
+        \draw[dotted] (2.5,0.625) -- (2.5,-0.1) node[below] {$\scriptstyle \omega_N$};
+        \draw (3.5,0.1) -- (3.5,-0.1) node[below] {$\scriptstyle \omega_S$};
+        \draw (3.5,0) edge[bend right=30,->, dashed] (2.5,0);
+        \node at (3,0.32) {$\scriptstyle \times \frac{1}{2}$};
 
-        \node[right] at (3,2) {\footnotesize Continuous time};
-        \node[right,red] at (3,1.7) {\footnotesize Discrete time};
+        \node[right] at (3,2) {\footnotesize Original signal (cont. time)};
+        \node[right,red] at (3,1.7) {\footnotesize Discretized signal (discr. time)};
     \end{tikzpicture}
 \end{figure}
 
-If $\Delta T$ is smaller, $\omega_S$ larger:
+Otherwise, if $\Delta T$ is smaller, $\omega_S$ (and $\omega_N$ accordingly) larger.
 
 \begin{figure}[H]
     \centering
@@ -481,25 +498,34 @@ If $\Delta T$ is smaller, $\omega_S$ larger:
         \draw[samples=50,domain=0:5,variable=\x,smooth] plot ({\x},{z(\x)});
         \draw[samples=50,red,domain=0:4,variable=\x,smooth] plot ({\x},{z2(\x)});
 
-        \draw[dotted] (4,0.35) -- (4,0) node[below] {$\scriptstyle \omega_N$};
-        \draw (4.8,0.1) -- (4.8,0) node[below] {$\scriptstyle \omega_S$};
-        \draw (4.8,0) edge[bend right=30,->] (4,0);
+        \draw[dotted] (4,0.35) -- (4,-0.1) node[below] {$\scriptstyle \omega_N$};
+        \draw (4.8,0.1) -- (4.8,-0.1) node[below] {$\scriptstyle \omega_S$};
+        \draw (4.8,0) edge[bend right=30,->, dashed] (4,0);
 
-        \node[align=center] at (4,3) {\footnotesize The discrete time approximation\\\footnotesize is valid over a larger bandwidth};
+        \node[right] at (3,2) {\footnotesize Original signal (cont. time)};
+        \node[right,red] at (3,1.7) {\footnotesize Discretized signal (discr. time)};
     \end{tikzpicture}
 \end{figure}
 
-\[
-    \Delta T \rightarrow f_S = \frac{1}{\Delta T} \qquad \omega_S = \frac{2\pi}{\Delta T} \qquad f_N = \frac{1}{2} f_S \qquad \omega_N = \frac{1}{2} \omega_S
-\]
+As we can see from the two graphs, in both case we have approximations of the original spectrum but in the latter case this approximation is valid over a larger \emph{bandwidth}.
 
-Hidden problems of a too-small $\Delta T$:
+\paragraph{Drawbacks} Hidden problems of a too-small $\Delta T$:
 \begin{itemize}
-    \item Sampling devices (A/D and D/A) cost
-    \item Computational cost: update an algorithm every $1 \mu s$ is much heavier than every $1 ms$
-    \item Cost of memory (if data logging is needed)
-    \item Numerical precision \emph{cost} (hidden computational cost)
+    \item sampling devices (A/D and D/A) cost
+    \item computational cost (e.g. update an algorithm every $1 \mu s$ is much heavier than every $1 ms$)
+    \item cost of memory (if data storing is needed)
+    \item numerical precision cost 
 \end{itemize}
+
+The latter one is the most critical one and it is really an hidden problem.
+
+\subparagraph{Numerical precision cost}
+Let's make a numerical example to understand it.
+
+Consider a continous time \gls{tf} with two asymptotically stable poles (eigenvalues) in $s=-3$ and $s=-2$. These can be mapped in the $z$-domain using the formula $\lambda_F=e^{\lambda_A\Delta T}$. 
+If $\Delta T$ is very small (tends to zero), we squeeze all the poles very closed to $(1,0)$.
+
+Graphically:
 
 \begin{figure}[H]
     \centering
@@ -520,14 +546,14 @@ Hidden problems of a too-small $\Delta T$:
         \node[right] at (7,-0.2) {$\scriptstyle 0.99995$};
         \node[right] at (7,-0.4) {$\scriptstyle 0.99996$};
 
-        \node at (0,2.5) {$s$-domain};
-        \node at (6,2.5) {$z$-domain};
+        \node at (0,2.5) {\textbf{$s$-domain}};
+        \node at (6,2.5) {\textbf{$z$-domain}};
 
         \draw[->] (2,2) -- (4,2) node[pos=0.5] {$\lambda_F=e^{\lambda_A\Delta T}$};
     \end{tikzpicture}
 \end{figure}
 
-If $\Delta T$ is very small (tends to zero), we squeeze all the poles very closed to $(1,0)$. We need very high numerical precision (use a lot of digits) to avoid instability.
+Therefore, we need very high numerical precision (use a lot of digits) to avoid instability.
 
 Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system bandwidth we are interested in.
 
@@ -546,99 +572,129 @@ Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system 
                 (2.64 <= \x) * (\x < 3.35) * d(\x) +
                 (3.35 <= \x) * f(\x);
     }]
-        \draw[->] (0,0) -- (5.5,0) node[below] {$\omega$};
+        \draw[->] (0,0) -- (5.5,0) node[below] {$f$};
         \draw[->] (0,0) -- (0,3) node[left] {$|G|$};
         \draw[samples=50,domain=0:5,variable=\x,smooth] plot ({\x},{z(\x)});
 
         \draw[dotted] (1.5,1.875) -- (1.5,0) node[below] {};
-        \node[below] at (0.75,0) {\footnotesize B.W. of interest};
-        \draw (4,0.1) -- (4,0) node[below] {$\scriptstyle \omega_S$};
-        \draw (1.5,0) edge[bend left=20,->] (4,0);
+        \node[below, align=center] at (0.75,0) {\footnotesize bandwidth\\ \footnotesize of interest};
+        \draw (4,0.1) -- (4,-0.1) node[below] {$\scriptstyle f_N$};
+        \draw (1.5,0) edge[bend left=20,->, dashed] (4,0);
         \node at (2.75,0.45) {$\scriptstyle \times 10$};
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}[Another way of managing the choice of $\Delta T$ w.r.t. the aliasing problem]
-    \begin{figure}[H]
-        \centering
-        \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
-            f(\x) = 2.7 * (1 - \x/4) + rand^2/4;
-        }]
-            \draw[->] (0,0) -- (5.5,0) node[below] {$\omega$};
-            \draw[->] (0,0) -- (0,3) node[left] {$\Gamma_{\tilde{x}}(\omega)$};
-            \draw[domain=0:4,samples=40,variable=\x,smooth] plot ({\x},{f(\x)});
-            \node[below, align=center] at (2,0) {BW of the full spectral\\content of $\tilde{x}(t)$};
-            \draw (4,0.05) -- (4,-0.05);
-        \end{tikzpicture}
-    \end{figure}
+Usually, the bandwidth of interest is the one of the closed-loop control system.
 
-    The classical way to deal with aliasing is to use anti-alias analog filters
 
-    \begin{figure}[H]
-        \centering
-        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-            \node[block,align=center] at (0,0) (sys) {Analog\\anti-alias\\low-pass\\filter};
-            \node[block] at (2.5,0) (ADC) {A/D};
+\paragraph{Aliasing problem}
+Another problem is managing the \emph{aliasing} problem, which is a big and critical problem in the A/D step. 
 
-            \draw[->] (-2,0) -- (sys) node[pos=0.5] {$\tilde{x}(t)$};
-            \draw[->] (sys) -- (ADC);
-            \draw[->] (ADC) -- ++(1.5,0);
-        \end{tikzpicture}
-    \end{figure}
+\begin{theorem}[Nyquist–Shannon sampling theorem]\label{th:shannon}
+    The maximum frequency content of a signal $f_{MAX}$ to be sampled should be such that $f_{MAX} \le f_N$.
+\end{theorem}
 
-    For example, if A/D is at $1KHz$ ($\Delta T = 1ms$)
-    \begin{figure}[H]
-        \centering
-        \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
-            f(\x) = 2.7 * (1 - \x/3) + rand^2/3;
-        }]
-            \pgfmathsetseed{43}
-            \draw[->] (0,0) -- (4,0) node[below] {$\omega$};
-            \draw[->] (0,0) -- (0,3);
-            \draw[domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{f(\x)});
-            \draw (3,0.05) -- (3,-0.05) node[below] {$\scriptstyle 2KHz$};
 
-            \pgfmathsetseed{43}
-            \draw[->] (5,0) -- (9,0) node[below] {$\omega$};
-            \draw[->] (5,0) -- (5,3);
-            \draw[domain=0:1,samples=13,variable=\x,smooth] plot ({\x+5},{f(\x)});
-            \draw (6,0.05) -- (6,-0.05) node[below] {$\scriptstyle 0.5KHz$};
-            \draw[dotted] (6,0) -- (6,2.1);
+When we want measure a signal $x$ we capture also the measurement noise; indeed, what we really obtain is $\tilde{x}(t) = x(t) + e(t)$, where $e$ is the noise. 
+Hence, the spectrum will also be composed by the spectrum of the original signal $x$ and the spectrum of the noise.
 
-            \node[align=center] at (9,2) {Nyquist generates no\\alias at 1KHz};
-        \end{tikzpicture}
-    \end{figure}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+        f(\x) = 5/(\x^2+2) - 0.6 ;
+        g(\x) = 10/(5*\x+3) - 1.6 ;
+        h(\x) = 0.2 * (1 - (\x - 1.1)^3/2.5) ;
+    }]
+        \draw[->] (0,0) -- (5.5,0) node[below] {$f$};
+        \draw[->] (0,0) -- (0,2.5) node[left] {$\Gamma_{\tilde{x}}$};
+        \draw[blue, domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{f(\x)}) 
+            node[above, blue] {$\tilde{x}$};
+        \draw[green,domain=0:1,samples=40,variable=\x,smooth] plot ({\x},{g(\x)}) 
+            node[above, green] {$x$};
+        \draw[domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{h(\x)})
+            node[right] {$e$};
 
-    \paragraph{Full Digital Approach} without analog anti-alias filter
+        \draw (2.5,0.1) -- ++(0,-0.1) node[below] {$f_{MAX}$};
+    \end{tikzpicture}
+\end{figure}
 
-    \begin{figure}[H]
-        \centering
-        \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
-            f(\x) = 2.7 * (1 - \x/3) + rand^2/3;
-        }]
-            \node[block] at (0,5) (ADC) {A/D};
-            \node[block,align=center] at (3,5) (filter) {Digital low\\pass filter};
-            \node[block,align=center] at (6,5) (sampl) {Under\\sampling};
+Therefore, if we want to sample the measured signal, and for example, $f_{MAX} = 2 \text{KHz}$, then we need $f_N \ge 2 \text{KHz} \implies f_S \ge 4 \text{KHz}$. \color{gray} On the other hand, we know that the bandwidth of the original signal $x(t)$ will be much smaller due to the presence of the noise. 
 
-            \draw[->] (-1.5,5) -- (ADC) node[pos=0.5] {$\tilde{x}(t)$};
-            \draw[->] (ADC) -- (filter);
-            \draw[->] (filter) -- (sampl);
-            \draw[->] (sampl) -- ++(2,0);
+Hence, suppose that we sample with an A/D that samples at $f_S = 1$ KHz.
 
-            \node at (0,6) {$f_S=4KHz$};
-            \node at (3,6) {Cutoff $0.5KHz$};
-            \node at (6,6) {$f_S=1KHz$};
+\subparagraph{Analog solution} The classical way to deal with aliasing is to use anti-alias analog filters. 
 
-            \draw [decorate,decoration={brace,amplitude=10pt},yshift=-0.1cm] (7,4.5) -- (-0.5,4.5) node [black,midway,yshift=-0.4cm] {\footnotesize fully digital};
+\begin{recall}[Anti-Aliasing Filter (AAF)]
+    An \emph{anti-aliasing filter (AAF)} is a filter used before a signal sampler to restrict the bandwidth of a signal to satisfy the Nyquist–Shannon sampling theorem (\ref{th:shannon}) over the band of interest.
+    
+    In practice, it is an analog low-pass filter with a cut frequency $f_{cut} \le \frac{1}{2} f_S = f_N$. 
+\end{recall}
 
-            \pgfmathsetseed{43}
-            \draw[->] (0,0) -- (7,0) node[below] {};
-            \draw[->] (0,0) -- (0,3);
-            \draw[domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{f(\x)});
-            \draw (3,0.05) -- (3,-0.05) node[below] {$\scriptstyle 2KHz$};
-            \draw (6.5,0.05) -- (6.5,-0.05) node[below] {$f_S$};
-        \end{tikzpicture}
-    \end{figure}
-\end{remark}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block,align=center] at (0,0) (sys) {\textbf{analog}\\anti-alias\\low-pass\\filter};
+        \node[block] at (2.5,0) (ADC) {A/D};
+
+        \draw[->] (-2,0) -- (sys) node[pos=0.5] {$\tilde{x}(t)$};
+        \draw[->] (sys) -- (ADC) node[pos=0.5] {$\tilde{x}'(t)$};
+        \draw[->] (ADC) -- ++(1.5,0) node[pos=0.5] {$\tilde{x}''(t)$};
+    \end{tikzpicture}
+\end{figure}
+
+In this case, since $f_S = 1$ KHz we need a low-pass filter that cut everything above $f_N = \frac{1}{2} f_S = 0.5$ KHz.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+        f(\x) = 5/(\x^2+2) - 0.6 ;
+        g(\x) = 10/(5*\x+3) - 1.6 ;
+    }]
+        \draw[->] (0,0) -- (4,0) node[below] {$f$};
+        \draw[->] (0,0) -- (0,3) node[left] {$\Gamma_{\tilde{x}}$};
+        \draw[blue, domain=0:3,samples=40,variable=\x,smooth] plot ({\x},{f(\x)}) 
+            node[above, blue] {$\tilde{x}$};
+        \draw[green,domain=0:1,samples=40,variable=\x,smooth] plot ({\x},{g(\x)}) 
+            node[above, green] {$x$};
+        \draw (2.5,0.05) -- (2.5,-0.05) node[below] {$\scriptstyle 2KHz$};
+
+        \draw[->] (5,0) -- (9,0) node[below] {$f$};
+        \draw[->] (5,0) -- (5,3) node[left] {$\Gamma_{\tilde{x}'}$};
+        \draw[blue, domain=0:1,samples=13,variable=\x,smooth] plot ({\x + 5},{f(\x)}) 
+            node[above, blue] {$\tilde{x}$};
+        \draw[green,domain=0:1,samples=13,variable=\x,smooth] plot ({\x + 5},{g(\x)}) 
+            node[below, green] {$x$};
+        \draw (6,0.05) -- (6,-0.05) node[below] {$\scriptstyle 0.5KHz$};
+        \draw[dotted] (6,0) -- (6,2.1);
+
+        % \node[align=center] at (9,2) {Nyquist generates no\\alias at 1KHz};
+    \end{tikzpicture}
+\end{figure}
+
+In this way the signal $\tilde{x}$ is ready to be sampled: aliasing is avoided ($f'_{MAX} = f_{cut} = f_N$); furthermore, all the frequency components in the bandwidth of the original signal $x(t)$ are preserved and the ones introduced by the noise are cut-off.
+
+\subparagraph{Full digital solution}  Today the most used solution is the full digital one in which there is no more the need of an analog anti-alias filter.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
+        f(\x) = 2.7 * (1 - \x/3) + rand^2/3;
+    }]
+        \node[block, align=center] at (0,5) (ADC) {A/D \\ $f_S=4$ KHz};
+        \node[block, align=center] at (3,5) (filter) {\textbf{digital}\\low-pass\\filter \\$f_{cut} = 0.5$ KHz};
+        \node[block, align=center] at (6.3,5) (sampl) {under-sampling\\$(1:4)$\\{$f'_S=1$ KHz}};
+
+        \draw[->] (-2,5) -- (ADC) node[pos=0.5] {$\tilde{x}(t)$};
+        \draw[->] (ADC) -- (filter);
+        \draw[->] (filter) -- (sampl);
+        \draw[->] (sampl) -- ++(2,0);
+
+        % \draw [decorate,decoration={brace,amplitude=10pt},yshift=-0.1cm] (7,4.5) -- (-0.5,4.5) node [black,midway,yshift=-0.4cm] {\footnotesize fully digital};
+    \end{tikzpicture}
+\end{figure}
+
+With this approach we consider the bandwidth of the noisy signal $\tilde x(t)$ ($f_{MAX} = 2$ KHz) and we sample it at $f_S = 2 f_{MAX} = 4$ KHz. Then we cut-off all the frequency components introduced by the noise with a digital low-pass filter ($f_{MAX} \rightarrow f'_{MAX} = 0.5$ KHz). Last, since now the bandwidth of the signal is $f'_{MAX} = 0.5$ KHz, we can re-sample the signal at $f'_S = 2 f'_{MAX} = 1$ KHz: this is \emph{under-sampling (1:4)} (because $f'_S = \frac{1}{4} f_S$) which in practice means to take one sample every out of four.
+
+{\Huge Gray $\equiv$ ask}
 
 \end{appendices}

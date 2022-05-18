@@ -2,6 +2,12 @@
 \setcounter{chapter}{-1}
 \chapter{Introduction}
 
+\section{Prerequisites}
+The \emph{Model Identification and Data Analysis - Part 2}\footnote{For more information about the MIDA course see \href{https://www4.ceda.polimi.it/manifesti/manifesti/controller/ManifestoPublic.do?EVN_DETTAGLIO_RIGA_MANIFESTO=evento&k_corso_la=481&k_indir=T2A&idItemOfferta=156912&idGruppo=4332&idRiga=271034&codDescr=051587&semestre=2&aa=2021&lang=EN&jaf_currentWFID=main}{here}.} course is a graduate level course of the MSc in Computer Science and Engineering held at Politecnico di Milano; hence, familiarity with basic concepts of computer science (algorithms and complexity), dynamical systems theory and a
+mathematical maturity in linear algebra and probability theory are prerequisites. 
+
+Furthermore, in order to understand the concepts of this course it is recommended to firstly follow the \emph{Model Identification and Data Analysis - Part 1}\footnote{MIDA1 lecture notes available \href{https://github.com/teobucci/mida/releases}{here}.} course.
+
 \section{General topics of MIDA course}
 
 \begin{itemize}
@@ -86,17 +92,17 @@ which is the variance of the \emph{prediction error} made by the model. The opti
 \subsection{MIDA 2}
 
 The focus is on \emph{Dynamical System} with a special eye on control (or feedback) application (more close to real applications than time series). We can divide the course in three main blocks: \emph{Advanced Model Identification} methods, \emph{Software-Sensing (SW)} and \emph{Minimum Variance Control}.\\
-In particular: 
+In particular we will see: 
 
-\begin{description}
-    \item[Chapter 1] non-parametric (direct/constructive) \gls{bb} identification of I/O systems using \acrlong{ss} models
-    \item[Chapter 2] parametric identification for \gls{bb} I/O systems, with a frequency-domain approach
-    \item[Chapter 3] Kalman-filter for SW-sensing using feedback on \gls{wb} models
-    \item[Chapter 4] \gls{bb} methods for SW-sensing without feedback
-    \item[Chapter 5] \gls{gb} system identification using Kalman-filter and using \emph{simulation-error methods} (S.E.M.)
-    \item[Chapter 6] Minimum-Variance Control (M.V.C.), design of optimal feedback controllers using the theory background of the MIDA course
-    \item[Appendix] Recursive (online) implementation of algorithms for system identification
-\end{description}
+\begin{itemize}
+    \item Non-parametric (direct/constructive) \gls{bb} identification of I/O systems using \acrlong{ss} models
+    \item Parametric identification for \gls{bb} I/O systems, with a frequency-domain approach
+    \item Kalman-filter for SW-sensing using feedback on \gls{wb} models
+    \item \gls{bb} methods for SW-sensing without feedback
+    \item \gls{gb} system identification using Kalman-filter and using \emph{simulation-error methods} (SEM)
+    \item  Minimum-Variance Control (MVC), design of optimal feedback controllers using the theory background of the MIDA course
+    \item Recursive (online) implementation of algorithms for system identification
+\end{itemize}
 
 \section{Motivation example for the course: ABS (Anti-Lock Braking System)} \label{abs_ex}
 ABS is an example of a control system since it follows this general scheme:
