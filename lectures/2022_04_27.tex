@@ -282,7 +282,7 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
     \begin{enumerate}
         \item \gls{are} has one and only one semi-definite positive solution: $\bar{P} \ge 0$.
         \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
-        \item The corresponding $\bar{K}$ is s.t. the \gls{kf} is asymptotically stable.
+        \item The corresponding $\bar{K}$ is s.t. the \gls{kf} is asymptotically stable (i.e. all the eigenvalues of $F-\bar{K}H$ have absolute value less than $1$).
     \end{enumerate}
 \end{theorem}
 
@@ -337,7 +337,7 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
     \begin{enumerate}
         \item \gls{are} has one and only one definite positive solution $\bar{P} > 0$.
         \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
-        \item The corresponding $\bar{K}$ is such that the \gls{kf} is asymptotically stable.
+        \item The corresponding $\bar{K}$ is such that the \gls{kf} is asymptotically stable (i.e. all the eigenvalues of $F-\bar{K}H$ have absolute value less than $1$).
     \end{enumerate}
 \end{theorem}
 
