@@ -633,10 +633,10 @@ Hence, suppose that we sample with an A/D that samples at $f_S = 1$ KHz.
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[block,align=center] at (0,0) (sys) {\textbf{analog}\\anti-alias\\low-pass\\filter};
-        \node[block] at (2.5,0) (ADC) {A/D};
+        \node[block,align=center] at (0,0) (sys) {\textbf{analog}\\anti-alias\\low-pass filter\\$f_{cut} = 0.5$KHz};
+        \node[block] at (3,0) (ADC) {A/D};
 
-        \draw[->] (-2,0) -- (sys) node[pos=0.5] {$\tilde{x}(t)$};
+        \draw[->] (-2.5,0) -- (sys) node[pos=0.5] {$\tilde{x}(t)$};
         \draw[->] (sys) -- (ADC) node[pos=0.5] {$\tilde{x}'(t)$};
         \draw[->] (ADC) -- ++(1.5,0) node[pos=0.5] {$\tilde{x}''(t)$};
     \end{tikzpicture}
