@@ -1,561 +1,556 @@
 %!TEX root = ../main.tex
 
-todo
-% In chapter 3 we have seen classical technology of software-sensing based on Kalman Filter:
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-%         \node[left] at (0,4) (u) {$u(t)$};
-%         \node[block] at (2,4) (sys) {$\Sys$};
-%         \node[block] at (2,2.3) (k) {$\bar{K}$};
-%         \node[sum] at (4,2.3) (sum) {};
-%         \node[right] at (6,4) (y) {$y(t)$};
-%         \node[block, align=center] at (2,1) (model) {model of \\ $\Sys$};
-%         \node[above] at (2,5) (dist) {disturbances};
+\externaldocument{2022_05_02}
 
-%         \draw[->] (dist) -- (sys);
-%         \draw[->] (u) -- (sys);
-%         \draw[->] (sys) -- (y);
-%         \draw[<-,red,line width=0.4mm] (sum) -- (4,4) node[pos=0.2] {+};
-%         \draw[->] (sum) -- (k);
-%         \draw[->,red,line width=0.4mm] (0.5,4) |- (model);
-%         \draw[->] (k) -- (model);
-%         \draw[->] (model) -| (sum) node[pos=0.8] {-};
-%         \draw[->,red,line width=0.4mm,transform canvas={yshift=-0.2cm}] (model) -- (6,1) node[right] {$\hat{x}(t|t)$};
-%         \draw[dashed, blue] (0,0) rectangle (5,3) node[right] {$\mathcal{KF}$};
-%     \end{tikzpicture}
-% \end{figure}
+In chapter 3 we have seen classical technology of software-sensing based on \acrlong{kf}:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node[left] at (0,4) (u) {$u(t)$};
+        \node[block] at (2,4) (sys) {$\Sys$};
+        \node[block] at (2,2.3) (k) {$\bar{K}$};
+        \node[sum] at (4,2.3) (sum) {};
+        \node[right] at (6,4) (y) {$y(t)$};
+        \node[block, align=center] at (2,1) (model) {model of \\ $\Sys$};
+        \node[above] at (2,5) (dist) {disturbances};
 
-% \textbf{Note} The \gls{kf} system is a MIMO LTI system. 
+        \draw[->] (dist) -- (sys);
+        \draw[->] (u) -- (sys);
+        \draw[->] (sys) -- (y);
+        \draw[<-,red,line width=0.4mm] (sum) -- (4,4) node[pos=0.2] {$+$};
+        \draw[->] (sum) -- (k) node[midway, above] {$e(t)$};
+        \draw[->,red,line width=0.4mm] (0.5,4) |- (model);
+        \draw[->] (k) -- (model);
+        \draw[->] (model) -| (sum) 
+        	node[pos=0.85] {$-$}
+        	node[right, pos=0.7] {$\hat{y}(t|t-1)$};
+        \draw[->,red,line width=0.4mm,transform canvas={yshift=-0.2cm}] (model) -- (6,1) node[right] {$\hat{x}(t|t)$};
+        \draw[dashed, blue] (0,0) rectangle (5,3) node[right] {$\mathcal{KF}$};
+    \end{tikzpicture}
+\end{figure}
 
-% Main features of this approach:
-% \begin{itemize}
-%     \item A (\acrlong{wb}/physical) model is needed.
-%     \item No need (in principle) of a training dataset including measurements of the state to be estimated.
-%     \item It is a feedback estimation algorithm (feedback correction of the model using estimated output error).
-%     \item Constructive method (non-parametric, no optimization involved).
-%     \item Can be used (in principle) to estimate states which are impossible to be measured (also at prototyping/training/design stage).
-% \end{itemize}
+\textbf{Note} If the \gls{kf} is the asymptotic one (i.e. $K(t) = \bar{K}$), it is a MIMO LTI system. 
 
-% Are there other classes of software-sensing techniques? Yes, black-box approaches with \emph{learning}/\emph{training} from data (system identification).
+Main features of this approach:
+\begin{itemize}
+    \item A (\acrlong{wb}/physical) model is needed.
+    \item No need (in principle) of a training dataset including measurements of the state to be estimated.
+    \item It is a feedback estimation algorithm (feedback correction of the model using estimated output error).
+    \item Constructive method (non-parametric, no optimization involved).
+    \item Can be used (in principle) to estimate states which are impossible to be measured (also at prototyping/training/design stage).
+\end{itemize}
+
+Are there other classes of software-sensing techniques? Yes, black-box approaches with \emph{learning}/\emph{training} from data (system identification).
  
-% In this chapter we see them focusing on the architecture (we do not need new algorithms, just use something we have already studied). We will re-cast the SW-sensing problem into a system identification problem. 
+In this chapter we see them focusing on the architecture (we do not need new algorithms, just use something we have already studied). We will re-cast the SW-sensing problem into a system identification problem. 
 
-% If we have a dataset
-% \begin{align*}
-%     \left\{ u(1), u(2), \ldots, u(N) \right\} \\
-%     \left\{ y(1), y(2), \ldots, y(N) \right\} \\
-%     \left\{ x(1), x(2), \ldots, x(N) \right\}
-% \end{align*}
+\section{Linear Time Invariant Systems}\label{sec:BB-SW-LTI}
 
-% we can estimate the relationship between the inputs $u(t)$, $y(t)$ and the output $x(t)$ ??? without modelling the system.
+To find the relationship between $u(t) \rightarrow \hat{x}(t|t)$ and $y(t) \rightarrow \hat{x}(t|t)$ we can use a dataset.
+Indeed, if we have a dataset
+\begin{align*}
+    \left\{ u(1), u(2), \ldots, u(N) \right\} \\
+    \left\{ y(1), y(2), \ldots, y(N) \right\} \\
+    \left\{ x(1), x(2), \ldots, x(N) \right\}
+\end{align*}
 
-% In the supervised training approach we need measurements of the state to be estimated (physical sensor for $x(t)$ only for training of the software-sensor).
+we can estimate the relationship (i.e. \gls{tf}s) between the inputs ($u(t)$ and $y(t)$) and the output ($x(t)$) without modelling the system and adopting a \gls{bb} approach instead.
 
-% We need an architecture.... 
-
-% \[
-% 	\hat{x}(t|t) = S_{ux}(z) u(t-1) + S_{yx}(z) y(t)
-% \]
-
-% E' la parte sotto l'esempio 
-
-% \section{Linear Time Invariant Systems}
-
-% Let's consider a simplified case (SISO system with one state) to understand the approach.
-% \[
-%     S: \begin{cases}
-%         x(t+1) = ax(t) + bu(t) + v_1(t) \\
-%         y(t) = cx(t) + v_2(t)
-%     \end{cases}
-% \]
-
-% \paragraph{Problem} Estimation of $\hat{x}(t|t)$ from measured signals $u(t)$ and $y(t)$.
-
-% We can start from the observer K.F. architecture:
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-%         \node [left] (u) at (-4,4) {$u(t)$};
-%         \node [block] (b) at (-3,4) {$b$};
-%         \node [block] (z1) at (1,4) {$z^{-1}$};
-%         \node [block] (F1) at (1,3) {$a$};
-%         \node [block] (K) at (1,2) {$K$};
-%         \node [block] (z2) at (1,1) {$z^{-1}$};
-%         \node [block] (F2) at (1,0) {$a$};
-
-%         \node [block] (H1) at (4,4) {$c$};
-%         \node [block] (H2) at (4,1) {$c$};
-
-%         \node [sum] (sum1) at (6,4) {};
-%         \node [sum] (sum2) at (7,2) {};
-%         \node [sum] (sum3) at (-1.5,4) {};
-%         \node [sum] (sum4) at (-1.5,1) {};
-
-%         \node (v1) at (-1.5,5) {$v_1(t)$};
-%         \node (v2) at (6,5) {$v_2(t)$};
-%         \node[right] (y) at (8,4) {$y(t)$};
-%         \node[right] (yhat) at (8,1) {$\hat{y}(t|t-1)$};
-%         \node[right] (xhat) at (8,0) {$\hat{x}(t|t-1)$};
-
-%         \draw[->] (u) -- (b);
-%         \draw[->] (b) -- (sum3);
-%         \draw[->] (-2.2,4) |- (sum4);
-%         \draw[->] (v1) -- (sum3);
-%         \draw[->] (sum3) -- (z1) node[pos=0.5] {$x(t+1)$};
-%         \draw[->] (F1) -| (sum3);
-%         \draw[->] (z1) -- (H1) node[pos=0.5] {$x(t)$};
-%         \draw[->] (H1) -- (sum1);
-%         \draw[->] (v2) -- (sum1);
-%         \draw[->] (2.5,4) |- (F1);
-%         \draw[->] (K) -| (sum4);
-%         \draw[->,blue,line width=0.5mm] (sum4) -- (z2) node[pos=0.5,black] {$\hat{x}(t+1|t)$};
-%         \draw[<-] (sum2) -- (7,4) node[pos=0.2] {$+$};
-%         \draw[->] (sum1) -- (y);
-%         \draw[<-] (K) -- (sum2) node[pos=0.5,black] {$e(t)$};
-%         \draw[blue,line width=0.5mm] (z2) -- (2.5,1) node[pos=0.8,black] {$\hat{x}(t|t-1)$};
-%         \draw[->] (2.5,1) -- (H2) {};
-%         \draw[->,blue,line width=0.5mm] (F2) -| (sum4);
-%         \draw[->,blue,line width=0.5mm] (2.5,1) |- (F2);
-%         \draw[->] (H2) |- (yhat);
-%         \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
-%         \draw[->] (2.5,0) -- (xhat);
-
-%         \node[blue] at (-0.5,0.5) {$\frac{z^{-1}}{1-az^{-1}}$};
-%     \end{tikzpicture}
-% \end{figure}
-
-% Let's find the relationship between $u(t) \rightarrow \hat{x}(t|t)$ and $y(t) \rightarrow \hat{x}(t|t)$.
-% \begin{align*}
-%     \hat{x}(t|t) &= \frac{b {\color{blue}\frac{z^{-1}}{1-az^{-1}}}}{1+Kc{\color{blue}\frac{z^{-1}}{1-az^{-1}}}} u(t) + \frac{ K{\color{blue}\frac{z^{-1}}{1-az^{-1}}} }{1+Kc{\color{blue}\frac{z^{-1}}{1-az^{-1}}}} y(t) \\
-%     &= \frac{b}{1+(Kc-a)z^{-1}}u(t-1) + \frac{K}{1+(Kc-a)z^{-1}} y(t-1)
-% \end{align*}
-
-% We can make a Black-Box estimation of these two transfer functions from data.
-
-% K.F. is a sophisticated way to build those T.F. from a white-box model.
-% We can estimate these functions directly from data.
-
-% We can adopt a black-box approach to estimate these T.F.:
-
-% \paragraph{Dataset for training}
-% \begin{align*}
-%     \left\{ u(1), u(2), \ldots, u(N) \right\} \\
-%     \left\{ y(1), y(2), \ldots, y(N) \right\} \\
-%     \left\{ x(1), x(2), \ldots, x(N) \right\}
-% \end{align*}
-
-% In the supervised training approach we need measurements of the state to be estimated (physical sensor for $x(t)$ only for training of the software-sensor).
-
-% We can use 4SID for direct non-parametric identification of $(u,y)\rightarrow x$ dynamics, or we can use classic parametric system identification approach:
-
-% \paragraph{Model selection} \phantom{lol}
-
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%         \node[block] (ux) {$s_{ux}(z, \theta)$};
-%         \node[block, below of=ux] (yx) {$s_{yx}(z, \theta)$};
-%         \node[left,left of=ux] (u) {$u(t)$};
-%         \node[left,left of=yx] (y) {$y(t)$};
-%         \node[sum,right of=ux,xshift=1cm,yshift=-1cm] (sum) {};
-%         \node[right, right of=sum] (x) {$\hat{x}(t|t)$};
-
-%         \draw[->] (u) -- (ux);
-%         \draw[->] (y) -- (yx);
-%         \draw[->] (ux) -| (sum);
-%         \draw[->] (yx) -| (sum);
-%         \draw[->] (sum) -- (x);
-%     \end{tikzpicture}
-% \end{figure}
-
-% \paragraph{Performance index}
-% \[
-%     J_N(\theta) = \frac{1}{N}\sum_{t=1}^N \left( x(t) - (S_{ux}(z, \theta) u(t-1) + S_{yx}(z,\theta)y(t)) \right)^2
-% \]
-
-% \paragraph{Optimization}
-% \[
-%     \hat{\theta}_N = \argmin_\theta J_N(\theta)
-% \]
-
-% We obtain the \acrlong{bb} software sensor $\hat{x}(t|t)$ 
-% \[
-% 	\hat{x}(t|t) = S_{ux}(z, \theta) u(t-1) + S_{yx}(z,\theta)y(t)
-% \]
+\textbf{Note} This is a supervised training approach, thus, only for the training phase, we need measurements of the state to be estimated (using physical sensor that will be replaced by the trained SW-sensor).
 
 
-% Once ... we no longer need $x(t)$ samples! 
+\paragraph{Model selection} We focus on this family of models:
+\[
+	\hat{x}(t|t) = S_{ux}(z, \theta) u(t-1) + S_{yx}(z,\theta)y(t)
+\]
+where we have at least 1-step delay on $u(t)$.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+    	\node[block] (z) {$z^{-1}$};
+        \node[block, right of=z] (ux) {$S_{ux}(z, \theta)$};
+        \node[block, below of=ux] (yx) {$S_{yx}(z, \theta)$};
+        \node[left,left of=z] (u) {$u(t)$};
+        \node[left, below of=u] (y) {$y(t)$};
+        \node[sum,right of=ux,xshift=1cm,yshift=-1cm] (sum) {};
+        \node[right, right of=sum] (x) {$\hat{x}(t|t)$};
 
-% \section{Comparison between \gls{kf} and \gls{bb} software sensing}
+        \draw[->] (u) -- (z);
+        \draw[->] (z) -- (ux);
+        \draw[->] (y) -- (yx);
+        \draw[->] (ux) -| (sum);
+        \draw[->] (yx) -| (sum);
+        \draw[->] (sum) -- (x);
+    \end{tikzpicture}
+\end{figure}
 
-% \begin{center}
-%     \begin{tabular}{l|c|c}
-%         & \textbf{\gls{kf}} & \textbf{\gls{bb}} \\
-%         \hline
-%         Need of (\gls{wb}) physical model of the system & \color{red} Yes & \color{green} No \\
-%         Need of a training dataset & \color{green} No \footnote{In practice some tuning through data is needed.} & \color{red} Yes \\
-%         Interpretability of the obtained SW-sensor & \color{green} Yes & \color{red} No \\
-%         Easy retuning for a similar (different) system & \color{green} Yes & \color{red} No \\
-%         Accuracy of the obtained SW-sensor & \color{green} Good & \color{green} Very Good \\
-%         Can be used also in case of un-measurable states & \color{green} Yes & \color{red} No \\
-%     \end{tabular}
-% \end{center}
+\paragraph{Performance index}
+We define the usual performance index as the \emph{sample variance of the estimation error}: 
+\[
+    J_N(\theta) = \frac{1}{N}\sum_{t=1}^N \left( x(t) - (S_{ux}(z, \theta) u(t-1) + S_{yx}(z,\theta)y(t)) \right)^2
+\]
 
-% \section{Non-linear Systems}
+\paragraph{Optimization}
+\[
+    \hat{\theta}_N = \argmin_\theta J_N(\theta)
+\]
 
-% {\large TODO: fix notation}
+We obtain the \acrlong{bb} software sensor $\hat{x}(t|t)$ as: 
+\[
+	\hat{x}(t|t) = S_{ux}(z, \hat{\theta}_N) u(t-1) + S_{yx}(z,\hat{\theta}_N)y(t)
+\]
 
-% When the system is non-linear the problem becomes more complicated.
-% Let's take inspiration from E.K.F.
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%         \node[block,dashed border,align=center] at (2,4) (n1) {non-lin.\\dyn. sys.};
-%         \node[block,double border,align=center] at (2,2) (n2) {non-lin.\\function};
-%         \node[block,dashed border,align=center] at (2,0) (n3) {non-lin.\\dyn. sys.};
-%         \node[sum] at (4,2) (sum) {};
-%         \node[left] at (0,4) (u) {input};
-%         \node[left] at (6,4) (y) {output};
+\textbf{Note} Once the SW-sensor has been designed (trained), we no longer need $x(t)$ samples.
 
-%         \draw[dashed, blue] (0,-1) rectangle (5,3);
+\textbf{Note} The above method is a classic \gls{bb} parametric approach (using \gls{tf}s) but the same can also be done using 4-SID algorithm.
 
-%         \draw[->] (u) -- (n1);
-%         \draw[->] (0.5,4) |- (n3);
-%         \draw[->] (n2) -- (n3);
-%         \draw[->] (sum) -- (n2);
-%         \draw[->] (n1) -| (sum) node[pos=0.9] {+};
-%         \draw[<-] (sum) |- (n3) node[pos=0.1] {-};
-%         \draw[->] (n1) -- (y);
-%         \draw[->,transform canvas={yshift=-0.3cm}] (n3) -- ++(4,0) node[right] {$\hat{x}(t|t)$};
-%     \end{tikzpicture}
-% \end{figure}
+
+\section{Non-linear Systems}
+
+In case the system is non-linear, we can use the same idea used in the LTI case (see \ref{sec:BB-SW-LTI}), where we replace the asymptotic \gls{kf} with a non-linear SW-sensor (like EKF, described in \ref{subsec:KF_non-lin_ext})
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block,dashed border,align=center] at (2,4) (n1) {$\Sys_{NL}$};
+        \node[block,double border,align=center] at (2,2) (n2) {$f_{NL}$};
+        \node[block,dashed border,align=center] at (2,0) (n3) {model of\\ $\Sys_{NL}$};
+        \node[sum] at (4,2) (sum) {};
+        \node[left] at (0,4) (u) {$u(t)$};
+        \node[left] at (6,4) (y) {$y(t)$};
+
+        \draw[dashed, blue] (0,-1) rectangle (5,3) 
+        	node[right, align=center] {non-linear\\SW-sensor};
+
+        \draw[->] (u) -- (n1);
+        \draw[->] (0.5,4) |- (n3);
+        \draw[->] (n2) -- (n3);
+        \draw[->] (sum) -- (n2);
+        \draw[->] (n1) -| (sum) node[pos=0.9] {+};
+        \draw[<-] (sum) |- (n3) node[pos=0.1] {-};
+        \draw[->] (n1) -- (y);
+        \draw[->,transform canvas={yshift=-0.3cm}] (n3) -- ++(4,0) node[right] {$\hat{x}(t|t)$};
+    \end{tikzpicture}
+\end{figure}
+
+\begin{remark}[Block scheme notation for non-linear system] 
+	Notation used from now on to represent non-linear systems:
+	\begin{figure}[H]
+	    \centering
+	    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+	        \node[block,double border,align=center] (n1) {non-lin.\\\textbf{static}\\system};
+	        \node[block,dashed border,align=center, right, right=3cm of n1](n2) {non-lin.\\\textbf{dynamic}\\system};
+	    \end{tikzpicture}
+	\end{figure}
+\end{remark}
 
 % \begin{remark}
 %     In \gls{kf} the E.K.F. extension uses the trick of a time-varying linear gain $K(t)$ but the obvious choice is a non-linear gain (static nonlinear function).
 % \end{remark}
 
-% The content of the box is:
+The content of the box (non-linear SW-sensor) is:
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%         \node[block,dashed border,align=center] at (0,0) (n) {non-lin\\dyn T.I. sys};
-%         \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
-%         \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
-%         \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
-%     \end{tikzpicture}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block,dashed border,align=center] at (0,0) (n) {non-linear\\dyn. T.I. sys.};
+        \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
+        \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
+        \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
+    \end{tikzpicture}
+\end{figure}
 
-% The problem is again the B.B. identification of a non-linear dynamic system, starting from a measured training dataset.
+The problem is again the \gls{bb} identification of a non-linear dynamic system, starting from a measured training dataset.
 
-% \paragraph{Architecture \#1} Use a \emph{Recurrent Dynamical Neural Network} in which we update \emph{static neurons} into \emph{dynamic neurons}.
+There are 4 (3+1) different architectures to design the non-linear SW-sensor.
 
-% % TODO: look at notation (border)
-% 	\begin{figure}[H]
-% 	    \centering
-% 	    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-% 	        \node[block,dashed border,align=center] at (0,0) (n) {recurrent\\neural net};
-% 	        \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
-% 	        \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
-% 	        \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
-% 	    \end{tikzpicture}
-% 	\end{figure}
+\paragraph{Architecture \#1} Use a \emph{Dynamical Recurrent Neural Network (Dynamic RNN)} in which we update \emph{static neurons} into \emph{dynamic neurons}.
 
-% Zoom into a single neuron: 
+% TODO: look at notation (border)
+	\begin{figure}[H]
+	    \centering
+	    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+	        \node[block,dashed border,align=center] at (0,0) (n) {recurrent\\neural net.};
+	        \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
+	        \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
+	        \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
+	    \end{tikzpicture}
+	\end{figure}
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{minipage}[t]{0.48\textwidth}
-%         \centering
-%         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-%             \node[block] at (0,4) (a1) {$a_1$};
-%             \node[block] at (0,3) (a2) {$a_2$};
-%             \node at (0,2) {$\vdots$};
-%             \node[block] at (0,1) (ah) {$a_h$};
-%             \node[sum] at (2,2) (sum) {};
-%             \node[block,ellipse,align=center] at (3.5,2) (nlf) {$f_{NL}$};
+If we zoom into a single neuron: 
 
-%             \draw[<-] (a1) -- ++(-1,0);
-%             \draw[<-] (a2) -- ++(-1,0);
-%             \draw[<-] (ah) -- ++(-1,0);
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+            \node[block] at (0,4) (a1) {$a_1$};
+            \node[block] at (0,3) (a2) {$a_2$};
+            \node at (0,2) {$\vdots$};
+            \node[block] at (0,1) (ah) {$a_h$};
+            \node[sum] at (2,2) (sum) {};
+            \node[block,ellipse,align=center] at (3.5,2) (nlf) {$f_{NL}$};
 
-%             \draw[->] (a1) -- (sum);
-%             \draw[->] (a2) -- (sum);
-%             \draw[->] (ah) -- (sum);
-%             \draw[<-] (sum) -- ++(0,0.5) node[above] {$b$};
-%             \draw[->] (sum) -- (nlf);
-%             \draw[->] (nlf) -- ++(1.5,0);
-%         \end{tikzpicture}
-%         \caption*{Static function of a neuron}
-%     \end{minipage}
-%     \begin{minipage}[t]{0.48\textwidth}
-%         \centering
-%         \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
-%             \node[block] at (0,4) (a1) {$a_1$};
-%             \node[block] at (0,3) (a2) {$a_2$};
-%             \node at (0,2) {$\vdots$};
-%             \node[block] at (0,1) (ah) {$a_h$};
-%             \node[sum] at (2,2) (sum) {};
-%             \node[block,ellipse,align=center] at (3.5,2) (nlf) {$f_{NL}$};
-%             \node[block, below of=nlf] (z) {$z^{-1}$};
-%             \node[block, below of=sum] (c) {$c$};
+            \draw[<-] (a1) -- ++(-1,0);
+            \draw[<-] (a2) -- ++(-1,0);
+            \draw[<-] (ah) -- ++(-1,0);
 
-%             \draw[<-] (a1) -- ++(-1,0);
-%             \draw[<-] (a2) -- ++(-1,0);
-%             \draw[<-] (ah) -- ++(-1,0);
+            \draw[->] (a1) -- (sum);
+            \draw[->] (a2) -- (sum);
+            \draw[->] (ah) -- (sum);
+            \draw[<-] (sum) -- ++(0,0.5) node[above] {$b$};
+            \draw[->] (sum) -- (nlf);
+            \draw[->] (nlf) -- ++(1.5,0);
+        \end{tikzpicture}
+        \caption*{Static neuron (non-linear static system)}
+    \end{minipage}
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
+            \node[block] at (0,4) (a1) {$a_1$};
+            \node[block] at (0,3) (a2) {$a_2$};
+            \node at (0,2) {$\vdots$};
+            \node[block] at (0,1) (ah) {$a_h$};
+            \node[sum] at (2,2) (sum) {};
+            \node[block,ellipse,align=center] at (3.5,2) (nlf) {$f_{NL}$};
+            \node[block, below of=nlf] (z) {$z^{-1}$};
+            \node[block, below of=sum] (c) {$c$};
 
-%             \draw[->] (a1) -- (sum);
-%             \draw[->] (a2) -- (sum);
-%             \draw[->] (ah) -- (sum);
-%             \draw[<-] (sum) -- ++(0,0.5) node[above] {$b$};
-%             \draw[->] (sum) -- (nlf);
-%             \draw[->] (nlf) -- ++(1.5,0);
+            \draw[<-] (a1) -- ++(-1,0);
+            \draw[<-] (a2) -- ++(-1,0);
+            \draw[<-] (ah) -- ++(-1,0);
 
-%             \draw[->] (4.5,2) |- (z);
-%             \draw[->] (z) -- (c);
-%             \draw[->] (c) -- (sum);
-%         \end{tikzpicture}
-%         \caption*{Upgrade to a dynamic neuron}
-%     \end{minipage}
-% \end{figure}
+            \draw[->] (a1) -- (sum);
+            \draw[->] (a2) -- (sum);
+            \draw[->] (ah) -- (sum);
+            \draw[<-] (sum) -- ++(0,0.5) node[above] {$b$};
+            \draw[->] (sum) -- (nlf);
+            \draw[->] (nlf) -- ++(1.5,0);
 
-% where $f_{NL}$ is a non-linear function (e.g. sigmoid function).
+            \draw[->] (4.5,2) |- (z);
+            \draw[->] (z) -- (c);
+            \draw[->] (c) -- (sum);
+        \end{tikzpicture}
+        \caption*{Dynamic neuron (non-linear dynamic system)}
+    \end{minipage}
+\end{figure}
+where $f_{NL}$ is a non-linear function (e.g. sigmoid function).
 
-% Most general approach but practically seldom used: major issues of stability and convergence of training.
+Using an RNN with dynamic neurons is the most general approach but it is also practically seldom used due to stability issues and convergence of training.
 
-% \paragraph{Architecture \#2} Split the SW-sensor into a static non-linear system and a dynamic linear system (i.e. non-recursive FIR scheme)
+\paragraph{Architecture \#2} Split the SW-sensor into a static non-linear system and a dynamic linear system (namely, a non-recursive FIR scheme)
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%         \node[block] at (1.5,0) (yn) {$z^{-1}$};
-%         \node[block] at (1.5,1.5) (y2) {$z^{-1}$};
-%         \node[block] at (1.5,2.5) (y1) {$z^{-1}$};
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block] at (1.5,0) (yn) {$z^{-1}$};
+        \node[block] at (1.5,1.5) (y2) {$z^{-1}$};
+        \node[block] at (1.5,2.5) (y1) {$z^{-1}$};
 
-%         \node[block] at (1.5,4) (un) {$z^{-1}$};
-%         \node[block] at (1.5,5.5) (u2) {$z^{-1}$};
-%         \node[block] at (1.5,6.5) (u1) {$z^{-1}$};
+        \node[block] at (1.5,4) (un) {$z^{-1}$};
+        \node[block] at (1.5,5.5) (u2) {$z^{-1}$};
+        \node[block] at (1.5,6.5) (u1) {$z^{-1}$};
 
-%         \node[left] at (0,6.5) (u) {$u(t)$};
-%         \node[left] at (0,3.2) (y) {$y(t)$};
+        \node[left] at (0,6.5) (u) {$u(t)$};
+        \node[left] at (0,3.2) (y) {$y(t)$};
 
-%         \node[block,minimum height=7cm,double border,align=center] at (5.25,3.25) (sys) {non-linear\\static\\parametric\\function\\(e.g. static\\neural\\network)};
+        \node[block,minimum height=7cm,double border,align=center] at (5.25,3.25) (sys) {non-linear\\static\\parametric\\function\\$f_{NL}(\cdot; \theta)$ \vspace{10pt} \\ (e.g. static\\neural\\network)};
 
-%         \draw[->] (u) -- (u1);
-%         \draw[->] (u1) -- (u2);
-%         \draw[->,dotted] (u2) -- (un);
-%         \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
-%         \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
-%         \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
+        \draw[->] (u) -- (u1);
+        \draw[->] (u1) -- (u2);
+        \draw[->,dotted] (u2) -- (un);
+        \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
+        \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
+        \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
 
-%         \draw[->] (y) -- (y-|sys.west);
-%         \draw[->] (1.5,3.2) -- (y1);
-%         \draw[->] (y1) -- (y2);
-%         \draw[->,dotted] (y2) -- (yn);
-%         \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
-%         \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
-%         \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
+        \draw[->] (y) -- (y-|sys.west);
+        \draw[->] (1.5,3.2) -- (y1);
+        \draw[->] (y1) -- (y2);
+        \draw[->,dotted] (y2) -- (yn);
+        \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
+        \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
+        \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
 
-%         \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
+        \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
 
-%         \draw[decoration={brace}, decorate] (3.5,-0.7) node {} -- (0,-0.7);
-%         \node[align=center,below] at (1.75,-0.9) {linear dynamic\\system};
+        \draw[decoration={brace}, decorate] (3.5,-0.7) node {} -- (0,-0.7);
+        \node[align=center,below] at (1.75,-0.9) {linear dynamic\\system};
 
-%         \draw[decoration={brace}, decorate] (7,-0.7) node {} -- (3.6,-0.7);
-%         \node[align=center,below] at (5.25,-0.9) {non-linear static\\system to be\\estimated};
-%     \end{tikzpicture}
-% \end{figure}
+        \draw[decoration={brace}, decorate] (7,-0.7) node {} -- (3.6,-0.7);
+        \node[align=center,below] at (5.25,-0.9) {non-linear static\\system to be\\estimated};
+    \end{tikzpicture}
+\end{figure}
 
-% \begin{remark}
-% 	Training done only to NL static... 
-% \end{remark}
+\begin{remark}[Pros]
+	Some pros about this architecture:
+	\begin{itemize}
+		\item Training (supervised) done only to the non-linear static part of the SW-sensor (much simpler than the estimation of an RNN).
+		\item Stability is guaranteed by construction since it is a static FIR architecture.
+	\end{itemize}	
+\end{remark}
 
-% \begin{remark}
-%     Notice that in principle $\hat{x}(t|t)$ can depend on $y(t)$ whereas we know $\hat{x}(t|t)$ can only depend on $u(t-1)$ and past values.
+\begin{remark}[Cons]
+    In case of a MIMO system with
+    \begin{align*}
+        m \text{ inputs: } u(t) = \begin{bmatrix}
+            u_1(t) \\
+            \vdots \\
+            u_m(t)
+        \end{bmatrix} \quad p \text{ outputs: } y(t) = \begin{bmatrix}
+            y_1(t) \\
+            \vdots \\
+            y_p(t)
+        \end{bmatrix} \quad n \text{ states: } x(t) = \begin{bmatrix}
+            x_1(t) \\
+            \vdots \\
+            x_n(t)
+        \end{bmatrix}
+    \end{align*}
 
-%     In case of a MIMO system with
-%     \begin{align*}
-%         m \text{ inputs: } u(t) = \begin{bmatrix}
-%             u_1(t) \\
-%             \vdots \\
-%             u_m(t)
-%         \end{bmatrix} \quad p \text{ outputs: } y(t) = \begin{bmatrix}
-%             y_1(t) \\
-%             \vdots \\
-%             y_p(t)
-%         \end{bmatrix} \quad n \text{ states: } x(t) = \begin{bmatrix}
-%             x_1(t) \\
-%             \vdots \\
-%             x_n(t)
-%         \end{bmatrix}
-%     \end{align*}
+    the estimation problem is the search of the optimal parameter vector $\theta$ for the function
+    \[
+        f(\cdot; \theta): \RR^{m\times n_u + p \times (n_y + 1)} \rightarrow \RR^n
+    \]    
+    Therefore, the I/O size of this non-linear parametric function can be very large.
+\end{remark}
 
-%     The estimation problem is the search of the optimal parameter vector $\theta$ for the function
-%     \[
-%         f(\cdot, \theta): \RR^{m\times n_u + p \times (n_y + 1)} \rightarrow \RR^n
-%     \]
+\paragraph{Architecture \#3} Like architecture \#2, we split the SW-sensor into a static non-linear system and a linear dynamic system but, this time, with a recursive IIR scheme.
 
-%     The estimation of this function $f(\cdot, \theta)$ is much simpler than the estimation of a recurrent neural network.
-%     Moreover the stability is guaranteed (the system is F.I.R.).
-% \end{remark}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block] at (1.5,0) (yn) {$z^{-1}$};
+        \node[block] at (1.5,1.5) (y2) {$z^{-1}$};
+        \node[block] at (1.5,2.5) (y1) {$z^{-1}$};
 
-% \paragraph{Architecture \#3} Like architecture $#2$, we split the SW-sensor into a static non-linear system and a linear dynamics system but, this time, with a IIR scheme
+        \node[block] at (1.5,4) (un) {$z^{-1}$};
+        \node[block] at (1.5,5.5) (u2) {$z^{-1}$};
+        \node[block] at (1.5,6.5) (u1) {$z^{-1}$};
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%         \node[block] at (1.5,0) (yn) {$z^{-1}$};
-%         \node[block] at (1.5,1.5) (y2) {$z^{-1}$};
-%         \node[block] at (1.5,2.5) (y1) {$z^{-1}$};
+        \node[block] at (1.5,8) (xn) {$z^{-1}$};
+        \node[block] at (1.5,9.5) (x2) {$z^{-1}$};
+        \node[block] at (1.5,10.5) (x1) {$z^{-1}$};
 
-%         \node[block] at (1.5,4) (un) {$z^{-1}$};
-%         \node[block] at (1.5,5.5) (u2) {$z^{-1}$};
-%         \node[block] at (1.5,6.5) (u1) {$z^{-1}$};
+        \node[left] at (0,10.5) (x) {$x(t)$};
+        \node[left] at (0,6.5) (u) {$u(t)$};
+        \node[left] at (0,3.2) (y) {$y(t)$};
 
-%         \node[block] at (1.5,8) (xn) {$z^{-1}$};
-%         \node[block] at (1.5,9.5) (x2) {$z^{-1}$};
-%         \node[block] at (1.5,10.5) (x1) {$z^{-1}$};
+        \node[block,minimum height=11cm,minimum width=1.5cm,double border,align=center] at (5.25,5.25) (sys) {non-linear\\static\\parametric\\function\\$f_{NL}(\cdot; \theta)$};
 
-%         \node[left] at (0,10.5) (x) {$x(t)$};
-%         \node[left] at (0,6.5) (u) {$u(t)$};
-%         \node[left] at (0,3.2) (y) {$y(t)$};
+        \draw[->] (u) -- (u1);
+        \draw[->] (u1) -- (u2);
+        \draw[->,dotted] (u2) -- (un);
+        \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
+        \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
+        \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
 
-%         \node[block,minimum height=11cm,minimum width=1.5cm,double border,align=center] at (5.25,5.25) (sys) {$f(\cdot,\theta)$};
+        \draw[->] (y) -- (y-|sys.west);
+        \draw[->] (1.5,3.2) -- (y1);
+        \draw[->] (y1) -- (y2);
+        \draw[->,dotted] (y2) -- (yn);
+        \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
+        \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
+        \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
 
-%         \draw[->] (u) -- (u1);
-%         \draw[->] (u1) -- (u2);
-%         \draw[->,dotted] (u2) -- (un);
-%         \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
-%         \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
-%         \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
+        \draw[->] (x) -- (x1);
+        \draw[->] (x1) -- (x2);
+        \draw[->,dotted] (x2) -- (xn);
+        \draw[->] (x1) -- (x1-|sys.west) node[pos=0.5] {$x(t-1)$};
+        \draw[->] (x2) -- (x2-|sys.west) node[pos=0.5] {$x(t-2)$};
+        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$x(t-n_u)$};
 
-%         \draw[->] (y) -- (y-|sys.west);
-%         \draw[->] (1.5,3.2) -- (y1);
-%         \draw[->] (y1) -- (y2);
-%         \draw[->,dotted] (y2) -- (yn);
-%         \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
-%         \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
-%         \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
+        \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
 
-%         \draw[->] (x) -- (x1);
-%         \draw[->] (x1) -- (x2);
-%         \draw[->,dotted] (x2) -- (xn);
-%         \draw[->] (x1) -- (x1-|sys.west) node[pos=0.5] {$x(t-1)$};
-%         \draw[->] (x2) -- (x2-|sys.west) node[pos=0.5] {$x(t-2)$};
-%         \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$x(t-n_u)$};
+    \end{tikzpicture}
+    \caption*{Architecture \#3 during training phase}
+\end{figure}
 
-%         \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
+\begin{remark}[Pros \& Cons]
+	The advantage is that usually in IIR architecture $n_u$ and $n_y$ are much smaller (thanks to recursion): lower computation 
+	effort. 
 
-%         \draw[dashed, blue] (0.7,7.2) rectangle (4.2,11.5) node[black, right] {recursive IIR architecture};
-%     \end{tikzpicture}
-% \end{figure}
+	For the disadvantages we have to notice that only for the training part we use $x(t)$ data from a physical sensor; then, in production, the recursion comes to play since we need to plug-in the output $\hat{x}(t|t)$ in the recursive part: this feedback can provide instability. 
 
-% DRAWBACK (feedback on $\hat{x}$ that can lead to instability )
+	\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block] at (1.5,0) (yn) {$z^{-1}$};
+        \node[block] at (1.5,1.5) (y2) {$z^{-1}$};
+        \node[block] at (1.5,2.5) (y1) {$z^{-1}$};
 
-% \paragraph{Architecture \#4} Separation of system dynamics and a static non-linear system using \emph{regressors} built from physical knowledge
+        \node[block] at (1.5,4) (un) {$z^{-1}$};
+        \node[block] at (1.5,5.5) (u2) {$z^{-1}$};
+        \node[block] at (1.5,6.5) (u1) {$z^{-1}$};
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%         \node[block, double border, minimum width=1.5cm, minimum height=3cm] at (0,0) (sys) {};
-%         \node[block, dashed border, minimum height=3cm] at (4,0) (f) {$f(\cdot,\theta)$};
+        \node[block] at (1.5,8) (xn) {$z^{-1}$};
+        \node[block] at (1.5,9.5) (x2) {$z^{-1}$};
+        \node[block] at (1.5,10.5) (x1) {$z^{-1}$};
 
-%         \draw[<-,transform canvas={yshift=0.5cm}] (sys) -- ++(-2cm,0) node[left] {$u(t)$};
-%         \draw[<-,transform canvas={yshift=-0.5cm}] (sys) -- ++(-2cm,0) node[left] {$y(t)$};
+        \node[left] at (0,10.5) (x) {};
+        \node[left] at (0,6.5) (u) {$u(t)$};
+        \node[left] at (0,3.2) (y) {$y(t)$};
 
-%         \draw[->,transform canvas={yshift=1.2cm}] (sys) -- (f) node[pos=0.5] {$r_1(t)$};
-%         \draw[->,transform canvas={yshift=0.6cm}] (sys) -- (f) node[pos=0.5] {$r_2(t)$};
-%         \draw[->,transform canvas={yshift=-1.2cm}] (sys) -- (f) node[pos=0.5] {$r_h(t)$};
-%         \node at (2,0) {$\vdots$};
-%         \draw[->] (f) -- ++(2cm,0) node[right] {$\hat{x}(t|t)$};
-%     \end{tikzpicture}
-% \end{figure}
+        \node[block,minimum height=11cm,minimum width=1.5cm,double border,align=center] at (5.7,5.25) (sys) {non-linear\\static\\parametric\\function\\$f_{NL}(\cdot; \theta)$};
 
-% The system (can be dynamic and non-linear) that builds the regressors (signals $r_1(t)$, $r_2(t)$, \ldots) from the physical sensors $u(t)$ and $y(t)$ using physical knowledge of the system. (PRE-PROCESSING PART, RIFORMULARE)
+        \draw[->] (u) -- (u1);
+        \draw[->] (u1) -- (u2);
+        \draw[->,dotted] (u2) -- (un);
+        \draw[->] (u1) -- (u1-|sys.west) node[pos=0.5] {$u(t-1)$};
+        \draw[->] (u2) -- (u2-|sys.west) node[pos=0.5] {$u(t-2)$};
+        \draw[->] (un) -- (un-|sys.west) node[pos=0.5] {$u(t-n_u)$};
 
-% The idea is to facilitate the job of $f(\cdot, \theta)$ by presenting at its input a smaller and more meaningful set of signals (regressors). In this way the \gls{bb} is much simpler.
+        \draw[->] (y) -- (y-|sys.west);
+        \draw[->] (1.5,3.2) -- (y1);
+        \draw[->] (y1) -- (y2);
+        \draw[->,dotted] (y2) -- (yn);
+        \draw[->] (y1) -- (y1-|sys.west) node[pos=0.5] {$y(t-1)$};
+        \draw[->] (y2) -- (y2-|sys.west) node[pos=0.5] {$y(t-2)$};
+        \draw[->] (yn) -- (yn-|sys.west) node[pos=0.5] {$y(t-n_y)$};
 
-% \paragraph{Conclusions} In case of black-box software sensing with non-linear systems the problem can be quite complex.
-% Using \emph{brute-force} approach (1 dynamic neural network) is usually doomed to failure.
-% The best is to gain some insight into the system and build some \emph{smart} regressors before black-box map.
+        \draw[->] (x) -- (x1);
+        \draw[->] (x1) -- (x2);
+        \draw[->,dotted] (x2) -- (xn);
+        \draw[->] (x1) -- (x1-|sys.west) node[pos=0.5] {$\hat{x}(t-1|t-1)$};
+        \draw[->] (x2) -- (x2-|sys.west) node[pos=0.5] {$\hat{x}(t-2|t-2)$};
+        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$\hat{x}(t-n_u|t-n_u)$};
+
+        \draw (sys.east) -| ($(x) + (7.5,1.5)$) node[midway, right] {$\hat{x}(t|t)$};
+
+        \draw ($(x) + (7.5,1.5)$) -- ($(x) + (0,1.5)$);
+
+        \draw[->] ($(x) + (0,1.5)$) |- (x1.west) 
+        	node[midway, left] {$\hat{x}(t|t)$};
+
+        \draw[dashed, blue] (0.7,7.2) rectangle (4.6,11.3) node[left,above] {recursive part};
+    \end{tikzpicture}
+    \caption*{Architecture \#3 during production phase}
+\end{figure}
+\end{remark}
+
+\paragraph{Architecture \#4} Modification with a-priori signal processing of architectures \#1, \#2 and \#3. The idea is to split the SW-sensor in two stages:
+\begin{itemize}
+	\item first stage: from $u(t)$ and $y(t)$, $h$ \emph{regressors} $r_i(t)$ are produced starting from physical knowledge of the system (where $h$ is much smaller than the number of $u(t)$ and $y(t)$ signals)
+	\item second stage: SW-sensor (could be both linear or non-linear and both static or dynamic system) to be firstly trained and then used in production.
+\end{itemize}
 
 
-% \begin{example}[Continue from the last one]
-%     Model (key equation) of the system:
-%     \[
-%         M\ddot{z} = -c(t)(\dot{z}-\dot{z}_d) - K(z-z_d)
-%     \]
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block, dashed border, minimum width=1.5cm, minimum height=3cm, align=center] at (0,0) (sys) {pre-processing\\filter};
+        \node[block, dashed border, minimum height=3cm] at (4,0) (f) {$f(\cdot;\theta)$};
 
-%     Measurable input $\ddot{z}$ with an accelerometer, $z-z_d$ measurable output with elongation sensor.
-%     We want to estimate $\dot{z}$.
+        \draw[<-,transform canvas={yshift=0.5cm}] (sys) -- ++(-2cm,0) node[left] {$u(t)$};
+        \draw[<-,transform canvas={yshift=-0.5cm}] (sys) -- ++(-2cm,0) node[left] {$y(t)$};
 
-%     The change is $c(t)$ is a semi-active suspension, can be electronically changed (control variable).
+        \draw[->,transform canvas={yshift=1.2cm}] (sys) -- (f) node[pos=0.5] {$r_1(t)$};
+        \draw[->,transform canvas={yshift=0.6cm}] (sys) -- (f) node[pos=0.5] {$r_2(t)$};
+        \draw[->,transform canvas={yshift=-1.2cm}] (sys) -- (f) node[pos=0.5] {$r_h(t)$};
+        \node at (2,0) {$\vdots$};
+        \draw[->] (f) -- ++(2cm,0) node[right] {$\hat{x}(t|t)$};
+    \end{tikzpicture}
+\end{figure}
 
-%     We can solve the problem with K.F. or we can make an experiment and collect training data:
-%     \begin{align*}
-%         c(t)        : & \left\{ c(1), c(2), \cdots, c(N) \right\} \\
-%         z(t)-z_d(t) : & \left\{ z(1)-z_d(1), z(2)-z_d(2), \cdots, z(N)-z_d(N) \right\} \\
-%         \ddot{z}(t) : & \left\{ \ddot{z}(1), \ddot{z}(2), \cdots, \ddot{z}(N) \right\} \\
-%         \dot{z}(t)  : & \left\{ \dot{z}(1), \dot{z}(2), \cdots, \dot{z}(N) \right\} \text{ (just for training)} \\
-%     \end{align*}
 
-%     % this part has been done the 18/05/2020
+The idea is to facilitate the estimation of $f(\cdot; \theta)$ by presenting at its input a smaller and more meaningful set of signals (regressors). In this way the \gls{bb} model identification is much simpler.
 
-%     Back to the main equation:
-%     \[
-%         M\ddot{z} = -K(z-z_d)-C(t)(\dot{z}-\dot{z}_d)
-%     \]
-%     \[
-%         \underbrace{\dot{z}}_{\text{to be estim.}} =
-%         -\frac{K}{M} \underbrace{\int (z-z_d)dt}_{r_1(t)}
-%         -\frac{1}{M} \underbrace{\int C(t)(\dot{z}-\dot{z}_d)dt}_{r_2(t)}
-%     \]
+\paragraph{Conclusions} In case of \gls{bb} SW-sensing with non-linear systems the problem can be quite complex.
+Using \emph{brute-force} approach (1 dynamic neural network) is usually doomed to failure.
+The best is to gain some insight into the system and build some \emph{smart} regressors before black-box map.
 
-%     We also consider this equation
-%     \[
-%         \dot{z}_d = \underbrace{\int \ddot{z}_d dt}_{r_3(t)}
-%     \]
+\section{Comparison between \gls{kf} and \gls{bb} software sensing}
 
-%     $r_1(t)$ and $r_2(t)$ are the primary regressors, directly linked to $\dot{z}(t)$. $r_3(t)$ is a secondary regressor, it can help $r_1(t)$.
+\begin{center}
+	\begin{minipage}{\textwidth}
+	\renewcommand{\arraystretch}{1.5}
+	    \begin{tabular}{l|c|c}
+	        & \textbf{\gls{kf}} & \textbf{\gls{bb}} \\
+	        \hline\hline 
+	        Need of (\gls{wb}) physical model of the system & \color{red} Yes & \color{green} No \\ \hline 
+	        Need of a training dataset & \color{green} No {\color{black} \footnote{In practice some tuning through data is needed.}} & \color{red} Yes \\ \hline 
+	        Interpretability of the obtained SW-sensor & \color{green} Yes & \color{red} No \\ \hline 
+	        Easy retuning for a similar (different) system & \color{green} Yes & \color{red} No \\ \hline 
+	        Accuracy of the obtained SW-sensor & \color{green} Good & \color{green} Very Good \\ \hline 
+	        Can be used also in case of un-measurable states & \color{green} Yes & \color{red} No \\ \hline\hline 
+	    \end{tabular}
+    \end{minipage}
+\end{center}
 
-%     Since these regressors are obtained by integration to avoid drifting (by DC components of noise integration) we have to high-pass the inputs with high-pass filters $\left(\frac{z-1}{z-a}\right)$.
+\begin{example}[Example \ref{ex:KF_full-proc} continued]
+    Model (key equation) of the system:
+    \[
+        M\ddot{z} = -c(t)(\dot{z}-\dot{z}_d) - K(z-z_d)
+    \]
 
-%     \paragraph{Full filtering scheme} \phantom{lol}
-%     \begin{figure}[H]
-%         \centering
-%         \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-%             \draw[block, dashed border] (0.5,-0.5) rectangle ++(5.5,6);
-%             \node[block, double border, minimum width=1.5cm, minimum height=6cm] at (8,2.5) (f) {$f(\cdot, \theta)$};
-%             \node[left] at (0,0) (c) {$c(t)$};
-%             \node[left] at (0,3) (d) {$z-z_d$};
-%             \node[left] at (0,5) (z) {$\ddot{z}$};
-%             \node[sum] at (2,0) (mult) {$\times$};
-%             \node[block] at (2,1.5) (d1) {$\frac{z-1}{z}$};
-%             \node[block] at (3.5,0) (d2) {$\frac{z-1}{z-a}$};
-%             \node[block] at (5,0) (d3) {$\frac{1}{z-1}$};
-%             \node[block] at (3.5,3) (d4) {$\frac{z-1}{z-a}$};
-%             \node[block] at (5,3) (d5) {$\frac{1}{z-1}$};
-%             \node[block] at (3.5,5) (d6) {$\frac{z-1}{z-a}$};
-%             \node[block] at (5,5) (d7) {$\frac{1}{z-1}$};
+    Measurable input $\ddot{z}$ with an accelerometer, $z-z_d$ measurable output with elongation sensor.
+    We want to estimate $\dot{z}$.
 
-%             \node[below] at (3,-0.7) {regressors building block};
+    The change is $c(t)$ is a semi-active suspension, can be electronically changed (control variable).
 
-%             \draw[->] (c) -- (mult);
-%             \draw[->] (d1) -- (mult);
-%             \draw[->] (mult) -- (d2);
-%             \draw[->] (d2) -- (d3);
-%             \draw[->] (z) -- (d6);
-%             \draw[->] (d6) -- (d7);
-%             \draw[->] (d) -- (d4);
-%             \draw[->] (d4) -- (d5);
-%             \draw[->] (d) -| (d1);
+    We can solve the problem with K.F. or we can make an experiment and collect training data:
+    \begin{align*}
+        c(t)        : & \left\{ c(1), c(2), \cdots, c(N) \right\} \\
+        z(t)-z_d(t) : & \left\{ z(1)-z_d(1), z(2)-z_d(2), \cdots, z(N)-z_d(N) \right\} \\
+        \ddot{z}(t) : & \left\{ \ddot{z}(1), \ddot{z}(2), \cdots, \ddot{z}(N) \right\} \\
+        \dot{z}(t)  : & \left\{ \dot{z}(1), \dot{z}(2), \cdots, \dot{z}(N) \right\} \text{ (just for training)} \\
+    \end{align*}
 
-%             \draw[->] (d7) -- (d7-|f.west) node[pos=0.7] {$r_3(t)$};
-%             \draw[->] (d5) -- (d5-|f.west) node[pos=0.7] {$r_1(t)$};
-%             \draw[->] (d3) -- (d3-|f.west) node[pos=0.7] {$r_2(t)$};
-%             \draw[->] (f) -- (9.5,2.5) node[right] {$\hat{\dot{z}}$};
-%         \end{tikzpicture}
-%     \end{figure}
-% \end{example}
+    % this part has been done the 18/05/2020
+
+    Back to the main equation:
+    \[
+        M\ddot{z} = -K(z-z_d)-C(t)(\dot{z}-\dot{z}_d)
+    \]
+    \[
+        \underbrace{\dot{z}}_{\text{to be estim.}} =
+        -\frac{K}{M} \underbrace{\int (z-z_d)dt}_{r_1(t)}
+        -\frac{1}{M} \underbrace{\int C(t)(\dot{z}-\dot{z}_d)dt}_{r_2(t)}
+    \]
+
+    We also consider this equation
+    \[
+        \dot{z}_d = \underbrace{\int \ddot{z}_d dt}_{r_3(t)}
+    \]
+
+    $r_1(t)$ and $r_2(t)$ are the primary regressors, directly linked to $\dot{z}(t)$. $r_3(t)$ is a secondary regressor, it can help $r_1(t)$.
+
+    Since these regressors are obtained by integration to avoid drifting (by DC components of noise integration) we have to high-pass the inputs with high-pass filters $\left(\frac{z-1}{z-a}\right)$.
+
+    \paragraph{Full filtering scheme} \phantom{lol}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \draw[block, dashed border] (0.5,-0.5) rectangle ++(5.5,6);
+            \node[block, double border, minimum width=1.5cm, minimum height=6cm] at (8,2.5) (f) {$f(\cdot, \theta)$};
+            \node[left] at (0,0) (c) {$c(t)$};
+            \node[left] at (0,3) (d) {$z-z_d$};
+            \node[left] at (0,5) (z) {$\ddot{z}$};
+            \node[sum] at (2,0) (mult) {$\times$};
+            \node[block] at (2,1.5) (d1) {$\frac{z-1}{z}$};
+            \node[block] at (3.5,0) (d2) {$\frac{z-1}{z-a}$};
+            \node[block] at (5,0) (d3) {$\frac{1}{z-1}$};
+            \node[block] at (3.5,3) (d4) {$\frac{z-1}{z-a}$};
+            \node[block] at (5,3) (d5) {$\frac{1}{z-1}$};
+            \node[block] at (3.5,5) (d6) {$\frac{z-1}{z-a}$};
+            \node[block] at (5,5) (d7) {$\frac{1}{z-1}$};
+
+            \node[below] at (3,-0.7) {regressors building block};
+
+            \draw[->] (c) -- (mult);
+            \draw[->] (d1) -- (mult);
+            \draw[->] (mult) -- (d2);
+            \draw[->] (d2) -- (d3);
+            \draw[->] (z) -- (d6);
+            \draw[->] (d6) -- (d7);
+            \draw[->] (d) -- (d4);
+            \draw[->] (d4) -- (d5);
+            \draw[->] (d) -| (d1);
+
+            \draw[->] (d7) -- (d7-|f.west) node[pos=0.7] {$r_3(t)$};
+            \draw[->] (d5) -- (d5-|f.west) node[pos=0.7] {$r_1(t)$};
+            \draw[->] (d3) -- (d3-|f.west) node[pos=0.7] {$r_2(t)$};
+            \draw[->] (f) -- (9.5,2.5) node[right] {$\hat{\dot{z}}$};
+        \end{tikzpicture}
+    \end{figure}
+\end{example}
