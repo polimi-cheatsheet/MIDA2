@@ -40,6 +40,17 @@ Assumptions:
     \item $\frac{B(z)}{A(z)}$ is \emph{minimum phase}
 \end{itemize}
 
+\begin{recall}[Transfer function in canonical form]
+    A transfer function $W(z) = \frac{C(z)}{A(z)}$ is in \emph{canonical form} if 
+    \begin{enumerate}
+        \item $C(z)$ and $A(z)$ are monic (i.e. the coefficients of the maximum degree terms of $C(z)$ and $A(z)$ are equal to 1);
+        \item $C(z)$ and $A(z)$ have null relative degree;
+        \item $C(z)$ and $A(z)$ are coprime (i.e. they have no common factors);
+        \item[4a.]the poles of $W(z)$ are such that $|z| < 1$;
+        \item[4b.]the zeros of $W(z)$ are such that $|z| < 1$. (more stringent condition than the one we saw in MIDA1)
+    \end{enumerate}
+\end{recall}
+
 \begin{remark}
     $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
 
@@ -188,8 +199,8 @@ The block scheme representation of the MVC system is
         \draw[<-] (b4) -- ++(0,1) node[above] (noise_in) {$e(t)$};
         \draw[->] (8,0) |- (b3);
 
-        \draw[dashed, blue] ($(in) + (0.7, -2.5)$) rectangle ($(b2) + (-1.2, 1)$) node[pos=0, below] {\text{controller}};
-        \draw[dashed] ($(b2) + (-1, -0.6)$) rectangle ($(noise_in) + (0.7, 0.5)$) node[above] {\text{system}};
+        \draw[dashed, blue] ($(in) + (0.7, -2.5)$) rectangle ($(b2) + (-1.2, 1)$) node[above=0.6cm of c1] {\text{controller}};
+        \draw[dashed] ($(b2) + (-1, -0.6)$) rectangle ($(noise_in) + (0.7, 0.3)$) node[right] {\text{system}};
     \end{tikzpicture}
 
     \caption{MVC System}
@@ -243,10 +254,8 @@ where we used the following result of the long division between $C(z)$ and $A(z)
 The MVC system is always guaranteed asymptotically stable, since the roots of $\chi(z)$ are the roots of $B(z)$ and $C(z)$ and:
 \begin{itemize}
     \item all roots of $B(z)$ are strictly inside the unit circle (thanks to minimum phase assumption on $\frac{B(z)}{A(z)}$)
-    \item all roots of $C(z)$ are \textcolor{red}{?? inside the unit circle (thanks to the assumption of canonical representation of $\frac{C(z)}{A(z)}$)}
+    \item all roots of $C(z)$ are inside the unit circle (thanks to the assumption of canonical representation of $\frac{C(z)}{A(z)}$)
 \end{itemize}
-
-\textcolor{red}{\large roots of $C(z)$ are (NOT strictly) inside the unit circle!}
 
 \subsection{Performance of the MVC System}\label{subsec:MVC_performance}
 

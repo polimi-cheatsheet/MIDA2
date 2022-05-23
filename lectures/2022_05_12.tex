@@ -618,9 +618,8 @@ Hence, the spectrum will also be composed by the spectrum of the original signal
     \end{tikzpicture}
 \end{figure}
 
-Therefore, if we want to sample the measured signal, and for example, $f_{MAX} = 2 \text{KHz}$, then we need $f_N \ge 2 \text{KHz} \implies f_S \ge 4 \text{KHz}$. \color{gray} On the other hand, we know that the bandwidth of the original signal $x(t)$ will be much smaller due to the presence of the noise. 
-
-Hence, suppose that we sample with an A/D that samples at $f_S = 1$ KHz.
+Therefore, if we want to sample the measured signal, and for example, $f_{MAX} = 2 \text{KHz}$, then we need $f_N \ge 2 \text{KHz} \implies f_S \ge 4 \text{KHz}$. On the other hand, we know that the bandwidth of the original signal $x(t)$ will be much smaller due to the presence of the noise. 
+For example, suppose that the frequency content of $x(t)$ is contained in the range $[0, 0.5]$ KHz: we can therefore sample with an A/D that samples at $f_S = 1$ KHz.
 
 \subparagraph{Analog solution} The classical way to deal with aliasing is to use anti-alias analog filters. 
 
@@ -695,6 +694,5 @@ In this way the signal $\tilde{x}$ is ready to be sampled: aliasing is avoided (
 
 With this approach we consider the bandwidth of the noisy signal $\tilde x(t)$ ($f_{MAX} = 2$ KHz) and we sample it at $f_S = 2 f_{MAX} = 4$ KHz. Then we cut-off all the frequency components introduced by the noise with a digital low-pass filter ($f_{MAX} \rightarrow f'_{MAX} = 0.5$ KHz). Last, since now the bandwidth of the signal is $f'_{MAX} = 0.5$ KHz, we can re-sample the signal at $f'_S = 2 f'_{MAX} = 1$ KHz: this is \emph{under-sampling (1:4)} (because $f'_S = \frac{1}{4} f_S$) which in practice means to take one sample every out of four.
 
-{\Huge Gray $\equiv$ ask}
 
 \end{appendices}
