@@ -154,7 +154,7 @@ The content of the box (non-linear SW-sensor) is:
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[block,dashed border,align=center] at (0,0) (n) {non-linear\\dyn. T.I. sys.};
+        \node[block,dashed border,align=center] at (0,0) (n) {non-linear\\dynamic\\time invariant\\system};
         \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
         \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
         \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
@@ -167,11 +167,10 @@ There are 4 (3+1) different architectures to design the non-linear SW-sensor.
 
 \paragraph{Architecture \#1} Use a \emph{Dynamical Recurrent Neural Network (Dynamic RNN)} in which we update \emph{static neurons} into \emph{dynamic neurons}.
 
-% TODO: look at notation (border)
 	\begin{figure}[H]
 	    \centering
 	    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-	        \node[block,dashed border,align=center] at (0,0) (n) {recurrent\\neural net.};
+	        \node[block,dashed border,align=center] at (0,0) (n) {recurrent\\neural network};
 	        \draw[<-,transform canvas={yshift=0.3cm}] (n) -- ++(-2,0) node[left] {$u(t)$};
 	        \draw[<-,transform canvas={yshift=-0.3cm}] (n) -- ++(-2,0) node[left] {$y(t)$};
 	        \draw[->] (n) -- ++(2,0) node[right] {$\hat{x}(t|t)$};

@@ -35,10 +35,10 @@ Why we dedicate a chapter on \emph{control}?
 	\textbf{Note}: The input is $u(t)$ and the output is $y(t)$. The noise $e(t)$ is a non-measurable input that models the uncertainty of the system.  
 \end{recall}
 
-Assumptions:
+\subparagraph{Assumptions}
 \begin{itemize}
     \item $\frac{C(z)}{A(z)}$ is in \emph{canonical form}
-    \item $b_0\ne 0$ (this implies that $k \ge 0$ is the actual delay)
+    \item $b_0\ne 0$ (this implies that $k \ge 1$ is the \emph{pure delay}, which is not greater than $k$)
     \item $\frac{B(z)}{A(z)}$ is \emph{minimum phase}
 \end{itemize}
 
@@ -53,9 +53,11 @@ Assumptions:
     \end{enumerate}
 \end{recall}
 
-\begin{remark}
-    $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
+\begin{recall}[Minimum Phase filter]
+    A filter described by a \gls{tf} $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
+\end{recall}
 
+\begin{remark}[Minimum Phase filter in practice]
     What does it means in practice? 
 
     \begin{figure}[H]
@@ -86,7 +88,7 @@ Assumptions:
     Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but \emph{generalized MVC (GMVC)}, described in \ref{subsec:GMVC}).
 \end{remark}
 
-Some additional (small) technical assumptions:
+Some additional (small) technical \textbf{assumptions}:
 \begin{itemize}
     \item $y^0(t)$ and $e(t)$ are not correlated (usually fulfilled).
     \item We assume (worst case) that $y^0(t)$ is known only up to time $t$ (present time): we have no preview of the future desired $y^0(t)$ (i.e. $y^0(t)$ is totally unpredictable or $\hat{y^0}(t+k|t) = y^0(t)$).
