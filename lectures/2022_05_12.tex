@@ -344,8 +344,7 @@ Discretization is done via those transformation formulas:
 \begin{align*}
     F &= e^{A\Delta T} \\
     G &= \int_0^{\Delta T} e^{A\delta}B\, d\delta \\
-    H &= C \\
-    D &= D
+    H &= C 
 \end{align*}
 
 \begin{recall}[$s$-domain] Let's recall the transformation from the $s$-domain to the $z$-domain.
@@ -357,7 +356,7 @@ Discretization is done via those transformation formulas:
     \[
         z = e^{s\Delta T} \qquad \lambda_F = e^{\lambda_A \Delta T}
     \]
-
+    \vspace{-25pt}
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2cm,auto,>=latex']
@@ -379,10 +378,11 @@ Discretization is done via those transformation formulas:
             \draw[fill,blue] (0,0) circle (0.05);
             \draw[fill,blue] (7,0) circle (0.05);
 
-            \draw[->] (2,1) -- (4,1) node[pos=0.5] {$z=e^{s\Delta T}$};
+            \draw[->] (2,1) -- (4,1) node[pos=0.5] (transf) {$z=e^{s\Delta T}$};
 
-            \fill[green, opacity=0.1] ($(im2) + (3.2,0)$) rectangle ++(2,1) 
-            	node[pos=0.5, above=0.005cm, align=center, black, opacity=1] {as. stable\\part};
+            % \fill[green, opacity=0.1] ($(im2) + (3.2,0)$) rectangle ++(2,1) 
+            % 	node[pos=0.5, above=0.005cm, align=center, black, opacity=1] {as. stable\\part};
+            \node[below=2.4cm of transf] {\colorbox{green!10}{as. stable part}};
         \end{tikzpicture}
     \end{figure}
 
@@ -443,8 +443,8 @@ The general intuitive rule is: the smaller $\Delta T$, the better.
     For a discretized signal its spectrum is limited and it ranges over $[0, \omega_N]$; as a result, the fitting between the spectrum of the discretized signal and the one of the original signal is very close at low frequencies and becomes more inaccurate as we approach $\omega_N$.
 \end{recall}
 
-If $\Delta T$ is large, $f_S$ is small (and accordingly,  $f_N$ too). 
-
+If $\Delta T$ is large, $f_S$ is small (and accordingly,  $f_N$ too):
+\vspace{-5pt}
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
@@ -475,7 +475,7 @@ If $\Delta T$ is large, $f_S$ is small (and accordingly,  $f_N$ too).
     \end{tikzpicture}
 \end{figure}
 
-Otherwise, if $\Delta T$ is smaller, $\omega_S$ (and $\omega_N$ accordingly) larger.
+Otherwise, if $\Delta T$ is smaller, $\omega_S$ (and $\omega_N$ accordingly) larger:
 
 \begin{figure}[H]
     \centering

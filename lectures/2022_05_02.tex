@@ -12,7 +12,7 @@
         v_1 \perp v_2
     \]
 
-    \paragraph{Question} Find (if exists) the steady state (asymp.) K.F. $\hat{x}(t+1|t)$ and $\hat{x}(t|t)$.
+    \paragraph{Question} Find (if exists) the steady state (asymp.) \gls{kf} $\hat{x}(t+1|t)$ and $\hat{x}(t|t)$.
 
     \[
         n = 1 \qquad F = \frac{1}{2} \qquad G = 0 \qquad H = 2 \qquad V_1 = \frac{19}{20} \qquad V_2 = 1 \qquad V_{12} = 0
@@ -119,14 +119,14 @@
     \]
     The controllability matrix of $\{F, \Gamma\}$ is $R = \begin{bmatrix} \sqrt{\frac{19}{20}} \end{bmatrix}$ with full $\rank R = 1$, the system is fully controllable from noise.
 
-    Both theorems are fulfilled, so \gls{are} has one and only one solution $\overline{P} > 0$, \gls{dre} converges to $\overline{P}$, $\forall P_0\ge0$ and $\overline{K}$ makes the K.F. asymptotically stable.
+    Both theorems are fulfilled, so \gls{are} has one and only one solution $\overline{P} > 0$, \gls{dre} converges to $\overline{P}$, $\forall P_0\ge0$ and $\overline{K}$ makes the \gls{kf} asymptotically stable.
 
     \paragraph{Third step} Compute $\overline{K}$
     \[
         \overline{K} = \left(F\overline{P}H^T + V_{12}\right)\left(H\overline{P}H^T+V_2\right) = \left(\frac{1}{2}\cdot 1 \cdot 2 + 0\right) \left(2\cdot 1 \cdot 2 + 1\right)^{-1} = \frac{1}{5}
     \]
 
-    Double-check the asymptotical stability of K.F.
+    Double-check the asymptotical stability of \gls{kf}
     \[
         F - \overline{K}H = \frac{1}{2} - \frac{1}{5}\cdot 2 = \frac{5-4}{10} = \frac{1}{10}
     \]
@@ -177,7 +177,7 @@
 
     \paragraph{Question} Find T.F. from $y(t)$ to $\hat{x}(t|t-1)$
 
-    \textbf{Recall} T.F. from block schemes of feedback systems.
+    \textbf{Recall} \gls{tf} from block schemes of feedback systems.
 
     \begin{figure}[H]
         \centering
@@ -200,7 +200,7 @@
         y(t) = G_1(z) \left(u(t) \mp G_2(z)y(t)\right) \quad \implies \quad y(t) = \frac{G_1(z)}{1 \pm G_1(z)G_2(z)}u(t)
     \]
 
-    The K.F. is composed of 2 nested loops.
+    The \gls{kf} is composed of 2 nested loops.
 
     \begin{figure}[H]
         \centering

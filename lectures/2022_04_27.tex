@@ -92,7 +92,7 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
 
 \begin{definition}[Kalman Filter in Filter Form] \label{KF-Filter_Form_sol}
     Reformulation of the equations described in \ref{subsec:KF-basic_sol}.\\
-    State equation (\ref{eq:KF-DRE}) and Gain equation (\ref{eq:KF-gain}) become  
+    State equation (\ref{eq:KF-DRE}) and Gain equation (\ref{eq:KF-gain}) becomes  
     \begin{align*}
         \hat{x}(t|t) &= F\hat{x}(t-1|t-1) + Gu(t-1) + K_0(t)e(t) \\
         K_0(t) &= \left(P(t)H\transpose\right) \left(HP(t)H\transpose+V_2\right)^{-1} \\
@@ -125,7 +125,7 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
 
 
 \subsection{Time-varying systems}\label{subsec:time-varying_extension}
-
+In case of time-varying systems we have to perform the following substitutions:
 \begin{align*}
     F \mapsto F(t) \\
     G \mapsto G(t) \\

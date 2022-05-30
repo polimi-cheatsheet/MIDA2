@@ -129,7 +129,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         \rank (R) = 1 < n = 2
         \quad\implies\quad \text{not fully controllable}
     \]
-    If $\Sys$ become 
+    If $\Sys$ becomes 
     \begin{align*}
     \mathcal{S'}: 
         \begin{cases}
@@ -138,7 +138,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
             y(t) = \frac{1}{4}x_1(t)
         \end{cases}
         \qquad
-        \text{only $F$ change and become}\quad
+        \text{only $F$ change and becomes}\quad
         F = \begin{bmatrix}
             \frac{1}{2} & \color{blue}\frac{1}{6} \\
             0 & \frac{1}{3}
@@ -202,7 +202,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
             \draw[black, dashed] ([yshift=3mm]14.north)-|(ut.east)|-([yshift=-3mm]13.south)-|(yt.west)|-([yshift=3mm]14.north);
         \end{tikzpicture}
     \end{figure}
-    From this block scheme it can be seen that $x_1$ is \emph{directly} observable and reachable; $x_2$ become only \emph{indirectly} observable through $x_1(t)$ with the introduction of the blue block that correspond to the term $\color{blue}\frac{1}{6} x_2(t)$ in $\mathcal{S'}$.
+    From this block scheme it can be seen that $x_1$ is \emph{directly} observable and reachable; $x_2$ becomes only \emph{indirectly} observable through $x_1(t)$ with the introduction of the blue block that correspond to the term $\color{blue}\frac{1}{6} x_2(t)$ in $\mathcal{S'}$.
 \end{example}
 
 \begin{example}[SISO system of order $n=2$]
@@ -254,7 +254,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         \quad\implies\quad \text{not fully controllable}
     \]
     
-    If $\Sys$ become 
+    If $\Sys$ becomes 
     \begin{align*}
     \mathcal{S'}: 
         \begin{cases}
@@ -263,7 +263,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
             y(t) = \frac{1}{4}x_1(t)
         \end{cases}
         \qquad
-        \text{only $F$ change and become}\quad
+        \text{only $F$ change and becomes}\quad
         F = \begin{bmatrix}
             \frac{1}{2} & \color{blue} \frac{1}{6} \\
             0 & \frac{1}{3}
@@ -342,11 +342,9 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         \end{tikzpicture}
     \end{figure}
     
-    It can be noticed that $x_1(t)$ is \emph{directly} observable but not reachable and $x_2(t)$ is \emph{directly} controllable. In $\mathcal{S'}$, with the introduction of the same blue block, the system become fully observable and controllable; in particular, $x_2(t)$ become also \emph{indirectly} observable and $x_1(t)$ become also \emph{indirectly} controllable.
+    It can be noticed that $x_1(t)$ is \emph{directly} observable but not reachable and $x_2(t)$ is \emph{directly} controllable. In $\mathcal{S}'$, with the introduction of the same blue block, the system becomes fully observable and controllable; in particular, $x_2(t)$ becomes also \emph{indirectly} observable and $x_1(t)$ becomes also \emph{indirectly} controllable.
     
 \end{example}
-
-\vspace{100pt}
 
 \begin{remark}[4 sub-systems]
 \hfill \break
@@ -387,6 +385,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
     \end{figure}
 
     Which \textbf{externally} is equivalent to a systems like this:
+    \vspace{-5pt}
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
@@ -394,7 +393,9 @@ Controllability is a property of the system: by driving (or move) the input $u(t
             \node[left of=oc] (in) {$u$};
             \node[right of=oc] (out) {$y$};
             
-            \node[align=center, below=0.1cm of oc, blue] {$\uparrow$\\$W(z)$};
+            % \node[align=center, below=0.1cm of oc, blue] {$\uparrow$\\$W(z)$};
+
+            \node[below=0.7cm of oc.north, blue] {$\underbrace{\phantom{OoC}}_{W(z)}$};
 
             \draw[->] (in) -- (oc);
             \draw[->] (oc) -- (out);
@@ -423,7 +424,7 @@ Another final definition is needed before presenting the 4SID algorithm.
 
     \textbf{Note}: it is a square matrix of size $n\times n$.
 
-    \textbf{Note}: we need IR up to time $2n-1$.
+    \textbf{Note}: we need the IR up to time $2n-1$.
 
     \textbf{Note}: it starts from $\omega(1)$ and not from $\omega(0)$ (since, for strictly-proper systems, $\omega(0)=0$).
 
@@ -451,11 +452,11 @@ Another final definition is needed before presenting the 4SID algorithm.
         \end{bmatrix} = O \cdot R
     \]
     
-    \[
-        \Rightarrow H_n = O \cdot R
-    \]
+    % \[
+    %     \Rightarrow H_n = O \cdot R
+    % \]
     
-    where $O$ is the observability matrix and $R$ is the reachability matrix.
+    Therefore, $H_n = O \cdot R$, where $O$ is the observability matrix and $R$ is the reachability matrix.
 \end{definition}
 
 
@@ -463,13 +464,13 @@ Another final definition is needed before presenting the 4SID algorithm.
 
 \section{Subspace-based \acrlong{ss} System Identification (4SID)}
 The original 4SID method starts from the measurement of the system output in a very simple experiment, that is the \emph{impulse experiment}.
-
+\vspace{-7pt}
 \begin{figure}[H]
     \begin{minipage}[t]{0.5\textwidth}
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
             \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
-            \draw[->] (0,-1) -- (0,2) node[left] {$u(t)$};
+            \draw[->] (0,-0.5) -- (0,2) node[left] {$u(t)$};
             \draw[domain=-0.3:0,smooth,variable=\x,red] plot ({\x},{0});
             \draw[domain=0:0.2,smooth,variable=\x,red] plot ({\x},{1.5});
             \draw[domain=0.2:2.5,smooth,variable=\x,red] plot ({\x},{0});
@@ -482,15 +483,15 @@ The original 4SID method starts from the measurement of the system output in a v
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
             \draw[->] (-0.5,0) -- (3,0) node[right] {$t$};
-            \draw[->] (0,-1) -- (0,2) node[left] {$y(t)$};
-            \draw[domain=0:2.5,smooth,variable=\x,red] plot ({\x},{2*sin(\x*180/3.14*5)*e^(-\x)});
-            \draw[mark=*, mark options={fill=blue},blue,samples=15,domain=0:2.5,only marks,variable=\x] plot ({\x},{2*sin(\x*180/3.14*5)*e^(-\x)});
+            \draw[->] (0,-0.5) -- (0,2) node[left] {$y(t)$};
+            \draw[domain=0:2.5,smooth,variable=\x,red] plot ({\x},{1.5*sin(\x*180/3.14*5)*e^(-\x)});
+            \draw[mark=*, mark options={fill=blue},blue,samples=15,domain=0:2.5,only marks,variable=\x] plot ({\x},{1.5*sin(\x*180/3.14*5)*e^(-\x)});
         \end{tikzpicture}
         \caption*{\gls{ir} in output}
     \end{minipage}
+    \vspace{-15pt}
+    %\caption*{Impulse experiment}
 \end{figure}
-
-\vspace{-15pt}
 
 The fundamental idea of this experiment is that it is very simple to measure the output of system given an impulse signal as the input.
 Since the goal of the method is to identify an \gls{ss} model $\left\{ \hat{F}, \hat{G}, \hat{H} \right\}$ starting from the $\gls{ir} = \left\{ \omega(0), \omega(1), \omega(2), \cdots \right\}$, it can be said that it is a \acrlong{bb} system identification method.
