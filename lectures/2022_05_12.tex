@@ -94,14 +94,14 @@ where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-            \node[block] at (0,1.5) (c) {C};
-            \node[block] at (2,1.5) (s) {S};
+            \node[block] at (0,1.5) (c) {Controller};
+            \node[block, right=1.5cm of c] (s) {System};
 
             \draw[->] (c) -- (s) node[pos=0.5] {$u(t)$};
             \draw[->] (c) -- (s);
-            \draw[<-] (c) -- ++(-1,0) node[left] {$y^0(t)$};
+            \draw[<-] (c.west) -- ++(-1,0) node[left] {$y^0(t)$};
             \draw[->] (s) -- ++(2,0) node[right] {$y(t)$};
-            \draw[->] (3,1.5) -- (3,0.5) -| (c);
+            \draw[->] (4.3,1.5) -- (4.3,0.5) -| (c);
         \end{tikzpicture}
     \end{figure}
 

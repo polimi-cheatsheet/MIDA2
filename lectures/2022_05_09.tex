@@ -185,14 +185,14 @@ The block scheme representation of the MVC system is
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
         \node[sum] at (0,0) (sum) {};
-        \node[block, left=1cm of sum] (c1) {$C$}; 
+        \node[block, left=1cm of sum] (c1) {$C(z)$}; 
         \node[block] at (1.5,0) (b1) {$\frac{1}{B(z) E(z)}$};
         \node[block] at (5,0) (b2) {$\frac{B(z)}{A(z)} z^{-k}$};
         \node[block] at (3,-1.5) (b3) {$\tilde{R}(z)$};
         \node[block] at (7,1.5) (b4) {$\frac{C(z)}{A(z)}$};
         \node[sum] at (7,0) (sum2) {};
 
-        \draw[<-] (c1) --++ (-1,0) {} node[left] (in) {$y^0(t)$};
+        \draw[<-] (c1) --++ (-1.5,0) {} node[left] (in) {$y^0(t)$};
         \draw[->] (sum) -- (b1);
         \draw[->] (b1) -- (b2) node[pos=0.5] {$u(t)$};
         \draw[->] (b3) -| (sum) node[pos=0.9] {$-$};
@@ -203,7 +203,7 @@ The block scheme representation of the MVC system is
         \draw[<-] (b4) -- ++(0,1) node[above] (noise_in) {$e(t)$};
         \draw[->] (8,0) |- (b3);
 
-        \draw[dashed, blue] ($(in) + (0.7, -2.5)$) rectangle ($(b2) + (-1.2, 1)$) node[above=0.6cm of c1] {\text{controller}};
+        \draw[dashed, blue] ($(in) + (0.9, -2.5)$) rectangle ($(b2) + (-1.2, 1)$) node[above=0.6cm of c1] {\text{MVC (controller)}};
         \draw[dashed] ($(b2) + (-1, -0.6)$) rectangle ($(noise_in) + (0.7, 0.3)$) node[right] {\text{system}};
     \end{tikzpicture}
 
