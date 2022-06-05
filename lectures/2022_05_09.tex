@@ -130,14 +130,14 @@ Now we can write $J$ as
 \begin{align*}
 	J =& \E \left[ \left( \hat{y}(t|t-k) + \epsilon(t) - y^0(t) \right)^2 \right] \\
 	  =& \E \left[ \left( (\hat{y}(t|t-k) - y^0(t)) + \epsilon(t) \right)^2 \right] \\
-	  =& \E \left[ \left( (\hat{y}(t|t-k) - y^0(t) \right)^2 \right] + \E [\epsilon(t)^2 ] + 2 \E \left[ \epsilon(t) \left( \hat{y}(t|t-k) + y^0(t) \right) \right] 
+	  =& \E \left[ \left( (\hat{y}(t|t-k) - y^0(t) \right)^2 \right] + \E [\epsilon(t)^2 ] + 2 \E \left[ \epsilon(t) \left( \hat{y}(t|t-k) - y^0(t) \right) \right] 
 \end{align*}
 
 where we note that
 
 \begin{itemize}
 	\item $\E [\epsilon(t)^2 ]$ doesn't depend on $u(t)$: it's not subject to minimization, since it's just a constant number.
-	\item $\E [ \epsilon(t) y^0(t) ] = 0$, since $e(t) = f(e(t), e(t-1), \dots) $ and, by assumption, $y^0 \perp e$.
+	\item $\E [ \epsilon(t) y^0(t) ] = 0$, since $\epsilon(t) = f(e(t), e(t-1), \dots) $ and, by assumption, $y^0 \perp e$.
 	\item $\E [ \epsilon(t) \hat{y}(t|t-k) ] = 0$, since by construction $\epsilon(t) \perp \hat{y}(t|t-k)$ (otherwise $\hat{y}(t|t-k)$ wouldn't be the optimal predictor).
 \end{itemize}
 
