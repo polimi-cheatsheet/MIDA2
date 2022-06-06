@@ -1,7 +1,7 @@
 %!TEX root = ../main.tex
 
 \begin{example}[similar to an exam exercise]
-    Consider the following S.S. model
+    Consider the following \gls{ss} model
     \[
     F = \begin{bmatrix}
         \frac{1}{2} & 0 \\
@@ -18,7 +18,7 @@
     \qquad
     D = 0
     \]
-    \textbf{Note} Given the size of $F$ the system has grade $n=2$ and it is strictly-proper single-input single-output system.
+    \textbf{Note} Given the size of $F$ the system has grade $n=2$ and it is strictly-proper single-input single-output system. \\
     \textbf{Note} Since $F$ is triangular, the eigenvalues are on the diagonal and $\eig (F) = \{\frac{1}{2}, \frac{1}{4}\}$ and they have both absolute value less than one, thus the system is \emph{asymptotically stable}.
 
     \paragraph{Question 1} Write the time domain equations of the system in the state space representation.
@@ -138,7 +138,7 @@
         \end{cases}
     \]
     \begin{align*}
-        zx_1(t+1) - \frac{1}{2}x_1(t) = u(t) \qquad &\implies \qquad x_1(t) = \frac{1}{z-\frac{1}{2}}u(t) \\
+        zx_1(t) - \frac{1}{2}x_1(t) = u(t) \qquad &\implies \qquad x_1(t) = \frac{1}{z-\frac{1}{2}}u(t) \\
         zx_2(t) - \frac{1}{4}x_2(t) = \frac{1}{z-\frac{1}{2}}u(t) \qquad &\implies \qquad x_2(t) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}u(t) \\
         y(t) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}u(t)
     \end{align*}
@@ -146,9 +146,9 @@
         W(z) = \frac{1}{(z-\frac{1}{4})(z-\frac{1}{2})}
     \]
 
-    There are 2 poles: $z=\frac{1}{4}$ and $z=\frac{1}{2}$. Since the system is fully observable and controllable the poles correspond to the eigenvalues of $F$.
+    There are 2 poles: $z=\frac{1}{4}$ and $z=\frac{1}{2}$. Since the system is fully observable and fully controllable, the poles correspond to the eigenvalues of $F$.
 
-    Second method: use the formula
+    Second method: use the transformation \ref{t1}
     \[
         W(z) = H(zI-F)^{-1}G = \begin{bmatrix}
             0 & 1
@@ -168,7 +168,7 @@
 
     \paragraph{Question 6} Compute the first 6 values (including $\omega(0)$) of \gls{ir}.
 
-    We decide to compute it from the \gls{tf} $\frac{z^{-2}}{1-\frac{3}{4}z^{-1}+\frac{1}{8}z^{-2}}$.
+    We decide to compute it from the \gls{tf} $W(z) = \frac{z^{-2}}{1-\frac{3}{4}z^{-1}+\frac{1}{8}z^{-2}}$.
     Performing the 5-step long division of $W(z)$ the result is $z^{-2}+\frac{3}{4}z^{-3}+\frac{7}{16}z^{-4}+\frac{15}{64}z^{-5}$.
 
     \begin{align*}
@@ -188,7 +188,7 @@
         H_1 = \begin{bmatrix}
             0
         \end{bmatrix}
-        \qquad \rank (H_1) = 1
+        \qquad \rank (H_1) = 0
     \]
     \[
         H_2 = \begin{bmatrix}

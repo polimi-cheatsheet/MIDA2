@@ -12,8 +12,8 @@
 \]
 
 $\tilde{H}_{qd}$ is a $q\times d$ matrix.\\
-\textbf{Note} that, as before, we start from $\tilde{\omega}(1)$ since we are assuming $\tilde{\omega}(0)=0$. \\
-\textbf{Note} that $q+d-1$ must equal to $N$ so that we use all the dataset.
+\textbf{Note} As before, we start from $\tilde{\omega}(1)$ since we are assuming $\tilde{\omega}(0)=0$. \\
+\textbf{Note} $q+d-1$ must equal to $N$ so that we use all the dataset.
 
 
 \begin{remark}[Choice of $q$ and $d$]
@@ -42,7 +42,7 @@ $\tilde{H}_{qd}$ is a $q\times d$ matrix.\\
     
     If $q \ll d$ it's computationally less intensive but has the worst accuracy.
 
-    \textbf{Rule of thumb:} If $ q > \frac{d}{2}$ we get to a good enough result.
+    \textbf{Rule of thumb} If $ q > \frac{d}{2}$ we get to a good enough result.
 \end{remark}
 
 \paragraph{Step 2} \emph{Singular Value Decomposition (SVD)} of $\tilde{H}_{qd}$
@@ -58,7 +58,7 @@ where $\tilde{U}$ and $\tilde{V}$ are \emph{square} and \emph{unitary} matrices 
         \sigma_1 & & & & &\\
         & \sigma_2 & & & &\\
         & & \ddots & & &\\
-        & & & \sigma_d & &\\
+        & & & \sigma_q & &\\
     \end{bmatrix}
 \]
 
@@ -68,7 +68,7 @@ Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge
 \begin{definition}[Unitary matrix]
     A matrix $M$ is \emph{unitary} if:
     \begin{itemize}
-        \item $\det M = 1$ (so it's invertible)
+        \item $\det (M) = 1$ \quad (this implies that $M$ is invertible)
         \item $M^{-1} = M\transpose$
     \end{itemize}
 \end{definition}
@@ -78,8 +78,9 @@ Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge
     SVD is a \emph{sort of diagonalization} of a rectangular matrix.
 \end{obs}
 
-\begin{recall}
-    For a square matrix, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. If $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM\transpose)}$ (for non zero eigenvalues).
+\begin{recall}[Eigenvalues and Singular Values]
+    For a square matrix $A$, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. \\
+    If a matrix $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM\transpose)}$ (for non zero eigenvalues).
 \end{recall}
 
 \begin{remark}[How to compute SVD]
@@ -148,7 +149,7 @@ Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge
     \end{minipage}
 \end{figure}
 
-In the ideal case there is a perfect/clear separation between the signal and the noise S.V. (a jump).
+In the ideal case there is a perfect/clear separation between the signal and the noise singular values (a jump).
 The index of the jump is $n$, that is the order of the system.
 
 In the real case there is no clear distinction between signal and noise singular values, since the order of the system can assume values in an interval.
@@ -203,11 +204,12 @@ After the decision on the value of $n$ we split $\tilde{H}_{qd}$ in $\tilde{U}$,
 \[
     \tilde{H}_{qd} = \underbrace{\hat{U} \hat{S} \hat{V}\transpose}_{\hat{H}_{qd}} + H_{res,qd} \qquad \rank (\tilde{H}_{qd}) = q \quad \rank (\hat{H}_{qd}) = n \quad \rank (H_{res,qd}) = q
 \]
-where $\hat{H}_{qd}$ is the \emph{"signal part"} and $H_{res,qd}$ is the \emph{"noise (or residual) part"} of $\tilde{H}_{qd}$.\\
 
-\textbf{Note:} $\hat{S}$ is now a square diagonal matrix of $\sigma_1, \dots, \sigma_q$.\\
-\textbf{Note:} from $\tilde{H}_{qd}$ to $\hat{H}_{qd}$ the rank is hugely reduced.\\
-\textbf{Note:} $\hat{H}_{qd}$ is the "cleaned" Hankel matrix.
+where $\hat{H}_{qd}$ is the \emph{signal part} and $H_{res,qd}$ is the \emph{noise (or residual) part} of $\tilde{H}_{qd}$.\\
+
+\textbf{Note} $\hat{S}$ is now a square diagonal matrix of $\sigma_1, \dots, \sigma_q$.\\
+\textbf{Note} From $\tilde{H}_{qd}$ to $\hat{H}_{qd}$ the rank is hugely reduced.\\
+\textbf{Note} $\hat{H}_{qd}$ is the "cleaned" Hankel matrix.
 
 \paragraph{Step 4} Estimation of $\hat{F}$, $\hat{G}$ and $\hat{H}$ using the cleaned matrix $\hat{H}_{qd}$
 
@@ -223,7 +225,7 @@ Defining $\hat{O} = \hat{U}\hat{S}^{\frac{1}{2}}$ and $\hat{R} = \hat{S}^{\frac{
 
 We can view $\hat{O}$ as the \emph{extended observability matrix} and the $\hat{R}$ the \emph{extended reachability matrix} of the system. \\
 
-Now it is possible to estimate $\hat{H}$ with the first row of $\hat{O}$ and $\hat{G}$ with the first column of $\hat{R}$, similarly to the \nameref{step3} of the noise-free case.
+Now it is possible to estimate $\hat{H}$ with the first row of $\hat{O}$ and $\hat{G}$ with the first column of $\hat{R}$, similarly to the \nameref{4SID-NF:step3} of the noise-free case.
 
 \begin{align*}
     \hat{G} = \hat{R}(\texttt{:;1}) & \quad\text{(first column of $\hat{R}$)} \\
@@ -232,10 +234,10 @@ Now it is possible to estimate $\hat{H}$ with the first row of $\hat{O}$ and $\h
 
 
 
-What about the estimation of $\hat{F}$? Let's try to proceed again similarly to what we have done at the \nameref{step3} of the noise-free case.
-Consider for example $\hat{O}$ and define $\hat{O}_1$ as $\hat{O}$ without the last row, and $\hat{O}_2$ as $\hat{O}$ without the first row.
+What about the estimation of $\hat{F}$? Let's try to proceed again similarly to what we have done at the \nameref{4SID-NF:step3} of the noise-free case.
+Consider for example $\hat{O}$ and define $\hat{O'}$ as $\hat{O}$ without the last row, and $\hat{O''}$ as $\hat{O}$ without the first row.
 
-Using the \emph{shift-invariance} property we have that $\hat{O}_1 \hat{F} = \hat{O}_2$, but $\hat{O}_1$ is not a square matrix so it's NOT invertible.
+Using the \emph{shift-invariance} property we have that $\hat{O'} \hat{F} = \hat{O''}$, but $\hat{O'}$ is not a square matrix so it's NOT invertible.
 To avoid this problem we can use the approximate \emph{least-squares} solution.
 
 
@@ -260,16 +262,16 @@ To avoid this problem we can use the approximate \emph{least-squares} solution.
 \end{remark}
 
 
-Applying the least-square method to $\hat{O}_1 \hat{F} = \hat{O}_2$ we have
+Applying the least-square method to $\hat{O'} \hat{F} = \hat{O''}$ we have
 \begin{align*}
-    \hat{O}_1\hat{F} = \hat{O}_2 \quad \Rightarrow \quad
-    \hat{O}_1\transpose\hat{O}_1\hat{F} = \hat{O}_1\transpose\hat{O}_2 \quad \Rightarrow \quad 
-    \hat{F} = \left(\hat{O}_1\transpose\hat{O}_1\right)^{-1} \hat{O}_1\transpose\hat{O}_2
+    \hat{O'}\hat{F} = \hat{O''} \quad \Rightarrow \quad
+    (\hat{O'})\transpose\hat{O'}\hat{F} = (\hat{O'})\transpose\hat{O''} \quad \Rightarrow \quad 
+    \hat{F} = \left((\hat{O'})\transpose\hat{O'}\right)^{-1} (\hat{O'})\transpose\hat{O''}
 \end{align*}
 
 
-\paragraph{Conclusion} Starting from a noisy \gls{ir} $\{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non-parametric and constructive way.
-\[ \left\{\hat{H}, \hat{G}, \hat{F} \right\} = \left \{\hat{O}(\texttt{1;:}), \hat{R}(\texttt{:;1}), \left(\hat{O}_1\transpose\hat{O}_1\right)^{-1} \hat{O}_1\transpose\hat{O}_2\right \}\]
+\paragraph{Conclusions} Starting from a noisy \gls{ir} $\widetilde{\omega}(t) = \{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non-parametric and constructive way.
+\[ \left\{\hat{H}, \hat{G}, \hat{F} \right\} = \left \{\hat{O}(\texttt{1;:}), \hat{R}(\texttt{:;1}), \left((\hat{O'})\transpose\hat{O'}\right)^{-1} (\hat{O'})\transpose\hat{O''} \right \}\]
 
 \begin{obs}
     This method can be extended also to the case where the input signal is generic (i.e. not an impulse).
@@ -282,36 +284,41 @@ Applying the least-square method to $\hat{O}_1 \hat{F} = \hat{O}_2$ we have
 \end{remark}
 
 \begin{remark}[Rank Reduction]
-Our goal is to obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
-SVD makes exactly this: $\tilde{H}_{res,qd}$ is the minimum possible (in the sense of the \emph{Frobenius norm}).
-\[
-    \left|\tilde{H}_{res,qd}\right|_F = \sqrt{\sum_{ij} \left(\tilde{H}_{res,qd}^{(ij)} \right)^2}
-\]
-    
+    Our goal is to obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
+    SVD makes exactly this: $H_{res,qd}$ has the minimum possible size in the sense of the \emph{Frobenius norm}:
+    \[
+        \left\Vert H_{res,qd} \right\Vert_\text{F} = \sqrt{\sum_{ij} \left(H_{res,qd}^{(ij)} \right)^2}
+    \]   
 \end{remark}
 
 \begin{example}[Rank Reduction]
+    
+    If we reduce a matrix $M$ as follows: 
     \[
         \underbrace{\begin{bmatrix}
             2 & 5 & 3 & 6 & 5 \\
             5 & 3 & 6 & 5 & 7 \\
             3 & 6 & 5 & 7 & 1
-        \end{bmatrix}}_{\rank = 3}
+        \end{bmatrix}}_{M}
         =
         \underbrace{\begin{bmatrix}
             1 & 0 & 0 & 0 & 0 \\
             0 & 1 & 0 & 0 & 0 \\
             0 & 0 & 0 & 0 & 0
-        \end{bmatrix}}_{\rank = 2}
+        \end{bmatrix}}_{\hat{M}}
         +
         \underbrace{
         \begin{bmatrix}
             1 & 5 & 3 & 6 & 5 \\
             5 & 2 & 6 & 5 & 7 \\
             3 & 6 & 5 & 7 & 1
-        \end{bmatrix}}_{\rank = 3}
+        \end{bmatrix}}_{M_{res}}
     \]
-    It's not the optimal rank reduction matrix, because it factors out a matrix with lower rank but a lot of information of the original matrix is lost.
+
+    where
+    \[ \rank(M) = 3 \qquad \rank(\hat{M}) = 2 \qquad \rank(M_{res}) = 3 \]
+
+    this is not the optimal rank reduction, since it factors out the matrix $\hat{M}$ with lower rank but a lot of information of the original matrix $M$ is lost in the residual matrix $M_{res}$.
 \end{example}
 
 

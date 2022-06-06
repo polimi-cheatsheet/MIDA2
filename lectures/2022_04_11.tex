@@ -43,7 +43,7 @@ Before moving to the topic of \emph{4SID method}, a recall of the \emph{observab
 \]
 
 \begin{definition}[Fully Observable]
-The system is fully observable (from the output) if and only if the \textbf{observability matrix} is full rank:
+The system is fully observable (from the output) if and only if the \textbf{observability matrix} $O$ is full rank:
 \[
     O = \begin{bmatrix}
         H \\
@@ -63,7 +63,7 @@ Observability is a property of the system: by observing the output $y(t)$ it's p
 \end{obs}
 
 \begin{definition}[Fully Controllable]
-The system is fully controllable (from the input) if and only if the \textbf{controllability matrix} is full rank:
+The system is fully controllable (from the input) if and only if the \textbf{controllability matrix} $R$ is full rank:
 \[
     R = \begin{bmatrix}
         G & FG & \cdots & F^{n-1}G
@@ -122,8 +122,8 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         R = \begin{bmatrix}
             G & FG
         \end{bmatrix} = \begin{bmatrix}
-            0 & 0 \\
-            1 & \frac{1}{3}
+            1 & \frac{1}{2} \\
+            0 & 0
         \end{bmatrix}
         \qquad
         \rank (R) = 1 < n = 2
@@ -138,7 +138,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
             y(t) = \frac{1}{4}x_1(t)
         \end{cases}
         \qquad
-        \text{only $F$ change and becomes}\quad
+        \text{only $F$ changes and becomes}\quad
         F = \begin{bmatrix}
             \frac{1}{2} & \color{blue}\frac{1}{6} \\
             0 & \frac{1}{3}
@@ -404,13 +404,13 @@ Controllability is a property of the system: by driving (or move) the input $u(t
     
     \vspace{-15pt}
     
-    Hence, this is graphically proves of the fact that the I/O representation of a system through the \acrlong{tf} can only represent the \emph{observable} and \emph{controllable} part of the system; all the other sub-systems remains \textbf{hidden} with this representation. For this reason, the \gls{ss} representation is "more complete" than the \gls{tf} one when the system is not fully observable or not fully controllable.
+    Hence, this is a graphic proof of the fact that the I/O representation of a system through the \acrlong{tf} can only represent the \emph{observable} and \emph{controllable} part of the system; all the other sub-systems remains \textbf{hidden} with this representation. For this reason, the \gls{ss} representation is "more complete" than the \gls{tf} one when the system is not fully observable or not fully controllable.
 \end{remark}
 
 Another final definition is needed before presenting the 4SID algorithm.
 
 \begin{definition}[Hankel matrix of order n]
-    Starting from $\gls{ir} = \{\omega(1), \omega(2), \ldots, \omega(N)\}$ we can build the Hankel matrix of order $n$.
+    Starting from the \gls{ir} $\omega(t) = \{\omega(1), \omega(2), \ldots, \omega(N)\}$ we can build the Hankel matrix of order $n$ as follows:
 
 \[
     H_n = \begin{bmatrix}
@@ -494,12 +494,12 @@ The original 4SID method starts from the measurement of the system output in a v
 \end{figure}
 
 The fundamental idea of this experiment is that it is very simple to measure the output of system given an impulse signal as the input.
-Since the goal of the method is to identify an \gls{ss} model $\left\{ \hat{F}, \hat{G}, \hat{H} \right\}$ starting from the $\gls{ir} = \left\{ \omega(0), \omega(1), \omega(2), \cdots \right\}$, it can be said that it is a \acrlong{bb} system identification method.
+Since the goal of the method is to identify an \gls{ss} model $\left\{ \hat{F}, \hat{G}, \hat{H} \right\}$ starting from the \gls{ir} $\omega(t) = \left\{ \omega(0), \omega(1), \omega(2), \cdots \right\}$, it can be said that it is a \acrlong{bb} system identification method (we need only data and knowledge of the system isn't required).
 
 We will see the solution of the problem with two different assumptions:
 \begin{description}
     \item [Basic problem] \gls{ir} measurement is assumed to be \textbf{noise-free}. Easier and not realistic problem. Described in \ref{4sid-noisefree}.
-    \item [Real problem] \gls{ir} is measured with noise
+    \item [Real problem] \gls{ir} is measured with noise, that is:5
     \[ \widetilde{\omega}(t) = \omega(t) + \eta(t) \quad t = 0, 1,\dots, N \] where
         $\widetilde{\omega}(t)$ is the measured noisy \gls{ir},
         $\omega(t)$ is the ``true'' noise-free \gls{ir} and
@@ -526,7 +526,7 @@ We will see the solution of the problem with two different assumptions:
             \node (in) [above of=sum, node distance=1.5cm] {};
             \node [coordinate] (mid) [below of=sum, node distance=1cm] {};
 
-            \draw[->] (in) edge node[align=left] {experimental\\excitation input} (sum);
+            \draw[->] (in) edge node[pos=0.2, align=left] {experimental\\excitation input} (sum);
             \draw[->] (stab) edge node {} (sum);
             \draw[->] (sum) edge node {} (sys);
             \draw (sys) edge (split);
@@ -539,9 +539,9 @@ We will see the solution of the problem with two different assumptions:
     \end{figure}
 \end{remark}
 
-\section{4SID procedure (noise-free)} \label{4sid-noisefree}
+\section{4SID procedure (noise-free)} \label{sec:4SID-NF}
 
-\paragraph{Step 1} \label{step1} Build the Hankel matrix in increasing order and each time compute the rank of the matrix.
+\paragraph{Step 1} \label{4SID-NF:step1} Build the Hankel matrix in increasing order and each time compute the rank of the matrix.
 
 \[
     H_1 = \begin{bmatrix}
@@ -585,7 +585,7 @@ where $O_{n+1} = \begin{bmatrix}
     \color{red}G & FG & \cdots & F^nG
 \end{bmatrix}$ of size $n\times (n+1)$.
 
-\paragraph{Step 3} \label{step3} $H$, $F$, $G$ estimation.
+\paragraph{Step 3} \label{4SID-NF:step3} $H$, $F$, $G$ estimation.
 
 Using $O_{n+1}$ and $R_{n+1}$ we can easily find:
 \begin{align*}
@@ -594,32 +594,43 @@ Using $O_{n+1}$ and $R_{n+1}$ we can easily find:
 \end{align*}
 
 To estimate $\hat{F}$ consider $O_{n+1}$ (or, similarly, $R_{n+1}$):\\
-define $O_1$ as $O_{n+1}$ without the last row, and $O_2$ as $O_{n+1}$ without the first row, that is
-\[O_1 = O_{n+1}\texttt{(1:n;:)} \qquad O_2 = O_{n+1}\texttt{(2:n+1;:)}\]
+define $O'$ as $O_{n+1}$ without the last row, and $O''$ as $O_{n+1}$ without the first row, that is
+\[O' = O_{n+1}\texttt{(1:n;:)} = \begin{bmatrix}
+        H \\
+        HF \\
+        \vdots \\
+        HF^{n-1}
+    \end{bmatrix}\]
 
-\textbf{Note:} $O_1$ and $O_2$ are $n\times n$ matrices.
-This is called \emph{shift-invariance} property.
+\[ O'' = O_{n+1}\texttt{(2:n+1;:)} = \begin{bmatrix}
+        HF \\
+        HF^2 \\
+        \vdots \\
+        HF^{n}
+    \end{bmatrix}\]
 
-\textbf{Note:} $O_1$ is invertible since it's an observability matrix and the subsystem is fully observable.\\
+\textbf{Note} $O'$ and $O''$ are $n\times n$ matrices.
 
-Moreover $O_2 = O_1 F$, so $\hat{F} = O_1^{-1}O_2$.
+\textbf{Note} It is easy to verify that $O'$ and $O''$ follow the \emph{shift-invariance} property: $O''= O' F$
 
-In conclusion in a simple and \emph{constructive} (i.e NON parametric) way we have estimated a \acrlong{ss} model of the system starting from measured \emph{noise-free} \gls{ir}, using only $2n+1$ samples of \gls{ir}. \\
+
+Thanks to the latter property, if we assume that $O'$ is invertible, we can find $\hat{F} = (O')^{-1}O''$.
+
+\paragraph{Conclusions}
+In conclusion, in a simple and \emph{constructive} (i.e. NON parametric) way we have estimated a \acrlong{ss} model of the system starting from measured \emph{noise-free} \gls{ir}, using only $2n+1$ samples of \gls{ir}. \\
 In practice $n \ll N$, where, again, $n$ is the order of the system and $N$ the number of sample in the dataset.
 
-\textbf{Conclusion}
-
-\[ \left\{\hat{H}, \hat{G}, \hat{F}\right\} = \left\{O_{n+1}(\texttt{1;:}), R_{n+1}(\texttt{:;1}), O_1^{-1}O_2\right\}\]
+\[ \left\{\hat{H}, \hat{G}, \hat{F}\right\} = \left\{O_{n+1}(\texttt{1;:}), R_{n+1}(\texttt{:;1}), (O')^{-1}O'' \right\}\]
 
 \begin{remark}
-    If the measurement is noisy all this process is \textbf{useless}. Also, if $n$ is unknown, \nameref{step1} could never stop.
+    If the measurement is noisy all this process is \textbf{useless}. Also, if $n$ is unknown, \nameref{4SID-NF:step1} could never stop.
 \end{remark}
 
-\section{4SID procedure (with Noise)} \label{4sid-noise}
+\clearpage
 
-In reality, the measurements of \gls{ir} are noisy: $\tilde{\omega}(t) = \omega(t) + \eta(t)$. Therefore, the \textbf{real problem} is the estimation of the system taking into account the noise; indeed, the available dataset will be $\gls{ir} = \tilde{\omega}(t) = \{\tilde{\omega}(0), \tilde{\omega}(1), \cdots, \tilde{\omega}(N)\}$.  
+\section{4SID procedure (with Noise)} \label{sec:4SID-N}
 
-\vspace{-7pt}
+In reality, the measurements of \gls{ir} are noisy: $\tilde{\omega}(t) = \omega(t) + \eta(t)$. Therefore, the \textbf{real problem} is the estimation of the system taking into account the noise; indeed, the available dataset will be $\tilde{\omega}(t) = \{\tilde{\omega}(0), \tilde{\omega}(1), \cdots, \tilde{\omega}(N)\}$.  
 
 \begin{figure}[H]
     \begin{minipage}[t]{0.5\textwidth}
