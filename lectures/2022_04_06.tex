@@ -12,12 +12,12 @@ Furthermore, in order to understand the concepts of this course it is recommende
 
 \begin{itemize}
     \item Collect digitally data from real systems
-    \item Build \acrfull{bb} (or \gls{gb}) models from data, with emphasis on
+    \item Build \acrfull{bb} (or \acrfull{gb}) models from data, with emphasis on
     \begin{itemize}
         \item Dynamic systems
         \item Control/automation-oriented applications
     \end{itemize}
-    \item Purpose of modelling (area of machine leasing focusing on ``control'')
+    \item Purpose of modelling (area of machine learning focusing on ``control'')
     \begin{itemize}
         \item Prediction
         \item Software-sensing
@@ -26,7 +26,7 @@ Furthermore, in order to understand the concepts of this course it is recommende
 \end{itemize}
 
 \subsection{Super summary of MIDA1}
-The focus is on \emph{Time Series} (output-only systems) and \emph{input/output} (I/O) systems.
+The focus was on \emph{Time Series} (output-only systems) and \emph{input/output} (I/O) systems.
 
 Models used in MIDA1:
 \begin{itemize}
@@ -41,7 +41,7 @@ Models used in MIDA1:
 
 		\node (input) at (0,0) {};
 		\draw[-] (input.east) -- (1,0)
-		    node[midway,above] {$u(t)$}
+		    node[midway,above] {$e(t)$}
 		    node[at end] (inputR) {};
 		
 		% blocks
@@ -80,14 +80,14 @@ Models used in MIDA1:
         \caption*{\gls{armax} model}
     \end{minipage}
 \end{figure}
-We've used a \emph{\acrlong{bb} model identification} of the model, indicated as $\Mc(\theta)$ where $\theta$ is the parameter vector, which contains the coefficients of $A(z)$, $B(z)$, $C(z)$.
+We've used a \acrlong{bb} model identification method to find the model of the real system. The model is indicated as $\Mc(\theta)$ where $\theta$ is the parameter vector, which contains the coefficients of $A(z)$, $B(z)$, $C(z)$.
 
-In particular we've seen the \textbf{\gls{pem}} method, a \emph{parametric approach} based on the minimization of the \emph{performance index} defined as:
+In particular, we've seen the \textbf{\acrfull{pem}} method, a \emph{parametric approach} based on the minimization of the \emph{performance index} defined as:
 \begin{definition}[\gls{pem} cost function]
     $J_{N}(\theta) = \frac{1}{N} \sum_{t=1}^N \left(y(t) - \hat{y}(t|t-1, \theta)\right)^2$
 \end{definition}
 
-which is the variance of the \emph{prediction error} made by the model. The optimal $\theta$ is $\hat{\theta}_N = \argmin_\theta J_{N}(\theta)$
+which is the variance of the \emph{prediction error} $\epsilon(t)$ made by the model. The optimal $\theta$ is $\hat{\theta}_N = \argmin_\theta J_{N}(\theta)$
 
 \subsection{MIDA 2}
 
@@ -234,7 +234,7 @@ where $\Phi(t)$ are the available (measurable) variables of the system and $\hat
 \end{figure}
 
 
-\begin{recall}[General path of a Parametric Identification Methods]
+\begin{recall}[General path of a Parametric Identification Method]
 \hfill \break
     \begin{enumerate}
         \item Collect data: inputs: $\left\{u(1), u(2), \ldots, u(N)\right\}$, outputs: $\left\{y(1), y(2), \ldots, y(N)\right\}$
@@ -243,9 +243,9 @@ where $\Phi(t)$ are the available (measurable) variables of the system and $\hat
         \item Optimization step (minimize $J(\theta)$ w.r.t $\theta$): $\hat{\theta}_N = \argmin_\theta J(\theta)$ $\rightarrow$ optimal model $\Mc(\hat{\theta}_N)$ characterized by the \textbf{optimal parameters} $\hat{\theta}_N$
     \end{enumerate}
     
-    Note:    $J(\theta): \RR^{n_\theta} \rightarrow \RR^+$ (where $n_\theta$ is the order of the model).
+    \textbf{Note}:    $J(\theta): \RR^{n_\theta} \rightarrow \RR^+$ (where $n_\theta$ is the order of the model).
     
-    Note: $\Mc(\theta_1)$ can be sorted, that is $\Mc(\theta)$ is better than $\Mc(\theta_2)$ if $J(\theta_1) < J(\theta_2)$.
+    \textbf{Note}: $\Mc(\theta)$ can be sorted, that is $\Mc(\theta_1)$ is better than $\Mc(\theta_2)$ if $J(\theta_1) < J(\theta_2)$.
 
 \end{recall}
 
@@ -256,7 +256,7 @@ In this chapter we are presenting a totally different system identification appr
     \item No optimization task
 \end{itemize}
 
-Before entering in the system identification algorithm we need to recall the three main mathematical representation of \textbf{Discrete-time Dynamic Linear Systems} which are characterized by their internal variables called \emph{states} and indicated with $x(t)$.
+Before entering in this system identification algorithm we need to recall the three main mathematical representation of \textbf{Discrete-time Dynamic Linear Systems} which are characterized by their internal variables called \emph{states} and indicated with $x(t)$.
 
 
 \section{Representations}
@@ -267,7 +267,7 @@ Before entering in the system identification algorithm we need to recall the thr
 \Sys: 
 \begin{cases}
     x(t+1) = F x(t) + G u(t) & \qquad \text{state equations} \\
-    y(t+1) = H x(t) + D u(t) & \qquad \text{output equations}
+    y(t) = H x(t) + D u(t) & \qquad \text{output equation}
 \end{cases}
 \]
 
@@ -342,5 +342,5 @@ $n$ is the \emph{order} of the system.
 
 
 \begin{remark}[\acrlong{ss} representation is not unique]
-    $F_1 = TFT^{-1}$, $G_1 = TG$, $H_1 = HT^{-1}$, $D_1 = D$ for any invertible $(n\times n)$ matrix $T$. The system $\{F, G, H, D\}$ is equivalent to $\{F_1, G_1, H_1, D_1\}$.
+    Let $F_1 = TFT^{-1}$, $G_1 = TG$, $H_1 = HT^{-1}$, $D_1 = D$ for any invertible $(n\times n)$ matrix $T$. Then, the system $\{F, G, H, D\}$ is equivalent to $\{F_1, G_1, H_1, D_1\}$.
 \end{remark}
