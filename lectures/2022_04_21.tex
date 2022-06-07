@@ -1,6 +1,7 @@
 %!TEX root = ../main.tex
 
 Dynamical systems have this layout:
+
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
@@ -23,7 +24,7 @@ Dynamical systems have this layout:
     \end{tikzpicture}
 \end{figure}
 
-MIMO system with $m$ inputs (actuators/control variables), $p$ outputs (sensors) and $n$ states.
+where, in this case, the system is MIMO: it has $m$ inputs (actuators/control variables), $p$ outputs (sensors) and $n$ states.
 
 \textbf{Key problem} usually $p \ll n$, that is, physical sensors are much less than system states, because of:
 \begin{itemize}
@@ -33,7 +34,7 @@ MIMO system with $m$ inputs (actuators/control variables), $p$ outputs (sensors)
     \item existence of such sensors
 \end{itemize}
 
-That's why usually not all the states are measured (available) but it is very useful to have full ``measurement'' of states because:
+That's why usually not all the states are measured (available). However, it is very useful to have full ``measurement'' of states because:
 \begin{itemize}
     \item design of control algorithms (state feedback design)
     \item monitoring of the system (fault detection, predictive maintenance, \dots)
@@ -100,7 +101,7 @@ where $\hat{x}(t)$ is an estimation (or SW-sensing) of the internal state $x(t)$
 Given $c$, the fixed cost of development of the software sensor, it is possible to compute the break-event point.
 The break-even point coincides with the number of products such that above that number it is more convenient to use software sensing, while below that number it is more convenient to buy and install physical sensors per each product.
 
-Anyway, in some cases we might use both physical and software sensing for redundancy (e.g. in vert safety-critical or mission-critical applications).
+Anyway, in some cases we might use both physical and software sensing for redundancy (e.g. in very safety-critical or mission-critical applications).
 
 \paragraph{Key questions for software sensing}
 
@@ -328,7 +329,7 @@ The basic system we initially consider is a MIMO system with $n$ states, ($m$ in
     \begin{enumerate}
         \item $\E[v_1(t)] = \vec{0}$
         \item $\E[v_1(t) \cdot v_1\transpose(t)] = V_1$, where $V_1$ is an $n\times n$ covariance matrix (square, symmetric and semi-definite positive by definition)
-        \item $\E[v_1(t) \cdot v_1\transpose(t-\tau)] = 0 \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
+        \item $\E[v_1(t) \cdot v_1\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
     \end{enumerate}
     
     \vspace{15pt}
@@ -349,7 +350,7 @@ The basic system we initially consider is a MIMO system with $n$ states, ($m$ in
     \begin{enumerate}
         \item $\E[v_2(t)] = \vec{0}$
         \item $\E[v_2(t) \cdot v_2\transpose(t)] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (square, symmetric and semi-definite positive\footnote{We make the \textbf{assumption that $V_2$ is definite positive} (i.e. $V_2>0$) because we will need this property in the Riccati equation.} by definition)
-        \item $\E[v_2(t) \cdot v_2\transpose(t-\tau)] = 0 \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
+        \item $\E[v_2(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
     \end{enumerate}
 
 \end{description}
@@ -357,7 +358,7 @@ The basic system we initially consider is a MIMO system with $n$ states, ($m$ in
 \textbf{Assumptions} about the relationships between $v_1(t)$ and $v_2(t)$:
 \[
     \E[v_1(t) \cdot v_2\transpose(t-\tau)] = \begin{cases} \label{sys:corrV12} \tag*{$\clubsuit$}
-        0 & \text{if } \tau \ne 0 \\
+        [0]_{n \times p} & \text{if } \tau \ne 0 \\
         V_{12} & \text{if } \tau = 0
     \end{cases}
 \]
@@ -366,19 +367,21 @@ where $V_{12}$ is a cross-correlation matrix of size $n\times p$.
 
 The system \eqref{sys:corrV12} means that $v_1$ and $v_2$ can be correlated only at the same time, but, in practice, $V_{12}=0$ is the most common assumption. Thus, in practice
 
-\[\E[v_1(t) \cdot v_2\transpose(t-\tau)] = 0 \quad \forall t \forall \tau  \qquad \qquad \text{($1^{st}$ assumption)} \]
+\[\E[v_1(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times p} \quad \forall t \forall \tau  \qquad \qquad \text{($1^{st}$ assumption)} \]
 
 Since the system $\Sys$ is dynamic we need to define the (in this case, probabilistic) initial conditions:
 \[
-    \E[x(1)] = \underbrace{X_0}_{n\times 1} \qquad \E[\left(x(1) - X_0)\right)\left(x(1)-X_0\right)\transpose] = \underbrace{P_0}_{n\times n} \ge 0
+    \E[x(1)] = \underbrace{X_0}_{n\times 1} \qquad \E[\left(x(1) - X_0)\right)\left(x(1)-X_0\right)\transpose] = \underbrace{P_0}_{n\times n} \ge [0]_{n \times n}
 \]
 
-If the covariance matrix $P_0 = 0$ the initial state is perfectly known.
+If the covariance matrix $P_0 = [0]_{n \times n}$ the initial state is perfectly known.
 
 Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated with the initial state:
 \[
     x(1) \perp v_1(t) \qquad x(1) \perp v_2(t) \qquad \qquad \text{($2^{nd}$ assumption)}
 \]
+
+\textbf{Note} From now on, \emph{null matrices} $[0]_{n \times m}$ will be simply denoted by $0$. 
 
 \subsection{KF Basic Solution of the Basic System}\label{subsec:KF-basic_sol}
 
