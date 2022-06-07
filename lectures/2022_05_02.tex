@@ -20,7 +20,7 @@
 
     Since $V_{12} = 0$ we can try to use the asymptotic theorems.
 
-    \paragraph{First step} Compute the \gls{dre}
+    \subparagraph{First step} Compute the \gls{dre}
     \begin{align*}
         P(t+1) &= \left( FP(t)F^T+V_1 \right) - \left( FP(t)H^T+V_{12} \right) \left( HP(t)H^T+V_2 \right)^{-1}\left( FP(t)H^T+V_{12} \right)^T \\
         &= \frac{1}{4}P(t) + \frac{19}{20} - \frac{ \left(\frac{1}{\cancel{2}}P(t)\cancel{2}\right)^2 }{4P(t)+1} \\
@@ -33,7 +33,7 @@
         P(t+1) = \frac{81P(t) + 19}{80P(t)+20}
     \]
 
-    \paragraph{Second step} Compute and solve the \gls{are}
+    \subparagraph{Second step} Compute and solve the \gls{are}
 
     \[
         \overline{P} = \frac{81\overline{P} + 19}{80\overline{P}+20} \quad \implies \quad 80\overline{P}^2 + 20\overline{P}-81\overline{P}-19 = 0
@@ -48,12 +48,13 @@
     \paragraph{Question} Does \gls{dre} converges to $\overline{P}=1$, $\forall P_0 \ge 0$?
 
     There are 2 methods for addressing this question:
+
     \begin{itemize}
         \item Direct analysis of \gls{dre}
         \item Using asymptotic theorems
     \end{itemize}
 
-    \paragraph{First methods} Direct analysis of \gls{dre}
+    \subparagraph{First methods} Direct analysis of \gls{dre}
 
     \begin{align*}
         P(t+1) = f(P(t)) \qquad \text{we need to plot $f(\cdot)$ in the $P(t)$ -- $P(t+1)$ plane}
@@ -105,7 +106,7 @@
 
     If $n=1$ the direct inspection is feasible, but it's very difficult for $n\ge2$.
 
-    \paragraph{Second method} Use theorems
+    \subparagraph{Second method} Use theorems
 
     \[
         V_{12} = 0 \qquad F = \frac{1}{2} \text{ ($S$ is stable)} \quad \implies \quad \text{First theorem is fulfilled}
@@ -121,7 +122,7 @@
 
     Both theorems are fulfilled, so \gls{are} has one and only one solution $\overline{P} > 0$, \gls{dre} converges to $\overline{P}$, $\forall P_0\ge0$ and $\overline{K}$ makes the \gls{kf} asymptotically stable.
 
-    \paragraph{Third step} Compute $\overline{K}$
+    \subparagraph{Third step} Compute $\overline{K}$
     \[
         \overline{K} = \left(F\overline{P}H^T + V_{12}\right)\left(H\overline{P}H^T+V_2\right) = \left(\frac{1}{2}\cdot 1 \cdot 2 + 0\right) \left(2\cdot 1 \cdot 2 + 1\right)^{-1} = \frac{1}{5}
     \]
@@ -169,13 +170,13 @@
             \draw[->] (z2) -- (H2) node[pos=0.5] {$\hat{x}(t|t-1)$};
             \draw[->] (F2) -| (sum4);
             \draw[->] (2.5,1) |- (F2);
-            \draw[->] (H2) |- (yhat);
+            \draw[->] (H2) -- (yhat);
             \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
             \draw[->] (F2) -- (xhat);
         \end{tikzpicture}
     \end{figure}
 
-    \paragraph{Question} Find T.F. from $y(t)$ to $\hat{x}(t|t-1)$
+    \paragraph{Question} Find \gls{tf} from $y(t)$ to $\hat{x}(t|t-1)$
 
     \textbf{Recall} \gls{tf} from block schemes of feedback systems.
 
@@ -240,7 +241,7 @@
             \draw[->,red,line width=0.5mm] (z2) -- (H2) node[pos=0.5,black] {$\hat{x}(t|t-1)$};
             \draw[->,red,line width=0.5mm] (F2) -| (sum4);
             \draw[->,red,line width=0.5mm] (2.5,1) |- (F2);
-            \draw[->] (H2) |- (yhat);
+            \draw[->] (H2) -- (yhat);
             \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
             \draw[->] (2.5,0) -- (xhat);
 

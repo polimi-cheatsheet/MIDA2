@@ -349,7 +349,7 @@ The basic system we initially consider is a MIMO system with $n$ states, ($m$ in
     \textbf{Properties of $v_2(t)$}:
     \begin{enumerate}
         \item $\E[v_2(t)] = \vec{0}$
-        \item $\E[v_2(t) \cdot v_2\transpose(t)] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (square, symmetric and semi-definite positive\footnote{We make the \textbf{assumption that $V_2$ is definite positive} (i.e. $V_2>0$) because we will need this property in the Riccati equation.} by definition)
+        \item $\E[v_2(t) \cdot v_2\transpose(t)] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (square, symmetric and semi-definite positive\footnote{We make the \textbf{assumption that $V_2$ is definite positive} (i.e. $V_2 > [0]_{n \times p}$) because we will need this property in the Riccati equation.} by definition)
         \item $\E[v_2(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
     \end{enumerate}
 
@@ -554,7 +554,7 @@ The selection of gain matrix $K(t)$ is very critical:
 Design of a Kalman Filter does not require a \emph{training dataset}, but a complete model of the system:
 \begin{itemize}
     \item $F$, $G$, $H$ matrixes: usually obtained with a white-box physical modelling of the system
-    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of \gls{kf}). For what concerns $V_{12}$, we recall that in practice $V_{12}=0$. 
+    \item $V_1$, $V_2$ and $V_{12}$: $V_2$ is easily built from sensor specifications, while $V_1$ is much more difficult to be designed (it's the most critical design parameter of \gls{kf}). For what concerns $V_{12}$, we recall that in practice $V_{12} = 0$. 
 \end{itemize}
 
  
