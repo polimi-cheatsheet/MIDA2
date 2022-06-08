@@ -56,14 +56,14 @@ Indeed, if we have a dataset
 
 we can estimate the relationship (i.e. \gls{tf}s) between the inputs ($u(t)$ and $y(t)$) and the output ($x(t)$) without modelling the system and adopting a \gls{bb} approach instead.
 
-\textbf{Note} This is a supervised training approach, thus, only for the training phase, we need measurements of the state to be estimated (using physical sensor that will be replaced by the trained SW-sensor).
+\textbf{Note} This is a supervised training approach, thus, only for the training phase, we need measurements of the state to be estimated (using physical sensor that, in \emph{production phase}, will be replaced by the trained SW-sensor).
 
 
 \paragraph{Model selection} We focus on this family of models:
 \[
 	\hat{x}(t|t) = S_{ux}(z, \theta) u(t-1) + S_{yx}(z,\theta)y(t)
 \]
-where we have at least 1-step delay on $u(t)$.
+where we have at least 1-step delay on $u(t)$. The block scheme of this model is: 
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
@@ -101,7 +101,7 @@ We obtain the \acrlong{bb} software sensor $\hat{x}(t|t)$ as:
 \]
 
 
-\textbf{Note} Once the SW-sensor has been designed (trained), we no longer need $x(t)$ samples.
+\textbf{Note} Once the SW-sensor has been designed (trained), we no longer need samples ofokok $x(t)$.
 
 \textbf{Note} The above method is a classic \gls{bb} parametric approach (using \gls{tf}s) but the same can also be done using 4-SID algorithm.
 
@@ -357,7 +357,7 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
         \draw[->,dotted] (x2) -- (xn);
         \draw[->] (x1) -- (x1-|sys.west) node[pos=0.5] {$x(t-1)$};
         \draw[->] (x2) -- (x2-|sys.west) node[pos=0.5] {$x(t-2)$};
-        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$x(t-n_u)$};
+        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$x(t-n_x)$};
 
         \draw[->] (sys) -- ++(2,0) node[right] {$\hat{x}(t|t)$};
 
@@ -369,7 +369,7 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
 	The advantage is that usually in IIR architecture $n_u$ and $n_y$ are much smaller (thanks to recursion): lower computation 
 	effort. 
 
-	For the disadvantages we have to notice that only for the training part we use $x(t)$ data from a physical sensor; then, in production, the recursion comes to play since we need to plug-in the output $\hat{x}(t|t)$ in the recursive part: this feedback can provide instability. 
+	For the disadvantages we have to notice that only for the training part we use $x(t)$ data from a physical sensor; then, in production, the recursion comes into play since we need to plug-in the output $\hat{x}(t|t)$ in the recursive part: this feedback can provide instability. 
 
 	\begin{figure}[H]
     \centering
@@ -412,7 +412,7 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
         \draw[->,dotted] (x2) -- (xn);
         \draw[->] (x1) -- (x1-|sys.west) node[pos=0.5] {$\hat{x}(t-1|t-1)$};
         \draw[->] (x2) -- (x2-|sys.west) node[pos=0.5] {$\hat{x}(t-2|t-2)$};
-        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$\hat{x}(t-n_u|t-n_u)$};
+        \draw[->] (xn) -- (xn-|sys.west) node[pos=0.5] {$\hat{x}(t-n_x|t-n_x)$};
 
         \draw (sys.east) -| ($(x) + (7.5,1.5)$) node[midway, right] {$\hat{x}(t|t)$};
 
