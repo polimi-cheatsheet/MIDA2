@@ -20,13 +20,13 @@ However we can use it also for gray-box system identification (\emph{side benefi
     \end{cases}
 \]
 
-$f$ and $h$ are linear or non-linear functions, depending on some unknown parameters $\theta$ (with a physical meaning, e.g. mass, resistance, friction, \dots).
+$f$ and $h$ are linear or non-linear functions, depending on \textbf{some unknown parameters} $\theta$ (with a physical meaning, e.g. mass, resistance, friction, \dots).
 
 The problem is to estimate $\hat{\theta}$ from a dataset.
 
 \paragraph{Problem solution}
 
-\gls{kf} solves this problem by transforming the unknown parameters in extended states: \gls{kf} makes the simultaneous estimation of $\hat{x}(t|t)$ (classic \gls{kf} problem) and $\hat{\theta}(t)$ (parameter identification problem).
+\gls{kf} solves this problem by transforming the unknown parameters in extended states: \gls{kf} makes the simultaneous estimation of $\hat{x}(t|t)$ (classic \gls{kf} problem) and of $\hat{\theta}(t)$ (parameter identification problem).
 
 \subparagraph{Trick} State extension
 
@@ -48,7 +48,7 @@ The unknown parameters are transformed in unknown variables.
     \]
     is a \emph{fictitious} equation (not a physical equation).
 
-    The core dynamics is $\theta(t+1)=\theta(t)$, it's the equations of something which is constant.
+    The core dynamics is $\theta(t+1)=\theta(t)$: it's the equations of something which is constant.
     This is exactly the nature of $\theta(t)$ which is indeed a constant vector of parameters.
 
     We need a \emph{fictitious} noise in order to force the \acrlong{kf} to find the right value of $\theta$ (otherwise \gls{kf} probably would stay fixed on the initial condition).
@@ -159,7 +159,7 @@ In practice it works well only on a limited number of parameters (e.g. 3 sensors
 
     \paragraph{Problem} Estimate $c$ with a \gls{kf}
 
-    Since we are using a \gls{kf}, we do not need a training dataset.
+    Since we are using a \gls{kf}, we do not need a training dataset, but we need to model the system.
 
     \paragraph{Step 1} Model the system
     \[
@@ -245,7 +245,7 @@ Following the classical 4 steps of a supervised parametric method for system ide
 \[
     y(t) = \mathcal{M}(u(t); \bar{\theta}, \theta)
 \]
-Mathematical model (linear or non-linear) usually written from first principle equations. $\bar{\theta}$ is the set of known parameters (mass, resistance, \dots), $\theta$ is the set of unknown parameters (possibly with bounds).
+Mathematical model (linear or non-linear) usually written from first principle equations. $\bar{\theta}$ is the set of \textbf{known parameters} (mass, resistance, \dots), $\theta$ is the set of \textbf{unknown parameters} (possibly with bounds).
 
 \paragraph{Step 3} Performance index definition (based on \emph{simulation error})
 \[
@@ -269,7 +269,7 @@ Notes about the optimization step:
     \item therefore, it's intuitive but very computationally demanding
 \end{itemize}
 
-\subsection{Comparison with \gls{pem}}
+\subsection{Comparison of SEM with \gls{pem}}
 We can represent what we've just seen with the following scheme:
 \begin{figure}[H]
     \centering
@@ -380,7 +380,7 @@ The general framework is similar, but with \gls{sem} we need the model of the sy
     Notice that it's non-linear with respect to $\theta$.
 \end{example}
 
-\gls{pem} approach looks much better, but do not forget the noise! \gls{pem} is much less robust w.r.t. noise, we must include a model of the noise in the estimated model.
+\gls{pem} approach looks much better, but do not forget the noise! \gls{pem} is much less robust w.r.t. noise: we must include a model of the noise in the estimated model.
 We use \gls{armax} models.
 
 If we use \gls{arx} models:
@@ -391,8 +391,8 @@ If we use \gls{arx} models:
     \hat{y}(t|t-1) = b_0u(t-1)+b_1u(t-2) - a_1y(t-1)-a_2y(t-2)
 \]
 
-If we use \gls{armax} models the numerator of the T.F. for $e(t)$ is $1+c_1z^{-1}+\ldots+c_mz^{-m}$, in this case $J_N(\theta)$ is non-linear.
-This leads to the same complexity of \gls{sem}
+If we use \gls{armax} models the numerator of the \gls{tf} for $e(t)$ is $1+c_1z^{-1}+\ldots+c_mz^{-m}$, in this case $J_N(\theta)$ is non-linear.
+This leads to the same complexity of \gls{sem}.
 
 The second problem of \gls{pem} is high sensitivity to sampling time choice.
 Remember that when we write at discrete time $y(t)$ we mean $y(t\cdot \Delta)$.
