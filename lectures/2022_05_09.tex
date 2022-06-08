@@ -32,7 +32,7 @@ Why we dedicate a chapter on \emph{control}?
 	    C(z) &= 1   + c_1z^{-1} + \dots + c_nz^{-n}
 	\end{align*}
 
-	\textbf{Note}: The input is $u(t)$ and the output is $y(t)$. The noise $e(t)$ is a non-measurable input that models the uncertainty of the system.  
+	\textbf{Note} The input is $u(t)$ and the output is $y(t)$. The noise $e(t)$ is a non-measurable input that models the uncertainty of the system.  
 \end{recall}
 
 \subparagraph{Assumptions}
@@ -63,12 +63,12 @@ Why we dedicate a chapter on \emph{control}?
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-            \draw[->] (0,4) -- (0,5) node[left] {$u(t)$};
+            \draw[->] (0,4) -- (0,7) node[left] {$u(t)$};
             \draw[->] (0,4) -- (5,4) node[below] {$t$};
             \draw[->] (0,0) -- (0,3) node[left] {$y(t)$};
             \draw[->] (0,0) -- (5,0) node[below] {$t$};
 
-            \draw[line width=0.4mm] (0,4) -- (1,4) -- (1,4.5) -- (5,4.5);
+            \draw[line width=0.3mm] (0,4) -- (1,4) -- (1,6) -- (5,6);
             \draw[dotted] (1,0) -- (1,4);
             \draw[dotted] (0,2.5) -- (5,2.5) node[right] {\footnotesize steady state};
 
@@ -88,14 +88,8 @@ Why we dedicate a chapter on \emph{control}?
     Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but \emph{generalized MVC (GMVC)}, described in \ref{subsec:GMVC}).
 \end{remark}
 
-Some additional (small) technical \textbf{assumptions}:
-\begin{itemize}
-    \item $y^0(t)$ and $e(t)$ are not correlated (usually fulfilled).
-    \item We assume (worst case) that $y^0(t)$ is known only up to time $t$ (present time): we have no preview of the future desired $y^0(t)$ (i.e. $y^0(t)$ is totally unpredictable or $\hat{y^0}(t+k|t) = y^0(t)$).
-\end{itemize}
-
 \paragraph{Goal of the problem} 
-The problem we wish to solve is optimal tracking of the desired behavior of output (which is the classical goal of control systems):
+The problem we wish to solve is the optimal tracking of the desired behavior of the output (which is the classical goal of control systems):
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
@@ -114,7 +108,13 @@ The problem we wish to solve is optimal tracking of the desired behavior of outp
         \draw[->] (5.5,0) -- (5.5,-1.5) -- (-1,-1.5) -- (cont);
     \end{tikzpicture}
 \end{figure}
-where $y^0(t)$ os the desired output value, called \emph{reference}. 
+where $y^0(t)$ os the desired output value, called \emph{reference}.
+
+Some additional (small) technical \textbf{assumptions}:
+\begin{itemize}
+    \item $y^0(t)$ and $e(t)$ are not correlated (usually fulfilled).
+    \item We assume (worst case) that $y^0(t)$ is known only up to time $t$ (present time): we have no preview of the future desired $y^0(t)$ (i.e. $y^0(t)$ is totally unpredictable or $\hat{y^0}(t+k|t) = y^0(t)$).
+\end{itemize} 
 
 In a more formal way MVC is an optimization control problem that tries to find $u(t)$ that minimize this performance index:
 \[
@@ -294,7 +294,7 @@ The system can be rewritten as follows considering the two inputs: $y^0(t)$ and 
  	and $F_1(z)$ is the direct line from the input to the output.
 \end{recall}
 
-Therefore, the \gls{tf} from $y^0(t)$ to $y(t)$ is
+Therefore, looking at the figure \ref{fig:MVC_sys}, the \gls{tf} from $y^0(t)$ to $y(t)$ is
 \begin{align*}
 	F_{y^0y}(z) =& \frac{C(z) \cdot \frac{1}{B(z) E(z)} \cdot \frac{z^{-k} B(z)}{A(z)}}{1 + \underbrace{\frac{1}{B(z)E(z)}\cdot \frac{z^{-k}B(z)}{A(z)}\cdot\tilde{R}(z)}_{L(z)}} \\
 	=& \dots \\

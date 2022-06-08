@@ -45,7 +45,7 @@
         \end{tikzpicture}
     \end{figure}
 
-    In principle the \emph{ideal} desired behavior would be $y(t) = y^0(t) + \cancelto{0}{E(z)}e(t)$, but, since the system has internally $k$-step delay and the reference $y^0(t)$ is not predictable, the \emph{optimal} result is the one found in \ref{subsec:MVC_performance}, that is:
+    In principle the \emph{ideal} desired behavior would be $y(t) = y^0(t) + \cancelto{0}{E(z)}e(t)$, but, since the system has internally $k$-step delay and the reference $y^0(t)$ is not predictable, and since it's impossible to obtain noise-free output ($E(z) e(t)$ is the minimum possible noise level), the \emph{optimal} result is the one found in \ref{subsec:MVC_performance}, that is:
 
     \[
     	y(t) = y^0(t-k) + E(z) e(t)
@@ -77,7 +77,7 @@ The main difference w.r.t. MVC is the extension of the performance index:
 \end{align*}
 where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
 \begin{itemize}
-    \item $P(z)$ is the \emph{reference model}
+    \item $P(z)$ is the \emph{reference behavior} from $y^0(t)$ to $y(t)$
     \item $Q(z) u(z)$ is used to penalize the usage of control action, which has to be moderated since it's expensive in terms of energy, power, aging, ...
 \end{itemize}
 
@@ -89,7 +89,7 @@ where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
 	GMVC can be applied also to non-minimum phase systems.
 \end{remark}
 
-\begin{remark}[Reference model $P(t)$]
+\begin{remark}[Reference behavior $P(t)$]
 	In a generic feedback control system
     \begin{figure}[H]
         \centering
@@ -162,12 +162,12 @@ where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
             \draw[domain=0:5,variable=\x,blue,samples=100] plot ({\x},{f(\x)}) node[right, blue] {$v^0(t)$};
             \draw[domain=0:5,variable=\x,red,smooth,samples=50] plot ({\x},{f2(\x)});
             \draw[domain=0:5,variable=\x,green,smooth,samples=50] plot ({\x},{f3(\x)});
-            \node[red, right]   at (3,1) {$\scriptstyle P(z) \approx 1$};
+            \node[red, right]   at (3,1) {$\scriptstyle P(z) = 1$};
             \node[green, right] at (3,0.7) {$\scriptstyle P(z)$ \footnotesize to smooth the behavior};
         \end{tikzpicture}
     \end{figure}
 
-    In this scenario it is intuitive that a very aggressive tracking (i.e. $P(z) \approx 1$) is unwanted since it is uncomfortable and dangerous. A smoother reference behavior is preferred (i.e. $P(z)$ is a low-pass filter).
+    In this scenario it is intuitive that a very aggressive tracking (i.e. $P(z) = 1$) is unwanted since it is uncomfortable and dangerous. A smoother reference behavior is preferred (i.e. $P(z)$ is a low-pass filter).
 \end{example}
 
 \begin{appendices}
@@ -296,7 +296,7 @@ If $\Delta T$ is sufficiently small, the step-wise analog signal is very similar
 
 \textbf{Note} Both $u(t)$ and $y(t)$ are digital signal.
 
-We can obtain a discrete-time model from $u(t)$ to $y(t)$ for the system \textcolor{red}{$\Sys$}:
+We can obtain a discrete-time model from $u(t)$ to $y(t)$ for the system \textcolor{red}{$\Sys$}
 
 \begin{figure}[H]
 	\centering 
@@ -308,11 +308,11 @@ We can obtain a discrete-time model from $u(t)$ to $y(t)$ for the system \textco
 	\end{tikzpicture}
 \end{figure}
 
-and we can either:
+How can we obtain that digital model? We can either:
 
 \begin{itemize}
     \item make \gls{bb} system identification starting from measured data: directly estimate a discrete-time model
-    \item starting from a physical \gls{wb} model (continuous time) that we need to discretize 
+    \item start from a physical \gls{wb} model (continuous time) that we need to discretize 
 \end{itemize}
 
 Let's analyze the latter method.
@@ -507,7 +507,7 @@ Otherwise, if $\Delta T$ is smaller, $\omega_S$ (and $\omega_N$ accordingly) lar
     \end{tikzpicture}
 \end{figure}
 
-As we can see from the two graphs, in both case we have approximations of the original spectrum but in the latter case this approximation is valid over a larger \emph{bandwidth}.
+As we can see from the two graphs, in both cases we have approximations of the original spectrum but in the latter case this approximation is valid over a larger \emph{bandwidth}.
 
 \paragraph{Drawbacks} Hidden problems of a too-small $\Delta T$:
 \begin{itemize}
@@ -523,7 +523,7 @@ The latter one is the most critical one and it is really an hidden problem.
 Let's make a numerical example to understand it.
 
 Consider a continous time \gls{tf} with two asymptotically stable poles (eigenvalues) in $s=-3$ and $s=-2$. These can be mapped in the $z$-domain using the formula $\lambda_F=e^{\lambda_A\Delta T}$. 
-If $\Delta T$ is very small (tends to zero), we squeeze all the poles very closed to $(1,0)$.
+If $\Delta T$ is very small (tends to zero), we squeeze all the poles very closed to the point $(1,0)$.
 
 Graphically:
 
@@ -555,7 +555,7 @@ Graphically:
 
 Therefore, we need very high numerical precision (use a lot of digits) to avoid instability.
 
-Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system bandwidth we are interested in.
+\textbf{Rule of thumb} of control engineers: $f_S$ is between 10 and 20 times the system bandwidth we are interested in.
 
 \begin{figure}[H]
     \centering
@@ -596,7 +596,7 @@ Another problem is managing the \emph{aliasing} problem, which is a big and crit
 
 
 When we want measure a signal $x$ we capture also the measurement noise; indeed, what we really obtain is $\tilde{x}(t) = x(t) + e(t)$, where $e$ is the noise. 
-Hence, the spectrum will also be composed by the spectrum of the original signal $x$ and the spectrum of the noise.
+Hence, the spectrum of the measured signal will also be composed by the spectrum of the original signal $x$ and the spectrum of the noise.
 
 \begin{figure}[H]
     \centering
@@ -670,7 +670,7 @@ In this case, since $f_S = 1$ KHz we need a low-pass filter that cut everything 
     \end{tikzpicture}
 \end{figure}
 
-In this way the signal $\tilde{x}$ is ready to be sampled: aliasing is avoided ($f'_{MAX} = f_{cut} = f_N$); furthermore, all the frequency components in the bandwidth of the original signal $x(t)$ are preserved and the ones introduced by the noise are cut-off.
+In this way the signal $\tilde{x}$ is ready to be sampled: aliasing is avoided ($f'_{MAX} = f_{cut} \le f_N$); furthermore, all the frequency components in the bandwidth of the original signal $x(t)$ are preserved and the ones introduced by the noise are cut-off.
 
 \subparagraph{Full digital solution}  Today the most used solution is the full digital one in which there is no more the need of an analog anti-alias filter.
 
