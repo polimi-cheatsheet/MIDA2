@@ -62,9 +62,9 @@ Models used in MIDA1:
 The model is indicated as $\mathcal{M}(\theta)$ where $\theta$ is the parameter vector, the coefficients of $A(z)$, $B(z)$, $C(z)$.
 
 A \textbf{parametric identification method} has been used: the \emph{performance index is defined}
-\begin{definition}
+\begin{defn}
     $J(\theta) = \frac{1}{N} \sum_{t=1}^N \left(y(t) - \hat{y}(t|t-1, \theta)\right)^2$
-\end{definition}
+\end{defn}
 
 Which is the variance of the \emph{prediction error} made by the model. The optimal $\theta$ is $\hat{\theta}_N = \argmin_\theta J(\theta)$
 
@@ -84,9 +84,9 @@ The focus is on I/O systems (more close to real applications than T.S.).
 
 \section{Motivation example for the course: ABS}
 
-\begin{definition}
+\begin{defn}
     \textbf{Slip} of the wheel: $\lambda = \frac{v-\omega r}{v}$
-\end{definition}
+\end{defn}
 
 During a break $0 \le \lambda \le 1$ (from free rolling wheel to locked wheel).
 \begin{figure}[H]
@@ -181,7 +181,7 @@ Using only I/O measured data we can \emph{learn} a mathematical model of the I/O
     \left\{y(1), y(2), \ldots, y(N)\right\} &\quad \text{(output)}
 \end{align*}
 
-\begin{remark}[general path of a parametric identification methods]
+\begin{rem}[general path of a parametric identification methods]
 
 \begin{enumerate}
     \item Collect data: $\left\{u(1), u(2), \ldots, u(N)\right\}$, $\left\{y(1), y(2), \ldots, y(N)\right\}$
@@ -194,7 +194,7 @@ $J(\theta): \RR^{n_\theta} \rightarrow \RR^+$ (where $n_\theta$ is the order of 
 
 $\mathcal{M}(\theta_1)$ is better than $\mathcal{M}(\theta_2)$ if $J(\theta_1) < J(\theta_2)$.
 
-\end{remark}
+\end{rem}
 
 In this chapter we are presenting a totally different system identification approach: \textbf{not parametric}.
 \begin{itemize}
@@ -243,11 +243,11 @@ Where $F$, $G$, $H$ and $D$ are matricies defined as follows:
 
 Assuming 1 input and 1 output, it can be extended for multiple inputs and outputs. Usually $D=0$ for \emph{strictly-proper systems}.
 
-\begin{remark}[S.S representation is not unique]
+\begin{rem}[S.S representation is not unique]
     $F_1 = TFT^{-1}$, $G_1 = TG$, $H_1 = HT^{-1}$, $D_1 = D$ for any invertible matrix $T$. The system $\{F, G, H, D\}$ is equivalent to $\{F_1, G_1, H_1, D_1\}$.
-\end{remark}
+\end{rem}
 
-\begin{example}
+\begin{exa}
     \[
         \begin{cases}
             x_1(t+1) = \frac{1}{2} x_1(t) + 2u(t) \\
@@ -276,7 +276,7 @@ Assuming 1 input and 1 output, it can be extended for multiple inputs and output
         & \qquad
         D = 0
     \end{align*}
-\end{example}
+\end{exa}
 
 \subsection{Representation \#2: transfer-function}
 
@@ -288,7 +288,7 @@ $W(z)$ is a rational function of the \emph{z} operator: it's a \emph{digital fil
 
 It's very easy to move from T.F. representation to a time domain description of the system.
 
-\begin{example}
+\begin{exa}
     \begin{align*}
         & y(t) = \underbrace{\begin{bmatrix}
             \frac{1+\frac{1}{2}z^{-1}}{2+\frac{1}{3}z^{-1}+\frac{1}{4}z^{-2}} z^{-1}
@@ -297,8 +297,8 @@ It's very easy to move from T.F. representation to a time domain description of 
         & y(t) = \underbrace{-\frac{1}{6}y(t-1) - \frac{1}{8}y(t-2)}_\text{old values of $y(t)$} + \underbrace{\frac{1}{2}u(t-1) + \frac{1}{4}u(t-2)}_\text{old values of input}
     \end{align*}
 
-\end{example}
-\begin{remark}[Notational remark]
+\end{exa}
+\begin{rem}[Notational remark]
     $\displaystyle W(z) = \frac{z^{-1}}{1 + \frac{1}{3}z^{-1}}$ is called an IIR (\emph{Infinite Impulse Response}) filter.\\
     $\displaystyle W(z) = z^{-1} + \frac{1}{2}z^{-2} + \frac{1}{4}z^{-3}$ is called a FIR (\emph{Finite Impulse Response}) filter.
-\end{remark}
+\end{rem}

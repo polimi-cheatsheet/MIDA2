@@ -50,7 +50,8 @@ We obtain $S_{ux}(z, \hat{\theta}_N)$ and $S_{yx}(z, \hat{\theta}_N)$, the black
 
 \section{Comparison between K.F. and B.B. software sensing}
 
-\begin{center}
+\begin{table}
+    \centering
     \begin{tabular}{l|c|c}
         & \textbf{K.F.} & \textbf{B.B.} \\
         \hline
@@ -61,7 +62,7 @@ We obtain $S_{ux}(z, \hat{\theta}_N)$ and $S_{yx}(z, \hat{\theta}_N)$, the black
         Accuracy of the estimation & \color{green} Good & \color{green} Very Good \\
         Can be used also in case of un-measurable states & \color{green} Yes & \color{red} No \\
     \end{tabular}
-\end{center}
+\end{table}
 
 \section{Non-linear Systems}
 
@@ -91,9 +92,9 @@ Let's take inspiration from E.K.F.
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}
+\begin{rem}
     In K.F. the E.K.F. extension uses the trick of a time-varying linear gain $K(t)$ but the obvious choice is a non-linear gain (static nonlinear function).
-\end{remark}
+\end{rem}
 
 The content of the box is:
 
@@ -223,7 +224,7 @@ Most general approach but practically seldom used: major issues of stability and
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}
+\begin{rem}
     Notice that in principle $\hat{x}(t)$ can depend on $y(t)$ whereas we know $\hat{x}(t)$ can only depend on $u(t-1)$ and past values.
 
     In case of a MIMO system with
@@ -250,7 +251,7 @@ Most general approach but practically seldom used: major issues of stability and
 
     The estimation of this function $f(\cdot, \theta)$ is much simpler than the estimation of a recurrent neural network.
     Moreover the stability is guaranteed (the system is F.I.R.).
-\end{remark}
+\end{rem}
 
 \paragraph{Architecture \#3} Static non-linear function plus linear dynamics but with a I.I.R. scheme
 

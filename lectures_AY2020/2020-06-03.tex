@@ -1,7 +1,7 @@
 \chapter{Recursive Identification}
 \newlecture{Stefano Dattilo}{03/06/2020}
 
-\begin{recall}[ARX syatem]
+\begin{rem}[ARX syatem]
     \[
         y(t) = \frac{B(z)}{A(z)}u(t-1) + \frac{1}{A(z)}e(t) \qquad e(t) \sim WN(m_e, \lambda_e)
     \]
@@ -28,7 +28,7 @@
     \]
 
     \paragraph{Objective} Identify $\theta$ starting from an available dataset.
-\end{recall}
+\end{rem}
 
 \section{Least square}
 
@@ -175,7 +175,7 @@ Define $V(N) = S(N)^{-1}$
     V(N) &= V(N-1) - \frac{V(N-1)\phi(N)\phi(N)^TV(N-1)}{1+\phi(N)^TV(N-1)\phi(N)}
 \end{align*}
 
-\begin{remark}
+\begin{rem}
     RLS is a rigorous version of LS (not an approximation), provided a correct initialization.
 
     \begin{figure}[H]
@@ -198,7 +198,7 @@ Define $V(N) = S(N)^{-1}$
     \end{itemize}
 
     In practice $\hat{\theta}_0 = 0$ and $S(0) = I$, the error due to the \emph{wrong} initialization will expire with time.
-\end{remark}
+\end{rem}
 
 \section{Recursive Least Square with Forgetting Factor}
 
@@ -244,7 +244,7 @@ Where $0 \le \rho \le 1$ is called \emph{forgetting factor}. If $\rho=1$ it's th
     S(N) &= \rho S(N-1) + \phi(N)\phi(N)^T
 \end{align*}
 
-\begin{remark}[Choice of $\rho$]
+\begin{rem}[Choice of $\rho$]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[
@@ -267,4 +267,4 @@ Where $0 \le \rho \le 1$ is called \emph{forgetting factor}. If $\rho=1$ it's th
     \end{figure}
 
     If $\rho \ll 1$ there's high tracking speed but low precision. With $\rho \approx 1$ there's low tracking speed but greater precision.
-\end{remark}
+\end{rem}

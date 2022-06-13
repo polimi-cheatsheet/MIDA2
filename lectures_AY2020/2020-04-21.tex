@@ -50,14 +50,14 @@ The system is fully controllable (from the input) if and only if the controllabi
 
 $R$ is also called \emph{reachability} matrix.
 
-\begin{remark}
+\begin{rem}
     \begin{description}
         \item[Observability] we can observe the state from the output sensors.
         \item[Controllability] we can control/move/influence the state using the input signal.
     \end{description}
-\end{remark}
+\end{rem}
 
-\begin{example}
+\begin{exa}
     \begin{align*}
         \begin{cases}
             x_1(t+1) = \frac{1}{2} x_1(t) + u(t) \\
@@ -104,9 +104,9 @@ $R$ is also called \emph{reachability} matrix.
         \rank R = 1 < n = 2
         \quad\implies\quad \text{not fully controllable}
     \]
-\end{example}
+\end{exa}
 
-\begin{remark}[4 sub-systems]
+\begin{rem}[4 sub-systems]
     Each system can be internally seen as 4 sub-systems as follows:
 
     \begin{figure}[H]
@@ -151,7 +151,7 @@ $R$ is also called \emph{reachability} matrix.
             \draw[->] (oc) -- (out);
         \end{tikzpicture}
     \end{figure}
-\end{remark}
+\end{rem}
 
 \section{Hankel matrix of order n}
 
@@ -260,9 +260,9 @@ Moreover $O_1F = O_2$, so $\hat{F} = O_1^{-1}O_2$.
 
 In conclusion in a simple and constructive way we have estimated a State Space model of the system $\{\hat{H}, \hat{G}, \hat{F}\}$ starting from measured IR, using only $2n+1$ samples of IR.
 
-\begin{remark}
+\begin{rem}
     If the measurement is noisy all this process is useless.
-\end{remark}
+\end{rem}
 
 \section{Real problem}
 
@@ -307,7 +307,7 @@ The measurements of IR are noisy: $\tilde{\omega}(t) = \omega(t) + \eta(t)$.
 
 $\tilde{H}_{qd}$ is a $q\times d$ matrix. \textbf{Note} that $q+d-1$ must equal to $N$ so that we use all the data set.
 
-\begin{remark}[Choice of $q$ and $d$]
+\begin{rem}[Choice of $q$ and $d$]
     Hypothesis: $q<d$ so that $q+d-1=N$, so $q=N+1-d$.
     \begin{figure}[H]
         \centering
@@ -333,4 +333,4 @@ $\tilde{H}_{qd}$ is a $q\times d$ matrix. \textbf{Note} that $q+d-1$ must equal 
     If $q \ll d$ it's computationally less intensive.
 
     If $0.6d < q < d$ we get to a good enough result.
-\end{remark}
+\end{rem}

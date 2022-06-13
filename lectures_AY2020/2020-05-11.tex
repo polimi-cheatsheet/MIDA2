@@ -1,6 +1,6 @@
 \newlecture{Sergio Savaresi}{11/05/2020}
 
-\begin{remark}[White noise]
+\begin{rem}[White noise]
     In the formulas of Kalman Filter there is a requirement that $v_1(t)$ and $v_2(t)$ must be white noises.
     In many practical applications this assumption can be too demanding.
 
@@ -61,7 +61,7 @@
     \]
 
     We can apply K.F. to this system.
-\end{remark}
+\end{rem}
 
 \subsection{Extension to Non-Linear systems}
 
@@ -75,14 +75,14 @@ Consider a system with non-linear dynamics:
 
 Where $f$ and $h$ are non-linear functions of $x(t)$ and $u(t)$ (smoothness class $C^1$ or higher).
 
-\begin{example}
+\begin{exa}
     \[
         S: \begin{cases}
             x(t+1) = \frac{1}{2} x^5(t) + u^3(t) + v_1(t) \\
             y(t) = e^{x(t)} + v_2(t)
         \end{cases}
     \]
-\end{example}
+\end{exa}
 
 How can we design a Kalman Filter in this case?
 
@@ -170,7 +170,7 @@ Procedure to implement EKF at time $t$:
     \item Compute $\hat{x}(t+1|t)$
 \end{itemize}
 
-\begin{remark}
+\begin{rem}
     \begin{itemize}
         \item EKF is very powerful since can be applied to non-linear systems
         \item Obviously EKF does not have a steady-state asymptotic solution
@@ -186,7 +186,7 @@ Procedure to implement EKF at time $t$:
         \item safety-critical applications
         \item mission-critical applications
     \end{itemize}
-\end{remark}
+\end{rem}
 
 \begin{exercise}[K.F. full procedure]
     \begin{figure}[H]

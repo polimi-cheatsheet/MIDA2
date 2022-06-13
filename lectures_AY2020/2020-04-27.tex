@@ -7,7 +7,7 @@ The general ideal of the method is:
     \item Fit the estimated and modeled frequency response to obtain the optimal model
 \end{itemize}
 
-\begin{example}[Car steer dynamics]
+\begin{exa}[Car steer dynamics]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
@@ -66,7 +66,7 @@ The general ideal of the method is:
         \item The driver controls $\delta_F$ which is a measurable disturbance, the system controls the rear steer
         \item Both $\delta_R$ and $\delta_F$ are control variables: application high performance autonomous car
     \end{enumerate}
-\end{example}
+\end{exa}
 
 \paragraph{Step 1} In the experiment design step we first have to select a set of excitation frequencies.
 
@@ -147,7 +147,7 @@ We make $H$ independent experiments.
 \end{figure}
 
 
-\begin{remark}
+\begin{rem}
     The amplitudes $A_1$, $A_2$, \ldots, $A_H$ can be equal (constant) or, more frequently, they decrease as the frequency increases to fulfill the power constraint on the input.
 
     \paragraph{Example} $\delta(t)$ is the steering angle (moved by an actuator).
@@ -157,7 +157,7 @@ We make $H$ independent experiments.
 
     If we have a limit to this power, this power should be constant during the $H$ experiments.
     \[KA_i^2\omega_i = \text{const} \qquad A_i=\sqrt{\frac{\text{const}}{K\omega_i}}\]
-\end{remark}
+\end{rem}
 
 Focusing on the $i$-th experiment.
 \begin{figure}[H]
@@ -178,9 +178,9 @@ Focusing on the $i$-th experiment.
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}
+\begin{rem}
     If the system is LTI (linear time-invariant), the frequency response theorem says the if the input is a sine input of frequency $\omega_i$ the output must be a sine with frequency $\omega_i$.
-\end{remark}
+\end{rem}
 
 However $y_i(t)$ in real applications is not a perfect sinusoid.
 \begin{itemize}
@@ -274,10 +274,10 @@ At the end of \emph{step 1} we have a frequency-domain dataset ($H$ values) repr
     \end{bmatrix}
 \]
 
-\begin{remark}[Model order selection]
+\begin{rem}[Model order selection]
     In this case the order is composed by 2 parameters $n$ and $p$.
     Use cross-validation approach (or visual fitting in the Bode diagram).
-\end{remark}
+\end{rem}
 
 \paragraph{Step 3} New performance index (frequency domain).
 
@@ -293,7 +293,7 @@ At the end of \emph{step 1} we have a frequency-domain dataset ($H$ values) repr
 
 Usually $J_H(\theta)$ is a non-quadratic and non-convex function, iterative optimization methods are needed.
 
-\begin{remark}[Frequency bandwidth selection $\omega_H =\; ?$]
+\begin{rem}[Frequency bandwidth selection $\omega_H =\; ?$]
     Theoretically the standard best solution should be $H$ points distributed uniformly from 0 to $\Omega_N$ (Nyquist).
 
     In practice it's better to concentrate the experimental effort in a smaller and more focused bandwidth.
@@ -313,4 +313,4 @@ Usually $J_H(\theta)$ is a non-quadratic and non-convex function, iterative opti
     A rule of thumb: $\omega_H \approx 3\omega_c$
 
     \paragraph{Example} The ESC (electronic stability control) has an expected bandwidth of $\omega_c \approx 2 \text{Hz}$, so $\omega_H \approx 6\text{Hz}$.
-\end{remark}
+\end{rem}

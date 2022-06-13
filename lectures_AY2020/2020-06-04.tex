@@ -149,7 +149,7 @@ Transformation formulas:
     D &= D
 \end{align*}
 
-\begin{remark}
+\begin{rem}
     How the poles of the continuous time system are transformed?
 
     Can be proved that the eigenvalues (poles) follow the \emph{sampling transformation rule}.
@@ -198,7 +198,7 @@ Transformation formulas:
     Unfortunately these hidden zeros are frequently outside the unit circle, which means that $G(z)$ is not minimum phase even if $G(s)$ is minimum phase.
 
     We need for instance GMVC to design the control system.
-\end{remark}
+\end{rem}
 
 Another simple discretization technique frequently used is the discretization of time-derivative $\dot{x}$.
 
@@ -350,7 +350,7 @@ Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system 
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}[Another way of managing the choice of $\Delta T$ w.r.t. the aliasing problem]
+\begin{rem}[Another way of managing the choice of $\Delta T$ w.r.t. the aliasing problem]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2cm,auto,>=latex',declare function={
@@ -431,4 +431,4 @@ Rule of thumb of control engineers: $f_S$ is between 10 and 20 times the system 
             \draw (6.5,0.05) -- (6.5,-0.05) node[below] {$f_S$};
         \end{tikzpicture}
     \end{figure}
-\end{remark}
+\end{rem}

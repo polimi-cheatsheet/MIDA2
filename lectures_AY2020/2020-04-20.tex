@@ -1,5 +1,5 @@
 \newlecture{Sergio Savaresi}{20/04/2020}
-\begin{remark}[Strictly proper systems]
+\begin{rem}[Strictly proper systems]
     Notice that for strictly proper systems the delay $k \ge 1$
     \begin{figure}[H]
         \begin{minipage}[t]{0.5\textwidth}
@@ -30,7 +30,7 @@
             \end{tikzpicture}
         \end{minipage}
     \end{figure}
-\end{remark}
+\end{rem}
 
 \subsection{Representation \#3: convolution of the input with the Impulse Response (IR)}
 The third way to represent a system is through the convolution of the input with the \emph{Impulse Response (IR)}.
@@ -120,7 +120,7 @@ From the system we get
 Thus, the transfer function is
 \[ W(z) = H(zI - F) ^ {-1} G \]
 
-\begin{example}
+\begin{exa}
 \begin{align*}
     F = \begin{bmatrix}
         1 & 0\\
@@ -193,7 +193,7 @@ W(z) &=
 \end{align*}
 Notice that in this case we only have one pole, but the system is of order two; this comes from the fact that part of the system is non observable.
 
-\end{example}
+\end{exa}
 
 \subsection{Transfer Function to State Space}
 This conversion is not very used in practice and it is called the \emph{realization} of a transfer function into a state space model.
@@ -229,7 +229,7 @@ The formula for the control realization of $W(z)$ is
     &&
     D = 0
 \end{align*}
-\begin{example}
+\begin{exa}
     Consider the transfer function $W(z)$
     \[ W(z) = \frac{2z^2 + \frac{1}{2}z + \frac{1}{4}}{z^3 + \frac{1}{4}z^2 + \frac{1}{3}z + \frac{1}{5}} \]
     The control realization is
@@ -252,11 +252,11 @@ The formula for the control realization of $W(z)$ is
         &&
         D = 0
     \end{align*}
-\end{example}
+\end{exa}
 
 \subsection{Transfer Function to Impulse Response}
 To get the IR from a transfer function $W(z)$ is sufficient to make the $\infty$-long division between the numerator and denominator of $W(z)$
-\begin{example}
+\begin{exa}
     Consider the transfer function
     \[ W(z) = \frac{1}{z-\frac{1}{2}} = \frac{z^{-1}}{1-\frac{1}{2}z^{-1}}
         = 0 z^{-0} + 1 z^{-1} + \frac{1}{2}z^{-2} + \frac{1}{4}z^{-3} + \cdots \]
@@ -267,22 +267,22 @@ To get the IR from a transfer function $W(z)$ is sufficient to make the $\infty$
     Remembering that for geometric series we have \[ \sum_{k = 0}^{\infty} a^k = \frac{1}{1-a} \text{ if } |a| < 1 \]
     We can rewrite $y(t)$ as follows
     \[ y(t) = \left( z^{-1} \sum_{k=0}^{\infty} \left( \frac{1}{2} z^{-1} \right)^{k} \right) u(t) = \left( 0 + 1 z^{-1} + \frac{1}{2}z^{-2} + \frac{1}{4}z^{-3} + \cdots \right) u(t) \]
-\end{example}
+\end{exa}
 
 \subsection{Impulse Response to Transfer Function}
-\begin{definition}
+\begin{defn}
     Given a discrete-time signal $s(t)$ such that $\forall t < 0: s(t) = 0$, its \emph{Z-Transform} is defined as
     \[ \mathcal{Z} \left( s(t) \right) = \sum_{t = 0}^{\infty} s(t) z^{-t} \]
-\end{definition}
+\end{defn}
 Given this, it can be proven that
 \[ W(z) = \mathcal{Z}\left( \omega(t) \right) = \sum_{t = 0}^{\infty} \omega(t) z^{-t} \]
 This means that the transfer function of a system is the $\mathcal{Z}$-transform of a special signal, that is the impulse response of the system.
 
-\begin{remark}
+\begin{rem}
     This formula cannot be used in practice to transform an IR representation to a TF representation.
     This is because we need infinite points of the impulse response, and the impulse response must be noise-free.
     Thus, this transformation is only theoretical.
-\end{remark}
+\end{rem}
 
 \subsection{State Space to Impulse Reponse}
 Consider the following state space model, with initial conditions $x(0) = 0$ and $y(0) = 0$
@@ -366,11 +366,11 @@ We will see the solution of this problem in two steps:
         \item $\eta(t)$ is the measurement noise (e.g. WN)
     \end{itemize}
 \end{enumerate}
-\begin{remark}
+\begin{rem}
     We will see in detail only 4SID when the experiment is an impulse-experiment, which is the first and original version of 4SID.
     However 4SID can be extended to any generic input signal $\left\{ u(1), u(2), \cdots, u(N) \right\}$ that is sufficiently exciting.
-\end{remark}
-\begin{remark}[Unstable system]
+\end{rem}
+\begin{rem}[Unstable system]
     In case of an unstable system the measurements must be collected in a closed-loop experiment.
     Indeed, if the experiment was open-loop, the experiment would be unfeasible.
 
@@ -395,4 +395,4 @@ We will see the solution of this problem in two steps:
         \end{tikzpicture}
         \caption*{Closed loop system}
     \end{figure}
-\end{remark}
+\end{rem}

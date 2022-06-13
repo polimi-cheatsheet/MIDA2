@@ -24,16 +24,16 @@ $\tilde{U}$ and $\tilde{V}$ are unitary matrices. A matrix $M$ is unitary if:
 Where $\sigma_1$, $\sigma_2$, $\ldots$, $\sigma_q$ are the singular values of $\tilde{H}_{qd}$.
 Those are real, positive numbers, sorted in decreasing order ($\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_q$).
 
-\begin{remark}
+\begin{rem}
     The singular values of a rectangular matrix are a \emph{sort of} eigenvalues of a square matrix.\\
     SVD is a \emph{sort of} diagonalization of a rectangular matrix.
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
     For a square matrix, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. If $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM^T)}$ (for non zero eigenvalues).
-\end{remark}
+\end{rem}
 
-\begin{remark}[How to compute SVD]
+\begin{rem}[How to compute SVD]
     The optimal numerical computation is not trivial. Use \texttt{svd(M)} in Matlab.
 
     Theoretical method for SVD computation is to make 2 diagonalization steps:
@@ -43,7 +43,7 @@ Those are real, positive numbers, sorted in decreasing order ($\sigma_1 \ge \sig
     \[
         \underbrace{\tilde{H}_{qd}^T \tilde{H}_{qd}}_{d\times d} = \tilde{V}\tilde{S}^T\tilde{S}\tilde{V}^T
     \]
-\end{remark}
+\end{rem}
 
 \paragraph{Step 3} Plot the singular values and cut-off the 3 matrices.
 
@@ -201,15 +201,15 @@ Using the pseudo-inverse matrix:
 
 \paragraph{Conclusion} Starting from a noisy I.R. $\{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non parametric and constructive way.
 
-\begin{remark}
+\begin{rem}
     This method can be extended also to the case where the input signal is generic (i.e. not an impulse).
-\end{remark}
+\end{rem}
 
-\begin{remark}[Optimality of 4SID]
+\begin{rem}[Optimality of 4SID]
     The method is optimal in the sense that it makes the best possible rank reduction of $\tilde{H}_{qd}$.
-\end{remark}
+\end{rem}
 
-\begin{example}[Rank reduction]
+\begin{exa}[Rank reduction]
     In general there are infinite ways to make a rank reduction.
     \[
         \underbrace{\begin{bmatrix}
@@ -231,7 +231,7 @@ Using the pseudo-inverse matrix:
         \end{bmatrix}
     \]
     It's not the optimal rank reduction matrix, but it factors out a matrix with lower rank.
-\end{example}
+\end{exa}
 
 Our goal is to obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
 SVD makes exactly this: $\tilde{H}_{res,qd}$ is the minimum possible (in the sense of the \emph{Frobenius norm}).
@@ -239,18 +239,18 @@ SVD makes exactly this: $\tilde{H}_{res,qd}$ is the minimum possible (in the sen
     \left|\tilde{H}_{res,qd}\right|_F = \sqrt{\sum_{ij} \left(\tilde{H}_{res,qd}^{(ij)} \right)^2}
 \]
 
-\begin{remark}
+\begin{rem}
     4SID is a constructive method that can be implemented in a fully-automatic way, except for these steps:
     \begin{itemize}
         \item $q$ and $d$ selection (not critical)
         \item Choice of $n$ (typically supervised by the designer). It can be made automatic using a cross-validation method.
     \end{itemize}
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
     SVD was an historical turning point in machine learning algorithms because it allows:
     \begin{itemize}
         \item Very efficient compression of information.
         \item Very efficient separation of \emph{important} information from noise.
     \end{itemize}
-\end{remark}
+\end{rem}
