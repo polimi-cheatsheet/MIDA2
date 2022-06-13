@@ -26,7 +26,7 @@ Assumptions:
     \item $\frac{B(z)}{A(z)}$ is \emph{minimum phase}
 \end{itemize}
 
-\begin{remark}
+\begin{rem}
     $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
 
     \begin{figure}[H]
@@ -59,7 +59,7 @@ Assumptions:
     Also for human it's difficult, for example \emph{steer to roll} dynamics in a bicycle: if you want to steer left, you must first steer a little to the right and then turn left.
 
     Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but generalized MVC).
-\end{remark}
+\end{rem}
 
 The problem we wish to solve is optimal tracking of the desired behavior of output:
 \begin{figure}[H]
@@ -93,7 +93,7 @@ Some additional (small) technical assumptions:
     \item We assume that $y^0(t)$ is known only up to time $t$ (present time), we have no preview of the future desired $y^0(t)$ ($y^0(t)$ is totally unpredictable).
 \end{itemize}
 
-\begin{remark}
+\begin{rem}
     There are 2 sub-classes of control problems:
     \begin{itemize}
         \item When $y^0(t)$ is constant or step-wise (regulation problem)
@@ -147,7 +147,7 @@ Some additional (small) technical assumptions:
             \caption*{Tracking problem}
         \end{minipage}
     \end{figure}
-\end{remark}
+\end{rem}
 
 Bottom-up way of presenting M.V.C.
 

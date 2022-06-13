@@ -1,0 +1,284 @@
+\documentclass[10pt,a4paper,twoside]{book}
+
+\input{style}
+
+\usepackage[
+  left=2.5cm, % inner
+  right=2.5cm, % outer
+  top=2.5cm,
+  bottom=3cm,
+  %showframe,
+  ]{geometry}
+
+\usepackage{xr} % cross-referencing 
+\makenoidxglossaries
+
+% Comandi pratici
+
+% d nell'integrale e i rispettivi usi
+\newcommand{\dl}{\de l}
+\newcommand{\dr}{\de r}
+\newcommand{\dxi}{\de \xi}
+\newcommand{\drho}{\de \rho}
+
+% d nell'integrale con differenziale vettoriale
+\newcommand{\dxx}{\de \x}
+\newcommand{\dyy}{\de \y}
+\newcommand{\dsig}{\de \sigg}
+
+\allowdisplaybreaks[4] % Consente di rompere equazioni su più pagine
+
+% MIDA1 acronym
+\newacronym{sp}{SP}{Stochastic Process}
+\newacronym{ssp}{SSP}{Stationary Stochastic Process}
+\newacronym{ma}{MA}{Moving Average}
+\newacronym{ar}{AR}{Auto Regressive}
+\newacronym{arx}{ARX}{Auto Regressive with Exogenous Input}
+\newacronym{arma}{ARMA}{Auto Regressive Moving Average}
+\newacronym{armax}{ARMAX}{Auto Regressive Moving Average with Exogenous Input}
+\newacronym{mse}{MSE}{Mean Square Error}
+\newacronym{wn}{WN}{White Noise}
+\newacronym{pem}{PEM}{Prediction Error Minimization}
+
+% MIDA2 acronym
+\newacronym{tf}{TF}{Transfer Function}
+\newacronym{ss}{SS}{State-Space}
+\newacronym{ir}{IR}{Impulse Response}
+\newacronym{bb}{BB}{Black-Box}
+\newacronym{wb}{WB}{White-Box}
+\newacronym{gb}{GB}{Gray-Box}
+\newacronym{kf}{KF}{Kalman Filter}
+\newacronym{dre}{DRE}{Difference Riccati Equation}
+\newacronym{are}{ARE}{Algebraic Riccati Equation}
+\newacronym{sem}{SEM}{Simulation Error Method}
+
+%c ommon used operator
+\DeclareMathOperator{\WN}{WN}
+
+\begin{document}
+
+\frontmatter
+
+\pagestyle{empty}
+
+% TITLE PAGE
+
+\hypertarget{mytitlepage}{} % set the hypertarget
+\bookmark[dest=mytitlepage,level=chapter]{Title Page} % add the bookmark
+
+\vspace*{\fill}
+\begin{center}
+	{\large \textsc{Lecture Notes of}}\\
+	
+  \vspace*{0.4cm}
+	
+  {\Huge
+  \textsc{Model Identification}\\
+	\vspace*{0.4cm}
+	\textsc{and Data Analysis}}\\
+	\vspace*{0.4cm}
+	{\huge \textsc{Part 2}}\\
+	
+  \vspace*{1cm}
+	
+  {\large {From Professor Sergio Savaresi's lectures}}\\
+	
+  \vspace*{1cm}
+	
+  {\large
+  Author\\
+  \vspace*{0.1cm}
+  \textsc{Edoardo Morassutto}\\
+  
+  \vspace*{0.4cm}
+  
+  Contributors\\
+  \vspace*{0.1cm}
+  \textsc{Marco Donadoni}\\
+  \textsc{Cosimo Russo}\\
+  \textsc{Federico Cazzola}\\
+  
+  \vspace*{0.4cm}
+	
+  Reviewed for the 2022 edition of the course by\\
+  \vspace*{0.1cm}
+  \textsc{Andrea Bosisio}\\
+
+  \vspace*{0.4cm}
+  
+  Document formatting by\\
+  \vspace*{0.1cm}
+  \textsc{Teo Bucci}}\\
+	
+  \vspace*{1cm}
+	
+  Politecnico di Milano\\A.Y. 2021/2022
+\end{center}
+\vspace*{\fill}
+\clearpage
+
+% COPYRIGHT PAGE
+
+\hypertarget{mycopyright}{} % set the hypertarget
+\bookmark[dest=mycopyright,level=chapter]{Copyright Page} % add the bookmark
+\input{firstpages/copyright}
+\clearpage
+
+% PREFACE
+
+% \hypertarget{mypreface}{} % set the hypertarget
+% \bookmark[dest=mypreface,level=chapter]{Preface} % add the bookmark
+% \input{firstpages/preface}
+% \clearpage
+
+% CONTENTS
+
+\cleardoublepage
+\pagestyle{toc}
+\hypertarget{mytoc}{} % set the hypertarget
+\bookmark[dest=mytoc,level=chapter]{\contentsname} % add the bookmark
+\tableofcontents
+\cleardoublepage
+
+% MAIN MATTER
+
+\pagestyle{fancy}
+\mainmatter
+
+%%TIKZ
+
+\usetikzlibrary{matrix,shapes.geometric}
+
+\tikzstyle{block}      = [draw, rectangle, inner sep=6pt]
+\tikzstyle{every node} = [font=\small]
+\tikzstyle{sum}        = [draw, circle, inner sep=3pt, minimum size =0.1cm]
+
+% Cross
+\tikzset{cross/.style={cross out, draw=black, minimum size=2*(#1-\pgflinewidth), inner sep=0pt, outer sep=0pt},
+  %default radius will be 1pt.
+  cross/.default={0.1cm}}
+
+% double border
+\tikzstyle{double border} = [double, double distance=0.5mm]
+% pattern in border
+\newcounter{tmp}
+\newif\ifpathisclosed
+\tikzset{dashed border/.style={
+    preaction={decoration={contour lineto closed, contour distance=2pt},
+      decorate,
+    },
+    postaction={
+      insert path={%
+        \pgfextra{%
+          \pgfinterruptpath
+          \path[pattern=north west lines, pattern color=black,even odd rule]
+          \mySecondList \myList
+          ;
+        \endpgfinterruptpath}
+    }},
+}}
+\def\pgfdecoratedcontourdistance{0pt}
+\pgfset{
+  decoration/contour distance/.code=%
+\pgfmathsetlengthmacro\pgfdecoratedcontourdistance{#1}}
+\pgfdeclaredecoration{contour lineto closed}{start}{%
+  \state{start}[
+  next state=draw,
+  width=0pt,
+  persistent precomputation=\let\pgf@decorate@firstsegmentangle\pgfdecoratedangle]{%
+    %\xdef\myList{}\xdef\mySecondList{}%
+    \setcounter{tmp}{0}%
+    \global\pathisclosedfalse%
+    \pgfpathmoveto{\pgfpointlineattime{.5}
+      {\pgfqpoint{0pt}{\pgfdecoratedcontourdistance}}
+    {\pgfqpoint{\pgfdecoratedinputsegmentlength}{\pgfdecoratedcontourdistance}}}%
+  }%
+  \state{draw}[next state=draw, width=\pgfdecoratedinputsegmentlength]{%
+    \ifpgf@decorate@is@closepath@%
+      \pgfmathsetmacro\pgfdecoratedangletonextinputsegment{%
+      -\pgfdecoratedangle+\pgf@decorate@firstsegmentangle}%
+    \fi
+    \pgfmathsetlengthmacro\pgf@decoration@contour@shorten{%
+    -\pgfdecoratedcontourdistance*cot(-\pgfdecoratedangletonextinputsegment/2+90)}%
+    \pgfpathlineto
+    {\pgfpoint{\pgfdecoratedinputsegmentlength+\pgf@decoration@contour@shorten}
+    {\pgfdecoratedcontourdistance}}%
+    \stepcounter{tmp}%
+    \pgfcoordinate{muemmel\number\value{tmp}}{\pgfpoint{\pgfdecoratedinputsegmentlength+\pgf@decoration@contour@shorten}
+    {\pgfdecoratedcontourdistance}}%
+    \pgfcoordinate{feep\number\value{tmp}}{\pgfpoint{\pgfdecoratedinputsegmentlength}{0pt}}%
+    \ifnum\value{tmp}=1\relax%
+     \pgfcoordinate{muemmel0}{\pgfpoint{0pt}{\pgfdecoratedcontourdistance}}%
+     \pgfcoordinate{feep0}{\pgfpoint{0pt}{0pt}}%
+     \xdef\myList{(muemmel\number\value{tmp})}%
+     \xdef\mySecondList{(feep\number\value{tmp})}%
+    \else
+     \xdef\myList{\myList -- (muemmel\number\value{tmp})}%
+     \xdef\mySecondList{(feep\number\value{tmp}) -- \mySecondList}%
+    \fi
+    \ifpgf@decorate@is@closepath@%
+      \pgfpathclose
+      \global\pathisclosedtrue%
+    \fi
+  }%
+  \state{final}{%\typeout{\myList,\mySecondList}%
+    \ifpathisclosed%
+      \xdef\myList{\myList -- cycle}%
+      \xdef\mySecondList{\mySecondList -- cycle}%
+      %\typeout{closed \mySecondList \myList }
+    \else
+      %\typeout{\number\value{tmp}}%
+      \xdef\myList{(muemmel0) -- \myList -- cycle}%
+      \xdef\mySecondList{\mySecondList -- (feep0) --}%
+      %\typeout{not closed \mySecondList \myList }%
+    \fi
+  }%
+}
+\tikzset{
+  contour/.style={
+    decoration={
+      name=contour lineto closed,
+      contour distance=#1
+    },
+decorate}}
+
+% pattern
+\tikzset{
+  hatch distance/.store in=\hatchdistance,
+  hatch distance=10pt,
+  hatch thickness/.store in=\hatchthickness,
+  hatch thickness=0.2pt
+}
+\pgfdeclarepatternformonly[\hatchdistance,\hatchthickness]{flexible hatch}
+{\pgfqpoint{0pt}{0pt}}
+{\pgfqpoint{\hatchdistance}{\hatchdistance}}
+{\pgfpoint{\hatchdistance-1pt}{\hatchdistance-1pt}}%
+{
+  \pgfsetcolor{\tikz@pattern@color}
+  \pgfsetlinewidth{\hatchthickness}
+  \pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
+  \pgfpathlineto{\pgfqpoint{\hatchdistance}{\hatchdistance}}
+  \pgfusepath{stroke}
+}
+
+%\tikzstyle{input} = [coordinate]
+%\tikzstyle{output} = [coordinate]
+%\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+\input{lectures/2022_04_06}
+\input{lectures/2022_04_07}
+\input{lectures/2022_04_11}
+\input{lectures/2022_04_12}
+\input{lectures/2022_04_14}
+\input{lectures/2022_04_20}
+\input{lectures/2022_04_21}
+\input{lectures/2022_04_27}
+\input{lectures/2022_05_02}
+\input{lectures/2022_05_09}
+\input{lectures/2022_05_12}
+
+\glsaddall
+\printnoidxglossary[type=\acronymtype,title=Glossary, toctitle=Glossary, nonumberlist]
+\cleardoublepage
+
+\end{document}

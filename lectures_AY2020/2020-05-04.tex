@@ -7,7 +7,7 @@
     \item Quality of estimation error (\emph{noise of measurement} for the software sensor).
 \end{itemize}
 
-\begin{example}[Slip estimation for ABS/traction control]
+\begin{exa}[Slip estimation for ABS/traction control]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
@@ -127,9 +127,9 @@
             \draw[->] (algo) -- (algoout);
         \end{tikzpicture}
     \end{figure}
-\end{example}
+\end{exa}
 
-\begin{example}[State of charge estimation of a battery]
+\begin{exa}[State of charge estimation of a battery]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
@@ -156,7 +156,7 @@
     \]
     Where $I$ is the total amount of \emph{current} that can be extracted by the user of the battery.
     This solution is not feasible since it integrates the noise on $i(t)$.
-\end{example}
+\end{exa}
 
 \section{Kalman Filter on Basic Systems}
 
@@ -277,7 +277,7 @@ These equations must be completed with 2 initial conditions (2 are dynamic equat
     P(1) = \text{var}[x(1)] = P_0 & \qquad\text{DRE}
 \end{align*}
 
-\begin{remark}[Structure or $K(t)$ and D.R.E]
+\begin{rem}[Structure or $K(t)$ and D.R.E]
     Notice that $K(t)$ and DRE have  a \emph{blockset} structure having this form: $AP(t)B^T+N$
 
     There are 3 different types of blocks:
@@ -291,25 +291,25 @@ These equations must be completed with 2 initial conditions (2 are dynamic equat
         \text{gain} \qquad& (\text{mix})(\text{output})^{-1} \\
         \text{DRE} \qquad& (\text{state}) - (\text{mix})(\text{output})^{-1}(\text{mix})^T
     \end{align*}
-\end{remark}
+\end{rem}
 
-\begin{remark}[Riccati equation]
+\begin{rem}[Riccati equation]
     Riccati equation is a special type of nonlinear matrix difference equation.
 
     Notice that DRE is an autonomous, non-linear, discrete time, multi-variable system, described by a non-linear difference matrix equation.
     \[
         \text{DRE: } P(t+1) = f(P(t)) \qquad P(1) = P_0
     \]
-\end{remark}
+\end{rem}
 
-\begin{remark}[Existance of DRE]
+\begin{rem}[Existance of DRE]
     In order to guarantee the existance of DRE for all $t$ the only critical part is the inversion of the \emph{output} block:
     \[
         ( \underbrace{HP(t)H^T}_{\ge 0} + \underbrace{V_2}_{>0})^{-1} \qquad \text{Thanks to $V_2>0$ it's invertible}
     \]
-\end{remark}
+\end{rem}
 
-\begin{remark}[Meaning of $P(t)$]
+\begin{rem}[Meaning of $P(t)$]
     It can be proven that $P(t)$ has a very important meaning.
 
     \[
@@ -317,4 +317,4 @@ These equations must be completed with 2 initial conditions (2 are dynamic equat
     \]
 
     $P(t)$ is the covariance of the 1-step prediction error of the state.
-\end{remark}
+\end{rem}

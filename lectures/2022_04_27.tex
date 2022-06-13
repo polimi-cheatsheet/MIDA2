@@ -1,0 +1,350 @@
+%!TEX root = ../main.tex
+
+\externaldocument{2022_04_21}
+\externaldocument{2022_05_02}
+
+\section{Extensions of the \gls{kf} for General System}\label{sec:KF-extensions}
+
+\subsection{Exogenous input}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node [block] (z1) at (1,5) {$z^{-1}$};
+        \node [block] (F1) at (1,4) {$F$};
+        \node [block] (K) at (1,2) {$K(t)$};
+        \node [block] (z2) at (1,1) {$z^{-1}$};
+        \node [block] (F2) at (1,0) {$F$};
+
+        \node [block] (H1) at (4,5) {$H$};
+        \node [block] (H2) at (4,1) {$H$};
+
+        \node [block] (G1) at (-3,5) {$G$};
+        \node [block] (G2) at (-3,1) {$G$};
+
+        \node[left] (u) at (-4,5) {$u(t)$};
+
+        \node [sum] (sum1) at (6,5) {};
+        \node [sum] (sum2) at (7,2) {};
+        \node [sum] (sum3) at (-1.5,5) {};
+        \node [sum] (sum4) at (-1.5,1) {};
+
+        \node (v1) at (-1.5,6) {$v_1(t)$};
+        \node (v2) at (6,6) {$v_2(t)$};
+        \node[right] (y) at (8,5) {$y(t)$};
+        \node[right] (yhat) at (8,1) {$\hat{y}(t|t-1)$};
+        \node[right] (xhat) at (8,0) {$\hat{x}(t|t-1)$};
+
+        \node at (-1,2.3) {\emph{feedback}};
+
+        \draw[->,red,line width=0.5mm] (u) -- (G1);
+        \draw[->,red,line width=0.5mm] (G1) -- (sum3);
+        \draw[->,red,line width=0.5mm] (-3.8,5) |- (G2);
+        \draw[->,red,line width=0.5mm] (G2) -- (sum4);
+        \draw[->] (v1) -- (sum3);
+        \draw[->] (sum3) -- (z1) node[pos=0.5] {$x(t+1)$};
+        \draw[->] (F1) -| (sum3);
+        \draw[->] (z1) -- (H1) node[pos=0.5] {$x(t)$};
+        \draw[->] (H1) -- (sum1);
+        \draw[->] (v2) -- (sum1);
+        \draw[->] (2.5,5) |- (F1);
+        \draw[->] (K) -| (sum4);
+        \draw[->] (sum4) -- (z2) node[pos=0.5] {$\hat{x}(t+1|t)$};
+        \draw[->] (7,5) -- (sum2) node[pos=0.8] {$+$};
+        \draw[->] (sum1) -- (y);
+        \draw[<-] (K) -- (sum2) node[pos=0.5,black] {$e(t)$};
+        \draw[->] (z2) -- (H2) node[pos=0.5] {$\hat{x}(t|t-1)$};
+        \draw[->] (F2) -| (sum4);
+        \draw[->] (2.5,1) |- (F2);
+        \draw[->] (H2) -- (yhat);
+        \draw[->] (7,1) -- (sum2) node[pos=0.8] {$-$};
+        \draw[->] (F2) -- (xhat);
+
+        \draw[dashed, blue] ($(G2) + (-1,-2)$) rectangle ($(sum2) + (1,1)$)
+            node[left=1cm of G2] {$\mathcal{KF}$:};
+
+    \end{tikzpicture}
+\end{figure}
+
+Notice that $K(t)$ remains the same because $P(t)$ is the covariance of the prediction error on $x(t)$ which remains the same because $Gu(t)$ doesn't introduce any additional noise or uncertainties to the system.
+That's because $Gu(t)$ is a totally known (deterministic) signal.
+
+\subsection{Multi-step Prediction}
+
+Assuming that $\hat{x}(t+1|t)$ is known from the basic solution, we can simply obtain a multi-step prediction as:
+\begin{align*}
+    \hat{x}(t+2|t) &= F \hat{x}(t+1|t) \\
+    \hat{x}(t+3|t) &= F \hat{x}(t+2|t) = F^2\hat{x}(t+1|t) \\
+    \vdots \\ 
+    \begin{cases}
+        \hat{x}(t+k|t) = F^{k-1} \hat{x}(t+1|t) \\
+        \hat{y}(t+k|t) = H\hat{x}(t+k|t)
+    \end{cases}
+\end{align*}   
+
+
+\subsection{Filter ($\hat{x}(t|t)$)}
+
+\[
+    \hat{x}(t+1|t) = F\hat{x}(t|t) \quad \implies \quad \hat{x}(t|t) = F^{-1}\hat{x}(t+1|t)
+\]
+This formula can be used only if $F$ is invertible.
+If $F$ is not invertible, the filter can be obtained with a specific \emph{filter} formulation of \gls{kf}
+
+\begin{defn}[Kalman Filter in Filter Form] \label{KF-Filter_Form_sol}
+    Reformulation of the equations described in \ref{subsec:KF-basic_sol}.\\
+    State equation (\ref{eq:KF-DRE}) and Gain equation (\ref{eq:KF-gain}) becomes  
+    \begin{align*}
+        \hat{x}(t|t) &= F\hat{x}(t-1|t-1) + Gu(t-1) + K_0(t)e(t) \\
+        K_0(t) &= \left(P(t)H\transpose\right) \left(HP(t)H\transpose+V_2\right)^{-1} \\
+    \end{align*}
+    while the \gls{dre} equation (\ref{eq:KF-DRE}) remains unchanged.\\
+    
+    The initial condition for the new State equation is 
+    \begin{align*}
+        \hat{x}(1|1) &= X_0 
+    \end{align*}
+\end{defn}
+
+\begin{rem}
+    These equations are valid under the (legit) assumption $V_{12} = 0$.
+\end{rem}
+
+\begin{rem}
+    Gain of \gls{kf} in prediction form (eq. \ref{eq:KF-gain} assuming $V_{12}=0$):
+    \[
+        K(t) = \left( FP(t)H\transpose \right) \left( HP(t)H\transpose+V_2 \right)^{-1}
+    \]
+
+    Gain of \gls{kf} in filter form:
+    \[
+        K_0(t) = \left(\textcolor{gray}{\cancel{F}} P(t)H\transpose \right) \left( HP(t)H\transpose+V_2 \right)^{-1}
+    \]
+
+    Therefore, the only difference is the elimination of $F$.
+\end{rem}
+
+
+\subsection{Time-varying systems}\label{subsec:time-varying_extension}
+In case of time-varying systems we have to perform the following substitutions:
+\begin{align*}
+    F \mapsto F(t) \\
+    G \mapsto G(t) \\
+    H \mapsto H(t)
+\end{align*}
+
+Therefore
+\[
+    \Sc: \begin{cases}
+        x(t+1) = F(t)x(t) + G(t)u(t) + v_1(t) \\
+        y(t) = H(t)x(t) + v_2(t)
+    \end{cases}
+\]
+
+\begin{defn} [Linear Time Varying (LTV) system]
+    The system $\Sc$ is a \emph{Linear Time Varying (LTV)} system, since its parameters ($F,G,H$) depends on the time instant $t$.
+\end{defn}
+
+Kalman Filter equations remain of the same form as the ones described in \ref{subsec:KF-basic_sol}: we just need to replace the parameter matrices ($F,G,H$) with the time-varying ones ($F(t),G(t),H(t)$).
+
+\subsection{Non-Linear Systems}
+
+This extensions is much more complicated. We will see Extended Kalman Filter (EKF) in section \ref{subsec:KF_non-lin_ext}.
+
+\section{Asymptotic Solution of Kalman Filter}
+
+\begin{rem} 
+    Even when the system $\Sc$ is an LTI, the Kalman Filter is not itself an LTI system: it is an LTV system, since it depends on the gain $K(t)$ which is time-varying.
+\end{rem}
+
+
+The fact that \gls{kf} is an LTV system is the source of 2 problems:
+\begin{itemize}
+    \item Checking the asymptotic stability of \gls{kf} algorithm is very difficult, since the stability check of an LTV system is not simple as the stability check for LTI.
+    \item Computational problem: $K(t)$ must be computed at each sampling time (e.g. every 5ms), including the inversion of $HP(t)H\transpose+V_2$ ($p\times p$ matrix) and the computation of $P(t)$ using the \gls{dre}.
+\end{itemize}
+
+\begin{rem}[Asymptotic Stability of a system]
+
+    If the system is: 
+    \begin{itemize}
+        \item LTI: $x(t+1) = Fx(t) + Gu(t)$ \\ 
+        \qquad the stability check considers only the sign of the eigenvalues of $F$.
+
+        \item LTV: $x(t+1) = F(t)x(t) + G(t)u(t)$ \\
+        \qquad even if all the eigenvalues of $F(t)$ are strictly inside the unit circle at any time, the system is not guaranteed asymptotically stable.
+        In practice it is, if the time-variations are \emph{slow} (e.g. aging).
+    \end{itemize}
+
+\end{rem}
+
+Because of those problems in real/practical applications the asymptotic version of \gls{kf} is preferred.
+
+\paragraph{Basic idea}
+Since the dependency on $t$ of $K(t)$ derives from the presence of $P(t)$, if $P(t)$ converges to a constant value $\bar{P}$ (steady-state value of $P(t)$), then also $K(t)$ will converge to $\bar{K}$ (steady-state value of $K(t)$).
+\\
+Using $\bar{K}$ the \gls{kf} becomes an LTI system.
+
+Let's analyze the asymptotic stability of the State equation (eq. \ref{eq:KF-state}) of the asymptotic \gls{kf} when $\bar{K}$ is used (assuming it exists).
+
+\begin{align*}
+    \hat{x}(t+1|t) &= F\hat{x}(t|t-1) + Gu(t) + \bar{K}e(t) \\
+    &= F\hat{x}(t|t-1) + Gu(t) + \bar{K}(y(t) - \hat{y}(t|t-1)) \\
+    &= F\hat{x}(t|t-1) + Gu(t) + \bar{K}(y(t) - H\hat{x}(t|t-1)) \\
+    &= \underbrace{(F - \bar{K}H)}_{\text{new state matrix}} \hat{x}(t|t-1) + Gu(t) + \bar{K}y(t)
+\end{align*}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+        \node[block ] (K) at (1,1) {$\bar{K}$};
+        \node[block ] (G) at (1,2) {$G$};
+        \node[sum] (sum) at (3,1) {};
+        \node[block ] (z) at (6,1) {$z^{-1}$};
+        \node[block ] (fb) at (6,0) {$F-\bar{K}H$};
+
+        \node[left] (y) at (0,1) {$y(t)$};
+        \node[left] (u) at (0,2) {$u(t)$};
+
+        \draw[->] (y) -- (K);
+        \draw[->] (u) -- (G);
+        \draw[->] (K) -- (sum);
+        \draw[->] (sum) -- (z) node[pos=0.5] {$\hat{x}(t+1|t)$};
+        \draw[->] (z) -- (9,1) node[pos=0.5] {$\hat{x}(t|t-1)$};
+        \draw[->] (fb) -| (sum);
+        \draw[->] (G) -| (sum);
+        \draw[->] (7.5,1) |- (fb);
+    \end{tikzpicture}
+    \caption*{Asymptotic Kalman Filter with Exogenous input}
+\end{figure}
+
+\paragraph{Condition for Asymptotic Stability of \gls{kf}}
+
+ If $\bar{K}$ exists, the \gls{kf} is asymptotically stable if and only if all the eigenvalues of $F-\bar{K}H$ are strictly inside the unit circle.
+
+\begin{rem}
+    The stability of the system $\Sc$ is related to matrix $F$, whereas the stability of \gls{kf} is related to matrix $F-\bar{K}H$.
+
+    Therefore, \gls{kf} can be asymptotically stable even if the system is unstable.
+\end{rem}
+
+\paragraph{Existance of $\bar{K}$}
+Starting from the equation \ref{eq:KF-gain}, if exists $P(t)$ such that $P(t) = \bar{P}$ then $K(t)$ becomes
+
+\[
+    \bar{K} = \left(F\bar{P}H\transpose + V_{12}\right)\left(H\bar{P}H\transpose+V_2\right)^{-1}
+\]
+
+Thus, $\bar{K}$ exists if $\bar{P}$ exists.\\
+
+In order to check that, we need to check the converge properties of \gls{dre}
+
+\begin{rem}[Stability of a dynamical autonomous system]
+    How to find the equilibrium points of a dynamical autonomous system?
+    \begin{center}
+        \begin{tabular}{c|c}
+            \textbf{Continuous time} & \textbf{Discrete time} \\
+            \hline\hline
+            $\dot{x} = f(x(t))$ & $x(t+1) = f(x(t))$ \\
+            \hline \\
+            equilibrium when $\dot{x} = 0$ & equilibrium when $x(t+1) = x(t)$ \\
+            $\downarrow$ & $\downarrow$ \\
+            $f(\bar{x}) = 0$ & $f(\bar{x}) = \bar{x}$ \\
+        \end{tabular}
+    \end{center}
+\end{rem}
+\gls{dre} is an autonomous discrete time system, thus we impose $\bar{P} = f(\bar{P})$, where $f(\bar{P})$ is the \gls{dre} (eq. \ref{eq:KF-DRE}) evaluated in $\bar{P}$:
+
+\begin{flalign}\label{eq:KF-ARE}
+    \nameeq{\bar{P} = \left( F\bar{P}F\transpose + V_1 \right)-\left(F\bar{P}H\transpose + V_{12}\right)\left(H\bar{P}H\transpose + V_2\right)^{-1}\left(F\bar{P}H\transpose+V_{12}\right)\transpose}{\acrshort{are}}
+\end{flalign}
+
+\begin{defn}[Algebraic Riccati Equation (ARE)]
+    The equation \ref{eq:KF-ARE} is a non-linear, matrix, static algebraic equation, known as \emph{\acrfull{are}}.
+\end{defn}
+
+If a steady state $\bar{P}$ solution of \gls{dre} (eq. \ref{eq:KF-DRE}) does exists, it must be a solution of ARE (eq. \ref{eq:KF-ARE}).
+There remains 3 questions:
+\begin{enumerate}
+    \item \textbf{Existence}: does \gls{are} have a semi-definite positive solution $\bar{P}$?
+    \item \textbf{Convergence}: if exists, does the \gls{dre} converges to $\bar{P}$?
+    \item \textbf{Stability}: is the corresponding $\bar{K}$ such that the \gls{kf} is asymptotically stable?
+\end{enumerate}
+
+
+To answer those questions we need two fundamental theorems (\gls{kf} asymptotic theorems).
+
+\subsection{Asymptotic Kalman Filter Theorems}
+The two Asymptotic Kalman Filter Theorems that we are going to introduce provide \emph{sufficient} conditions only.
+
+\begin{thm}[First Asymptotic \gls{kf} Theorem]\label{th:1KF_as}
+    Assumptions: $V_{12} = 0$ and the system is asymptotically stable (i.e. all eigenvalues of $F$ are strictly inside the unit circle).
+    Then:
+    \begin{enumerate}
+        \item \gls{are} has one and only one semi-definite positive solution: $\bar{P} \ge 0$.
+        \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
+        \item The corresponding $\bar{K}$ is s.t. the \gls{kf} is asymptotically stable (i.e. all the eigenvalues of $F-\bar{K}H$ have absolute value less than $1$).
+    \end{enumerate}
+\end{thm}
+
+\begin{rem}[Observability and Controllability]
+    Recall on Observability and Controllability needed for the introduction of the Second Asymptotic \gls{kf} Theorem (\ref{th:2KF_as}). 
+
+    \paragraph{Observability of the state through the output} 
+
+    The pair $(F, H)$ is observable if and only if
+    \[
+        O = \begin{bmatrix}
+            H \\
+            HF \\
+            \vdots \\
+            HF^{n-1}
+        \end{bmatrix}
+        \qquad
+        \text{is full rank}
+    \]
+
+    \paragraph{Controllability from the noise} 
+
+    We are interested in controllability from $v_1(t)$ (and not from $u(t)$).
+
+    \begin{align*}
+        x(t+1) = Fx(t) + \cancel{Gu(t)} + v_1(t) \qquad v_1(t) \sim WN(0, V_1)
+    \end{align*}
+
+    % \begin{align*}
+    %     x(t+1) = Fx(t) + v_1(t)
+    % \end{align*}
+
+    It's always possible to factorize $V_1 = \Gamma\cdot\Gamma^T$ rewriting
+    \[
+        x(t+1) = Fx(t) + \Gamma\omega(t) \qquad \omega(t) \sim WN(0, I)
+    \]
+
+    We can say that the state $x$ is controllable/reachable from the input noise $v_1(t)$ if and only if:
+    \[
+        R = \begin{bmatrix}
+            \Gamma & F\Gamma & \cdots & F^{n-1}\Gamma
+        \end{bmatrix}
+        \qquad
+        \text{is full rank}
+    \]
+\end{rem}
+
+
+\begin{thm}[Second Asymptotic \gls{kf} Theorem]\label{th:2KF_as}
+    Assumptions: $V_{12} = 0$, $(F, H)$ is observable and $(F, \Gamma)$ is controllable.
+    Then:
+    \begin{enumerate}
+        \item \gls{are} has one and only one definite positive solution $\bar{P} > 0$.
+        \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
+        \item The corresponding $\bar{K}$ is such that the \gls{kf} is asymptotically stable (i.e. all the eigenvalues of $F-\bar{K}H$ have absolute value less than $1$).
+    \end{enumerate}
+\end{thm}
+
+\begin{rem}
+    The difference between theorems \ref{th:1KF_as} and \ref{th:2KF_as} is that the first one ensures that $\bar{P} \ge 0$ while the second one ensures that $\bar{P} > 0$. 
+\end{rem}
+
+These two theorems are very useful in practice because we can fully avoid the (very difficult) direct convergence analysis of \gls{dre}.
+
+

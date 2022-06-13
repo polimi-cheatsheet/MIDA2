@@ -1,0 +1,428 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Template Dispense
+% Autore: Teo Bucci
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%---------------------------
+% FONTS AND LANGUAGE
+%---------------------------
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+%---------------------------
+% PACKAGES
+%---------------------------
+
+\usepackage{dsfont} % for using \mathds{1} characteristic function
+\usepackage{amsmath, amssymb, amsthm} % amssymb also loads amsfonts
+\usepackage{latexsym}
+
+\usepackage{booktabs}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{
+  positioning,
+  shapes.misc,
+  intersections,
+  shapes.symbols,
+  patterns,
+  fadings,
+  shadows.blur,
+  decorations.pathreplacing,
+  arrows.meta,
+  arrows
+}
+\usepackage{mathdots}
+\usepackage{cancel}
+\usepackage{color}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{tabularx}
+\usepackage{caption}
+\captionsetup{belowskip=12pt,aboveskip=4pt}
+\usepackage{subcaption}
+\usepackage{placeins} % \FloatBarrier
+\usepackage{flafter}  % The flafter package ensures that floats don't appear until after they appear in the code.
+\usepackage[shortlabels]{enumitem}
+\usepackage[english]{varioref}
+\renewcommand{\ref}{\vref}
+
+%---------------------------
+% INCLUSIONE FIGURE
+%---------------------------
+
+\usepackage{import}
+\usepackage{pdfpages}
+\usepackage{transparent}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\graphicspath{ {./images/} } % Path relative to the main .tex file
+\usepackage{float}
+
+\newcommand{\fg}[3][\relax]{%
+  \begin{figure}[H]%[htp]%
+    \centering
+    \captionsetup{width=0.7\textwidth}
+      \includegraphics[width = #2\textwidth]{#3}%
+      \ifx\relax#1\else\caption{#1}\fi
+      \label{#3}
+  \end{figure}%
+  \FloatBarrier%
+}
+
+%---------------------------
+% PARAGRAPHS AND LINES
+%---------------------------
+
+\usepackage[none]{hyphenat} % no hyphenation
+
+\emergencystretch 3em % to prevent the text from going beyond margins
+
+\usepackage[skip=0.2\baselineskip+2pt]{parskip}
+
+% \renewcommand{\baselinestretch}{1.5} % line spacing
+
+%---------------------------
+% HEADERS AND FOOTERS
+%---------------------------
+
+\usepackage{fancyhdr}
+
+\fancypagestyle{toc}{%
+\fancyhf{}%
+\fancyfoot[C]{\thepage}%
+\renewcommand{\headrulewidth}{0pt}%
+\renewcommand{\footrulewidth}{0pt}
+}
+
+\fancypagestyle{fancy}{%
+\fancyhf{}%
+\fancyhead[RE]{\nouppercase{\leftmark}}%
+\fancyhead[LO]{\nouppercase{\rightmark}}%
+\fancyhead[LE,RO]{\thepage}%
+\renewcommand{\footrulewidth}{0pt}%
+\renewcommand{\headrulewidth}{0.4pt}
+}
+
+% Removes the header from odd empty pages at the end of chapters
+\makeatletter
+\renewcommand{\cleardoublepage}{
+\clearpage\ifodd\c@page\else
+\hbox{}
+\vspace*{\fill}
+\thispagestyle{empty}
+\newpage
+\fi}
+
+%---------------------------
+% CUSTOM
+%---------------------------
+
+\usepackage{xspace}
+\newcommand{\latex}{\LaTeX\xspace}
+\newcommand{\tex}{\TeX\xspace}
+
+\newcommand{\Tau}{\mathcal{T}}
+\newcommand{\Ind}{\mathds{1}} % indicatrice
+
+\newcommand{\transpose}{^{\mathrm{T}}}
+\newcommand{\complementary}{^{\mathrm{C}}} % alternative ^{\mathrm{C}} ^{\mathrm{c}} ^{\mathsf{c}}
+\newcommand{\degree}{^\circ\text{C}} % simbolo gradi
+
+\newcommand{\notimplies}{\mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
+\newcommand{\questeq}{\overset{?}{=}} % è vero che?
+
+\newcommand{\indep}{\perp \!\!\! \perp} % indipendenza
+\newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\event}[1]{\emph{``#1''}} % evento
+
+% variazioni del simbolo "="
+\newcommand{\iideq}{\overset{\text{\tiny iid}}{=}}
+\newcommand{\ideq}{\overset{\text{\tiny id}}{=}}
+\newcommand{\indepeq}{\overset{\perp \!\!\! \perp}{=}}
+
+\newcommand{\boxedText}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
+
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\tilde}{\widetilde}
+\renewcommand{\hat}{\widehat}
+
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator*{\rank}{rank}
+\DeclareMathOperator*{\eig}{eig}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Grad}{grad}
+\DeclareMathOperator{\Div}{div}
+\DeclareMathOperator{\Span}{span}
+\let\Im\undefined  % redefine \Im
+\DeclareMathOperator{\Im}{Im}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\esssup}{ess\ sup}
+\DeclareMathOperator*{\essinf}{ess\ inf}
+\DeclareMathOperator*{\supp}{supp}
+
+\newcommand{\eps}{\varepsilon}
+
+\usepackage{mathtools} % Serve per i comandi dopo
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert} % absolute value
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert} % norm
+\DeclarePairedDelimiter{\sca}{\langle}{\rangle} % scalar product
+
+% Bold
+\renewcommand{\AA}{\mathbb A}
+\newcommand{\BB}{\mathbb{B}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\GG}{\mathbb{G}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\II}{\mathbb{I}}
+\newcommand{\JJ}{\mathbb{J}}
+\newcommand{\KK}{\mathbb{K}}
+\newcommand{\LL}{\mathbb{L}}
+\newcommand{\MM}{\mathbb{M}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\OO}{\mathbb{O}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\renewcommand{\SS}{\mathbb S}
+\newcommand{\TT}{\mathbb{T}}
+\newcommand{\UU}{\mathbb{U}}
+\newcommand{\VV}{\mathbb{V}}
+\newcommand{\WW}{\mathbb{W}}
+\newcommand{\XX}{\mathbb{X}}
+\newcommand{\YY}{\mathbb{Y}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+% Calligraphic
+\newcommand{\Ac}{\mathcal{A}}
+\newcommand{\Bc}{\mathcal{B}}
+\newcommand{\Cc}{\mathcal{C}}
+\newcommand{\Dc}{\mathcal{D}}
+\newcommand{\Ec}{\mathcal{E}}
+\newcommand{\Fc}{\mathcal{F}}
+\newcommand{\Gc}{\mathcal{G}}
+\newcommand{\Hc}{\mathcal{H}}
+\newcommand{\Ic}{\mathcal{I}}
+\newcommand{\Jc}{\mathcal{J}}
+\newcommand{\Kc}{\mathcal{K}}
+\newcommand{\Lc}{\mathcal{L}}
+\newcommand{\Mc}{\mathcal{M}}
+\newcommand{\Nc}{\mathcal{N}}
+\newcommand{\Oc}{\mathcal{O}}
+\newcommand{\Pc}{\mathcal{P}}
+\newcommand{\Qc}{\mathcal{Q}}
+\newcommand{\Rc}{\mathcal{R}}
+\newcommand{\Sc}{\mathcal{S}}
+\newcommand{\Tc}{\mathcal{T}}
+\newcommand{\Uc}{\mathcal{U}}
+\newcommand{\Vc}{\mathcal{V}}
+\newcommand{\Wc}{\mathcal{W}}
+\newcommand{\Xc}{\mathcal{X}}
+\newcommand{\Yc}{\mathcal{Y}}
+\newcommand{\Zc}{\mathcal{Z}}
+
+% differenziale
+\newcommand{\dspace}{\,} % \, aggiunge un piccolo spazio
+\newcommand{\de}{\mathrm{d}}
+\newcommand{\dx}{\dspace \de x}
+\newcommand{\dy}{\dspace \de y}
+\newcommand{\dt}{\dspace \de t}
+\newcommand{\ds}{\dspace \de s}
+\newcommand{\dz}{\dspace \de z}
+\newcommand{\dw}{\dspace \de w}
+\newcommand{\du}{\dspace \de u}
+\newcommand{\dv}{\dspace \de v}
+\newcommand{\dteta}{\dspace \de \vartheta}
+\newcommand{\dxy}{\dspace \de x \de y}
+\newcommand{\duv}{\dspace \de u \de v}
+\newcommand{\dst}{\dspace \de s \de t}
+\newcommand{\dP}{\dspace \de P}
+\newcommand{\dPP}{\dspace \de \PP}
+
+\newcommand{\SDP}{(\Omega,\Ac,\PP)} % spazio di probabilità
+\newcommand{\Cz}{\Cc^0}
+\newcommand{\Cu}{\Cc^1}
+\newcommand{\Lu}{\mathcal{L}^1}
+
+\newcommand{\fXY}{f_{(X,Y)}}
+\newcommand{\fXYxy}{\fXY(x,y)}
+
+% spaziature https://tex.stackexchange.com/questions/438612/space-between-exists-and-forall
+% questo aggiunge un piccolo spazio dopo \forall
+\let\oldforall\forall
+\renewcommand{\forall}{\oldforall \, }
+% questo aggiunge un piccolo spazio dopo \exists
+\let\oldexist\exists
+\renewcommand{\exists}{\oldexist \: }
+% questo aggiunge un comando \existsu per l'esiste ed è unico
+\newcommand\existu{\oldexist! \: }
+
+%---------------------------
+% APPENDICE
+%---------------------------
+
+\usepackage[title,titletoc]{appendix}
+
+%---------------------------
+% THEOREMS
+%---------------------------
+
+\definecolor{grey245}{RGB}{245,245,245}
+
+\newtheoremstyle{blacknumbox} % Theorem style name
+{0pt}% Space above
+{0pt}% Space below
+{\normalfont}% Body font
+{}% Indent amount
+{\bf\scshape}% Theorem head font --- {\small\bf}
+{.\;}% Punctuation after theorem head
+{0.25em}% Space after theorem head
+{\small\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
+%{\small\thmname{#1}% Theorem text (e.g. Theorem)
+\thmnote{\nobreakspace\the\thm@notefont\normalfont\bfseries---\nobreakspace#3}}% Optional theorem note
+
+\newtheoremstyle{unnumbered} % Theorem style name
+{0pt}% Space above
+{0pt}% Space below
+{\normalfont}% Body font
+{}% Indent amount
+{\bf\scshape}% Theorem head font --- {\small\bf}
+{.\;}% Punctuation after theorem head
+{0.25em}% Space after theorem head
+{\small\thmname{#1}\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
+%{\small\thmname{#1}% Theorem text (e.g. Theorem)
+\thmnote{\nobreakspace\the\thm@notefont\normalfont\bfseries---\nobreakspace#3}}% Optional theorem note
+
+\newcounter{dummy}
+\numberwithin{dummy}{chapter}
+
+\theoremstyle{blacknumbox}
+\newtheorem{definitionT}[dummy]{Definition}
+\newtheorem{theoremT}[dummy]{Theorem}
+\newtheorem{corollaryT}[dummy]{Corollary}
+\newtheorem{lemmaT}[dummy]{Lemma}
+
+% Per gli unnumbered tolgo il \nobreakspace subito dopo {\small\thmname{#1} perché altrimenti c'è uno spazio tra Teorema e il ".", lo spazio lo voglio solo se sono numerati per distanziare Teorema e "(2.1)"
+\theoremstyle{unnumbered}
+\newtheorem*{remarkT}{Remark}
+\newtheorem*{proofT}{Proof}
+\newtheorem*{exampleT}{Example}
+
+\RequirePackage[framemethod=default]{mdframed} % Required for creating the theorem, definition, exercise and corollary boxes
+
+% orange box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=orange,
+backgroundcolor=orange!0,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=2pt,
+innerbottommargin=5pt]{oBox}
+
+% green box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=green,
+backgroundcolor=green!0,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=2pt,
+innerbottommargin=5pt]{gBox}
+
+% blue box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=blue,
+backgroundcolor=blue!0,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=2pt,
+innerbottommargin=5pt]{bBox}
+
+% dim box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=black,
+backgroundcolor=grey245!0,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=2pt,
+innerbottommargin=5pt]{blackBox}
+
+\newenvironment{defn}{\begin{bBox}\begin{definitionT}}{\end{definitionT}\end{bBox}}
+\newenvironment{thm}{\begin{gBox}\begin{theoremT}}{\end{theoremT}\end{gBox}}
+\newenvironment{coro}{\begin{oBox}\begin{corollaryT}}{\end{corollaryT}\end{oBox}}
+\newenvironment{lemma}{\begin{oBox}\begin{lemmaT}}{\end{lemmaT}\end{oBox}}
+\newenvironment{rem}{\begin{oBox}\begin{remarkT}}{\end{remarkT}\end{oBox}}
+\newenvironment{exa}{\begin{blackBox}\begin{exampleT}}{\end{exampleT}\end{blackBox}}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+\renewenvironment{proof}{\begin{blackBox}\begin{proofT}}{\[\qed\]\end{proofT}\end{blackBox}}
+
+%---------------------------
+% CONTENTS
+%---------------------------
+
+\setcounter{secnumdepth}{3} % \subsubsection is level 3
+\setcounter{tocdepth}{2}
+
+\usepackage{bookmark}% loads hyperref too
+    \hypersetup{
+        %pdftitle={Fundamentos de C\'alculo},
+        %pdfsubject={C\'alculo diferencial},
+        bookmarksnumbered=true,
+        bookmarksopen=true,
+        bookmarksopenlevel=1,
+        hidelinks,% remove border and color
+        pdfstartview=Fit, % Fits the page to the window.
+        pdfpagemode=UseOutlines, %Determines how the file is opening in Acrobat; the possibilities are UseNone, UseThumbs (show thumbnails), UseOutlines (show bookmarks), FullScreen, UseOC (PDF 1.5), and UseAttachments (PDF 1.6). If no mode if explicitly chosen, but the bookmarks option is set, UseOutlines is used.
+    }
+
+\usepackage{glossaries} % certain packages that must be loaded before glossaries, if they are required: hyperref, babel, polyglossia, inputenc and fontenc
+\setacronymstyle{long-short}
+
+% hide section from the ToC \tocless\section{hide}
+\newcommand{\nocontentsline}[3]{}
+\newcommand{\tocless}[2]{\bgroup\let\addcontentsline=\nocontentsline#1{#2}\egroup}
+
+\usepackage[textsize=tiny, textwidth=1.5cm]{todonotes} % add disable to options to not show in pdf

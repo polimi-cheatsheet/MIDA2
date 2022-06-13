@@ -164,11 +164,11 @@ Kalman Filter in the filter form is:
     \text{DRE}& \text{ unchanged}
 \end{align*}
 
-\begin{remark}
+\begin{rem}
     These equations are valid under the restrictive assumption $V_{12} = 0$.
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
     Gain of K.F. in prediction form:
     \[
         K(t) = \left( FP(t)H^T \right) \left( HP(t)H^T+V_2 \right)^{-1}
@@ -178,7 +178,7 @@ Kalman Filter in the filter form is:
     \[
         K_0(t) = \left( \underline{\phantom{F}} P(t)H^T \right) \left( HP(t)H^T+V_2 \right)^{-1}
     \]
-\end{remark}
+\end{rem}
 
 
 \subsection{Time-varying systems}
@@ -206,12 +206,12 @@ The fact that K.F. is a LTV system is the source of 2 problems:
     \item Computational problem: $K(t)$ must be computed at each sampling time (e.g. every 5ms), including the inversion of $HP(t)H^T+V_2$ ($p\times p$ matrix).
 \end{itemize}
 
-\begin{remark}
+\begin{rem}
     For LTI: $x(t+1) = Fx(t) + Gu(t)$ the stability check considers the eigenvalues of $F$.
 
     For LTV: $x(t+1) = F(t)x(t) + G(t)u(t)$, even if all the eigenvalues of $F(t)$ are strictly inside the unit circle at any time, the system is not guaranteed to be asymptotically stable.
     In practice it is, if the time-variations are \emph{slow}, like in aging.
-\end{remark}
+\end{rem}
 
 Because of those problems in real/practical applications the asymptotic version of K.F. is preferred.
 
@@ -253,11 +253,11 @@ Let's analyze the asymptotic stability of K.F. when $\overline{K}$ is used (assu
 
 If $\overline{K}$ exists, the K.F. is asymptotically stable if and only if all the eigenvalues of $F-\overline{K}H$ are strictly inside the unit circle.
 
-\begin{remark}
+\begin{rem}
     The stability of the system $S$ is related to matrix $F$, whereas the stability of K.F. is related to matrix $F-\overline{K}H$.
 
     K.F. can be asymptotically stable even if the system is unstable.
-\end{remark}
+\end{rem}
 
 \paragraph{Existance of $\overline{K}$}
 

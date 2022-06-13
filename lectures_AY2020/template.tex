@@ -1,0 +1,81 @@
+\chapter{Template}
+\section{Table}
+
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{r|l|p{10cm}}
+        Right &  Left  &  Longlonglonglonglonglonglonglong longlonglonglonglonglonglonglonglonglonglonglonglong longlonglonglonglonglong \\
+        Right &  Left  &  Longlonglonglonglonglonglong
+        longlonglonglonglonglonglonglong
+        longlonglonglong
+        longlonglonglonglonglonglonglong
+    \end{tabular}
+    \caption{This is a caption}
+    \label{tab:trans-sym}
+\end{table}
+
+\section{List}
+This is a List:
+\begin{itemize}
+    \item \textbf{Bullet 1}: Bullet 1 is bullet 1.
+    \item \textbf{Bullet 2}: Bullet 2 is bullet 2.
+\end{itemize}
+
+\section{Definition}
+\begin{definition}\label{def:def1}
+\textbf{DEFINITION NAME}: This is a definition.
+\end{definition}
+
+% avoid bad break
+\vspace{5cm}
+
+\section{Theorem}
+\begin{theo}[THEOREM NAME]{theo:theo1}
+This is a theorm. Below are equations.
+\begin{align}\label{eq:multi-equations}
+    \psi(\bvec{a}) &= A\cdot \bvec{a} + \bvec{t}.\\
+    R_x &=  \begin{bmatrix}
+            0 & \cos(\theta) & -\sin(\theta)\\
+            0 & \sin(\theta) & \cos(\theta)\\
+            1 & 0 & 0
+         \end{bmatrix},
+    R_y =  \begin{bmatrix}
+            \cos(\theta) & 0 & -\sin(\theta)\\
+            \sin(\theta) & 0 & \cos(\theta)\\
+            0 & 1 & 0
+         \end{bmatrix},
+    R_z =  \begin{bmatrix}
+            \cos(\theta) & -\sin(\theta) & 0\\
+            \sin(\theta) & \cos(\theta) & 0 \\
+            0 & 0 & 1
+         \end{bmatrix}
+\end{align}
+\end{theo}
+
+\begin{lem}[LEMMA NAME]{lem:leml}
+This is a lemma
+\end{lem}
+
+\begin{prf}[LEMMA NAME]{prf:leml}
+This is a proof.
+\end{prf}
+
+\section{Tikz Pictures}
+\begin{figure}[htp]
+    \centering
+        \begin{tikzpicture}[scale=0.6]
+            \draw[->] (0,-1)--(0,1.5)node[above] {$s$};
+            \draw[->] (-0.8,0.6) to[bend right] (0.8,0.6);
+            \draw[->] (0.9, 0.8)--(0.9, 1.2) node[right] {$\omega$};
+            \filldraw[dashed] (0,-0.2)--(0.9, -0.3) circle (1pt) node [right] {$q$};
+            \draw[->] (0.8, -0.9)--(1.2, -0.8) node[right] {$v$};
+        \end{tikzpicture}
+    \caption{This is a caption. }
+    \label{fig:rotation}
+\end{figure}
+
+
+
+
+
+\curinstructor{Ins Tructor1}

@@ -1,6 +1,6 @@
 \newlecture{Sergio Savaresi}{27/05/2020}
 
-\begin{remark}
+\begin{rem}
     For stability let's recall a result of feedback system:
     \begin{figure}[H]
         \centering
@@ -23,7 +23,7 @@
         \item Build the \emph{characteristic polynomial} $\chi(z) = L_N(z) + L_D(z)$ (sum of numerator and denominator)
         \item Find the roots of $\chi(z)$, closed loop system is asymptotically stable iff all the roots of $\chi(z)$ are strictly inside the unit circle
     \end{itemize}
-\end{remark}
+\end{rem}
 
 \[
     L(z) = \frac{1}{b_0+b_1z^{-1}} \cdot \frac{z^{-1}(b_0+b_1z^{-1})}{1-az^{-1}} \cdot a
@@ -173,7 +173,7 @@ At closed loop the behavior is very simple:
 $y(t)$ exactly tracks/follows $y^0(t)$ but with $k$ steps of delay and it's disturbed by noise $E(z)e(t)$.
 This is the best possible solution.
 
-\begin{remark}
+\begin{rem}
     The closed-loop behavior is very simple.
 
     \begin{figure}[H]
@@ -219,7 +219,7 @@ This is the best possible solution.
 
     The M.V. controller \emph{pushes} all the system poles into the non-observable and/or non-controllable parts of the system (it makes internal cancellations).
     It's not a problem since we verified it's internally asymptotically stable.
-\end{remark}
+\end{rem}
 
 \section{Main limits of Minimum Variance Controllers}
 
@@ -241,7 +241,7 @@ Main difference: extension of the performance index.
     \item $Q(z)$ is a T.F. that makes a penalty to big values of $u(t)$
 \end{itemize}
 
-\begin{remark}[Reference model $P(t)$]
+\begin{rem}[Reference model $P(t)$]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2cm,auto,>=latex']
@@ -257,9 +257,9 @@ Main difference: extension of the performance index.
     \end{figure}
 
     The typical goal is to obtain the best possible tracking $y(t) = y^0(t)$, however perfect tracking may not be the best solution, but the best solution is to track a \emph{reference model}: $y(t) = P(z)y^0(t)$.
-\end{remark}
+\end{rem}
 
-\begin{example}[Cruise control in a car]
+\begin{exa}[Cruise control in a car]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2cm,auto,>=latex']
@@ -313,4 +313,4 @@ Main difference: extension of the performance index.
             \node[green, right] at (3,0.7) {$\scriptstyle P(z)$ \footnotesize to smooth the behavior};
         \end{tikzpicture}
     \end{figure}
-\end{example}
+\end{exa}

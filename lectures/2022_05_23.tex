@@ -1,0 +1,441 @@
+%!TEX root = ../main.tex
+
+\acrfull{gb} approach is something between \acrlong{wb} (where we need the physical model, like \gls{kf}) and \acrlong{bb} (machine learning, data-driven approach).
+
+We'll see two \gls{gb} approaches:
+\begin{itemize}
+    \item using \gls{kf} theory
+    \item using classical parametric framework
+\end{itemize}
+
+\section{\gls{gb} system identification using Kalman Filter}
+\acrlong{kf} is not a system identification method, it is a variable estimation approach (software-sensor, observer).
+However we can use it also for gray-box system identification (\emph{side benefit} of \gls{kf}).
+
+\paragraph{Problem definition} We have a model, typically built as a \gls{kf} model using first principles (mathematical equations are known):
+\[
+    \Sc: \begin{cases}
+        x(t+1) = f(x(t), u(t); \theta) + v_1(t) \\
+        y(t) = h(x(t); \theta) + v_2(t)
+    \end{cases}
+\]
+
+$f$ and $h$ are linear or non-linear functions, depending on \textbf{some unknown parameters} $\theta$ (with a physical meaning, e.g. mass, resistance, friction, \dots).
+
+The problem is to estimate $\hat{\theta}$ from a dataset.
+
+\paragraph{Problem solution}
+
+\gls{kf} solves this problem by transforming the unknown parameters in extended states: \gls{kf} makes the simultaneous estimation of $\hat{x}(t|t)$ (classic \gls{kf} problem) and of $\hat{\theta}(t)$ (parameter identification problem).
+
+\subparagraph{Trick} State extension
+
+\[
+    \Sc: \begin{cases}
+        x(t+1) = f(x(t), u(t); \theta(t)) + v_1(t) \\
+        \theta(t+1) = \theta(t) + v_\theta(t) \\
+        y(t) = h(x(t), \theta(t)) + v_2(t)
+    \end{cases}
+\]
+
+The new extended state vector is $x_E = \begin{bmatrix} x(t) \\ \theta(t) \end{bmatrix}$.
+The unknown parameters are transformed in unknown variables.
+
+\begin{rem}[New state equation for $\theta$ estimation]
+    The new equation we created
+    \[
+        \theta(t+1) = \theta(t) + v_\theta(t)
+    \]
+    is a \emph{fictitious} equation (not a physical equation).
+
+    The core dynamics is $\theta(t+1)=\theta(t)$: it's the equations of something which is constant.
+    This is exactly the nature of $\theta(t)$ which is indeed a constant vector of parameters.
+
+    We need a \emph{fictitious} noise in order to force the \acrlong{kf} to find the right value of $\theta$ (otherwise \gls{kf} probably would stay fixed on the initial condition).
+    We're telling \gls{kf} to do not rely on initial conditions.
+
+    Notice that this equation is not of an asymptotic stable system but a simply-stable system.
+    It's not a problem because \gls{kf} can deal with non-asymptotically stable systems.
+\end{rem}
+
+\subparagraph{Design choice} The critical point is, as for any \gls{kf} problem, the choice of the covariance matrix of $v_\theta(t) \sim WN(0, V_\theta)$. 
+
+We make the empirical assumption that $v_1 \perp v_\theta$ and $v_2 \perp v_\theta$ (there is no reason for $v_\theta$ to be correlated with $v_1$ and $v_2$).
+We also usually make the following strongly simplifying assumption on $V_\theta$: 
+\[
+    V_\theta = \begin{bmatrix}
+        \lambda_{1\theta}^2 & & & \\
+        & \lambda_{2\theta}^2 & & \\
+        & & \ddots & \\
+        & & & \lambda_{n_\theta\theta}^2\\
+    \end{bmatrix}
+\]
+
+where $\lambda_{1\theta}^2=\lambda_{2\theta}^2=\dots=\lambda_{n_\theta\theta}^2 = \lambda_{\theta}^2$.
+In practice this means that $v_\theta(t)$ is a vector of independent \gls{wn}s all with the same variance $\lambda_\theta^2$.
+The choice of this single parameter is made empirically: it is a design parameter. 
+
+By calling $\bar{\theta}$ the true value of $\theta$ and starting from an initial condition $\theta(0)$ (i.e. the best guess on the parameters' value), we can graphically represent the behavior of $\theta(t)$ depending on different choice of $\lambda_{\theta}^2$ (assuming that $\theta(t)$ is a single parameter). In particular, we consider the following extreme situations:
+\begin{itemize}
+    \item big $\lambda_\theta^2$
+    \item small $\lambda_\theta^2$
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+            node distance=2cm,auto,>=latex',
+            declare function={
+                f1(\x) = (\x < 2) * (\x/2*(3-1)) +
+                         (\x >= 2) * (3-1) +
+                         (\x > 0.2) * rand/2.5 +
+                         1;
+                f2(\x) = (\x < 4.5) * (\x/4.5*(3-1)) +
+                         (\x >= 4.5) * (3-1) +
+                         (\x > 0.2) * rand/15 +
+                         1;
+            }
+        ]
+        \draw[->] (0,0.5) -- (6,0.5) node[below] {$t$};
+        \draw[->] (0,0.5) -- (0,3.7) node[left] {$\theta(t)$};
+
+        \node[green] at (2.3,1.5) {\footnotesize small $\lambda_\theta^2$};
+        \node[blue] at (2.3,3.7) {\footnotesize big $\lambda_\theta^2$};
+
+        \draw[dotted] (6,3) -- (0,3) node[left] {$\bar{\theta}$};
+        \draw[domain=0:5.5,smooth,variable=\x,blue,samples=70] plot ({\x},{f1(\x)});
+        \draw[domain=0:5.5,smooth,variable=\x,green,samples=70] plot ({\x},{f2(\x)});
+
+        \draw[mark=*] plot coordinates {(0,1)} node[left, align=right] {Initial\\condition};
+    \end{tikzpicture}
+    % \vspace{-10pt}
+    % \caption*{Influence of choice of $\lambda_\theta^2$}
+\end{figure}
+
+With a small value of $\lambda_\theta^2$ there is a slow convergence with small oscillations (noise) at steady-state (big trust to initial conditions).
+With large values of $\lambda_\theta^2$, instead, there's fast convergence but noisy at steady-state.
+
+$\lambda_\theta^2$ is selected according to the best compromise for your specific application.
+
+\textbf{Note} This method can be useful when $\theta$ is varying (e.g. aging of a resistance).
+
+\textbf{Note} This trick can work in principle with any number of unknown parameters (e.g. 3 sensors, 10 states and 20 parameters).
+In practice it works well only on a limited number of parameters (e.g. 3 sensors, 5 states and 2 parameters).
+
+\begin{exa}
+    Mass linked to the wall with a spring (stiffness $K$) and with a pulling (or pushing) force $F(t)$.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \draw (0,0) -- (6,0);
+            \draw[pattern=north east lines] (0,0) rectangle (-0.5,2);
+            \draw[] (2,0) rectangle (4,1.5);
+            \node at (3,0.75) {$M$};
+            \draw[decoration={aspect=0.3, segment length=1mm, amplitude=2mm,coil},decorate] (0.5,0.75) -- (1.5,0.75);
+            \draw (0,0.75) -- (0.5,0.75);
+            \draw (1.5,0.75) -- (2,0.75);
+            \draw[->] (4,0.75) -- (5,0.75) node[right] {$F(t)$};
+            \fill[pattern=north east lines] (1.8,0) rectangle ++(2.4,-0.1) node[above right] {\footnotesize friction $c$};
+            \draw[->] (3,-0.5) -- (4,-0.5) node[right] {$x$};
+            \draw (3,-0.55) -- (3,-0.45);
+        \end{tikzpicture}
+    \end{figure}
+
+    \begin{description}
+        \item[Input] $F(t)$
+        \item[Output] Position $x(t)$ (measured with a physical sensor)
+        \item[Parameters] Realistic case: $K$ and $M$ are known (measured), but the friction $c$ is unknown
+    \end{description}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+            \node[block,align=center] at (0,0) (s) {system\\$c = ?$};
+            \draw[<-] (s) -- ++(-1.5,0) node[left] {$F(t)$};
+            \draw[->] (s) -- ++(1.5,0) node[right] {$x(t)$};
+        \end{tikzpicture}
+    \end{figure}
+
+    \paragraph{Problem} Estimate $c$ with a \gls{kf}
+
+    Since we are using a \gls{kf}, we do not need a training dataset, but we need to model the system.
+
+    \paragraph{Step 1} Model the system
+    \[
+        \ddot{x}M = -Kx - c\dot{x} + F(t)
+    \]
+    It's a differential, continuous time linear equation.
+    It's second order so we need 2 state variables: $x_1(t) = x(t)$ and $x_2(t) = \dot{x}(t)$.
+    \[
+        \begin{cases}
+            \dot{x}(t) = x_2(t) \\
+            M\dot{x}_2(t) = -Kx_1(t) -cx_2(t) + F(t) \\
+            y(t) = x_1(t)
+        \end{cases}
+        \begin{cases}
+            \dot{x}_1(t) = x_2(t) \\
+            \dot{x}_2(t) = -\frac{K}{M} x_1(t) - \frac{c}{M} x_2(t) + \frac{1}{M}F(t) \\
+            y(t) = x_1(t)
+        \end{cases}
+    \]
+
+    \paragraph{Step 2} Discretization
+
+    Eulero forward (see \nameref{appendix:discr}): $\dot{x}(t) \approx \frac{x(t+1)-x(t)}{\Delta}$.
+
+    \[
+        \begin{cases}
+            \frac{x_1(t+1)-x_1(t)}{\Delta} &= x_2(t) \\
+            \frac{x_2(t+1)-x_2(t)}{\Delta} &= -\frac{K}{M} x_1(t) - \frac{c}{M} x_2(t) + \frac{1}{M}F(t) \\
+            y(t) &= x_1(t)
+        \end{cases}
+    \]
+    \[
+        \begin{cases}
+            x_1(t+1) = x_1(t) + \Delta x_2(t) \\
+            x_2(t+1) = -\frac{K\Delta}{M}x_1(t) + \left(1-\frac{{\color{red}c}\Delta}{M}\right)x_2(t) + \frac{\Delta}{M}F(t) \\
+            y(t) = x_1(t)
+        \end{cases}
+    \]
+
+    \paragraph{Step 3} State extension: transforming $c$ into a state variable and adding noises.
+    \[
+        x_3(t+1) = x_3(t) = {\color{red}c(t)}
+    \]
+    \[
+        \begin{cases}
+            x_1(t+1) = x_1(t) + \Delta x_2(t) + v_{11}(t) \\
+            x_2(t+1) = -\frac{K\Delta}{M}x_1(t) + \left(1-\frac{{\color{red}x_3(t)} \Delta }{M}\right)x_2(t) + \frac{\Delta}{M}F(t) + v_{12}(t) \\
+            {\color{red}x_3(t+1) = x_3(t) + v_{13}(t)} \\
+            y(t) = x_1(t) + v_2(t)
+        \end{cases}
+    \]
+
+    The system is ready for \gls{kf} application: we get at the same time $\hat{x}(t)$ and $\hat{c}(t)$.
+
+    \textbf{Note} We need the Extended Kalman Filter: even if the original system was linear, state extension moved it to a non-linear system (due to the multiplication of $x_3(t)$ and $x_2(t)$ in the second state equation). This is something that happens most of the times when doing the state extension.
+\end{exa}
+
+
+\section{\gls{gb} system identification using Simulation Error Method}
+
+Are there alternative ways to solve \acrlong{gb} system identification problems?
+A commonly (and intuitive) used method is parametric identification approach based on \emph{\gls{sem}}.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block, align=center] at (0,0) (sys) {Physical model\\of $\Sc$\\with some\\unknown parameters ($\theta$)};
+        \draw[<-] (sys.west) -- ++(-1,0) node[left] {$u(t)$};
+        \draw[->] (sys.east) -- ++(1,0) node[right] {$y(t)$};
+    \end{tikzpicture}
+\end{figure}
+
+Following the classical 4 steps of a supervised parametric method for system identification:
+
+\paragraph{Step 1} Collect data from an experiment
+
+\begin{align*}
+    \{ \tilde{u}(1), \tilde{u}(2), \dots, \tilde{u}(N) \} \\
+    \{ \tilde{y}(1), \tilde{y}(2), \dots, \tilde{y}(N) \}
+\end{align*}
+
+\paragraph{Step 2} Define model structure
+\[
+    y(t) = \mathcal{M}(u(t); \bar{\theta}, \theta)
+\]
+Mathematical model (linear or non-linear) usually written from first principle equations. $\bar{\theta}$ is the set of \textbf{known parameters} (mass, resistance, \dots), $\theta$ is the set of \textbf{unknown parameters} (possibly with bounds).
+
+\paragraph{Step 3} Performance index definition (based on \emph{simulation error})
+\[
+    J_N(\theta) = \frac{1}{N} \sum_{t=1}^N \left( \tilde{y}(t) - \mathcal{M}(\tilde{u}(t); \bar{\theta}, \theta) \right)^2
+\]
+where $\tilde{y}(t)$ is the measured output and $\mathcal{M}(\tilde{u}(t); \bar{\theta}, \theta)$ is the simulated output.
+
+Therefore, $J_N(\theta)$ is the \emph{sample variance of the simulated output error}.
+
+\paragraph{Step 4} Optimization
+
+\[
+    \hat{\theta}_N = \argmin_\theta J_N(\theta)
+\]
+
+Notes about the optimization step:
+\begin{itemize}
+    \item usually no analytic expression of $J_N(\theta)$ is available
+    \item each computation of $J_N(\theta)$ requires an entire simulation of the model from $t=1$ to $t=N$
+    \item usually $J_N(\theta)$ is a non-quadratic and non-convex function. Iterative and randomized optimization methods must be used
+    \item therefore, it's intuitive but very computationally demanding
+\end{itemize}
+
+\subsection{Comparison of SEM with \gls{pem}}
+We can represent what we've just seen with the following scheme:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \draw (0,2) rectangle ++(2,2);
+        \node[align=center] at (1,3) {True system\\$\Sc$};
+        \node[draw, ellipse, align=center] at (1,0) (m) {Simulator\\$\mathcal{M}(\theta)$};
+        \node[sum] at (4,0) (sum) {};
+        \node[block] at (4,-1.5) (J) {$J_N(\theta)$};
+
+        \draw[<-] (m) -- (-1,0) node[left] {$\tilde{u}(t)$};
+        \draw[->] (m) -- (sum) node[pos=0.9] {$+$} node[pos=0.5] {$\hat{y}(t; \theta)$};
+        \draw[->] (4,3) -- (sum) node[pos=0.9] {$-$};
+        \draw[->] (sum) -- (J) node[pos=0.5, right] {\footnotesize simulation error};
+        \draw[->] (J) -| (m);
+
+        \draw[<-] (0,3) -- (-1,3) node[left] {$\tilde{u}(t)$};
+        \draw[->] (2,3) -- (5,3) node[right] {$\tilde{y}(t)$};
+    \end{tikzpicture}
+\end{figure}
+
+In the \gls{bb} approach, we have seen something very similar but:
+\begin{itemize}
+    \item the model was \gls{bb}
+    \item the performance index was based on \emph{prediction error} (\gls{pem}).
+\end{itemize}    
+
+The general framework is similar, but with \gls{sem} we need the model of the system a-priori.
+\begin{exa}
+    We collect data $\{ \tilde{u}(1), \tilde{u}(2), \dots, \tilde{u}(N) \}$ and $\{ \tilde{y}(1), \tilde{y}(2), \dots, \tilde{y}(N) \}$, we want to estimate from data the I/O model.
+
+    \[
+        y(t) = \frac{b_0 + b_1z^{-1}}{1+a_1z^{-1} + a_2z^{-2}}u(t-1) \qquad \theta = \begin{bmatrix}
+            a_1 \\ a_2 \\ b_0 \\ b_1
+        \end{bmatrix}
+    \]
+
+    In time domain $y(t) = -a_1y(t-1)-a_2y(t-2)+b_0u(t-1)+b_1u(t-2)$.
+
+    Using \gls{pem}
+    \[
+        \hat{y}(t|t-1) = -a_1\hat{y}(t-1)-a_2\hat{y}(t-2)+b_0\hat{u}(t-1)+b_1\hat{u}(t-2)
+    \]
+    \begin{align*}
+        J_N(\theta) &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) - \hat{y}(t|t-1, \theta) \right)^2 \\
+        &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) +a_1\tilde{y}(t-1)+a_2\tilde{y}(t-2)-b_0\tilde{u}(t-1)-b_1\tilde{u}(t-2) \right)^2 \\
+    \end{align*}
+
+    Notice that it's a quadratic formula.
+
+    \begin{figure}[H]
+        \begin{minipage}[t]{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+                \node[block] at (1,1) (zu) {$z^{-1}$};
+                \node[block] at (1,3.5) (zy) {$z^{-1}$};
+
+                \node at (0,2) (u) {$\tilde{u}(t)$};
+                \node at (0,4.5) (y) {$\tilde{y}(t)$};
+
+                \node[block,minimum height=5cm,minimum width=1.5cm,align=center] at (3.5,2.5) (sys) {Linear\\function\\of $\theta$};
+
+                \draw[->] (zu) -- (zu-|sys.west) node[pos=0.5] {$\scriptstyle\tilde{u}(t-1)$};
+                \draw[->] (u) -- (u-|sys.west);
+                \draw[->] (1,2) -- (zu);
+                \draw[->] (zy) -- (zy-|sys.west) node[pos=0.5] {$\scriptstyle\tilde{y}(t-1)$};
+                \draw[->] (y) -- (y-|sys.west);
+                \draw[->] (1,4.5) -- (zy);
+                \draw[->] (sys) -- ++(2,0) node[above] {$\scriptstyle\hat{y}(t|t-1)$};
+            \end{tikzpicture}
+            \caption*{\gls{pem}}
+        \end{minipage}
+        \begin{minipage}[t]{0.4\textwidth}
+            \centering
+            \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
+                \node[block] at (1,1) (zu) {$z^{-1}$};
+                \node[block] at (1,3) (zy) {$z^{-1}$};
+                \node[block] at (1,4.5) (zy2) {$z^{-1}$};
+
+                \node at (0,2) (u) {$\tilde{u}(t)$};
+
+                \node[block,minimum height=5cm,minimum width=1.5cm,align=center] at (3.5,2.5) (sys) {Linear\\function\\of $\theta$};
+
+                \draw[->] (zu) -- (zu-|sys.west) node[pos=0.5] {$\scriptstyle\tilde{u}(t-1)$};
+                \draw[->] (u) -- (u-|sys.west);
+                \draw[->] (1,2) -- (zu);
+
+                \draw[->] (zy) -- (zy-|sys.west) node[pos=0.5] {$\scriptstyle\hat{y}(t-2)$};
+                \draw[->] (zy2) -- (zy2-|sys.west) node[pos=0.5] {$\scriptstyle\hat{y}(t-1)$};
+                \draw[->] (zy2) -- (zy);
+                \draw[->] (4.8,2.5) -- (4.8,5.5) -- (1,5.5) -- (zy2);
+
+                \draw[->] (sys) -- ++(2,0) node[above] {$\scriptstyle\hat{y}(t|t-1)$};
+            \end{tikzpicture}
+            \caption*{\gls{sem}}
+        \end{minipage}
+    \end{figure}
+
+    Using \gls{sem}
+    \[
+        \hat{y}(t|t-1) = -a_1\hat{y}(t-1)-a_2\hat{y}(t-2)+b_0\tilde{u}(t-1)+b_1\tilde{u}(t-2)
+    \]
+    \begin{align*}
+        J_N(\theta) &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) - \hat{y}(t|t-1, \theta) \right)^2 \\
+        &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) +a_1\hat{y}(t-1)+a_2\hat{y}(t-2)-b_0\tilde{u}(t-1)-b_1\tilde{u}(t-2) \right)^2 \\
+    \end{align*}
+
+    Notice that it's non-linear with respect to $\theta$.
+\end{exa}
+
+\gls{pem} approach looks much better, but do not forget the noise! \gls{pem} is much less robust w.r.t. noise: we must include a model of the noise in the estimated model.
+We use \gls{armax} models.
+
+If we use \gls{arx} models:
+\[
+    y(t) = \frac{b_0+b_1z^{-1}}{1+a_1z^{-1}+a_2z^{-2}}u(t-1) + \frac{1}{1+a_1z^{-1}+a_2z^{-2}}e(t)
+\]
+\[
+    \hat{y}(t|t-1) = b_0u(t-1)+b_1u(t-2) - a_1y(t-1)-a_2y(t-2)
+\]
+
+If we use \gls{armax} models the numerator of the \gls{tf} for $e(t)$ is $1+c_1z^{-1}+\ldots+c_mz^{-m}$, in this case $J_N(\theta)$ is non-linear.
+This leads to the same complexity of \gls{sem}.
+
+The second problem of \gls{pem} is high sensitivity to sampling time choice.
+Remember that when we write at discrete time $y(t)$ we mean $y(t\cdot \Delta)$.
+
+\[
+    \hat{y}(t|t-1) = -a_1\tilde{y}(t-1)-a_2\tilde{y}(t-2) + b_0\tilde{u}(t-1)+b_1\tilde{u}(t-2)
+\]
+
+If $\Delta$ is very small the difference between $\tilde{y}(t)$ and $\tilde{y}(t-1)$ becomes very small.
+The effect is that the \gls{pem} optimization ends to provide this \emph{trivial} solution:
+\[
+    a_1 = -1 \qquad a_2 \rightarrow 0 \qquad b_0 \rightarrow 0 \qquad b_1 \rightarrow 0 \qquad \Rightarrow \qquad \tilde{y}(t) \approx \tilde{y}(t-1)
+\]
+
+This is a wrong model due to the fact that the recursive part of the model is using past measures of the output instead of past values of the model outputs.
+
+\section{Summary of system identification methods for I/O systems}
+
+The problem is to estimate the model of a system $\Sc$ that, in general, could be non-linear and dynamic.
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm,auto,>=latex']
+        \node[block, dashed border, minimum width=1.5cm, minimum height=1.5cm] at (0,0) (sys) {$\Sc$};
+        \draw[<-] (sys) -- ++(-1.5,0) node[left] {$u(t)$};
+        \draw[->] (sys) -- ++(1.5,0) node[right] {$y(t)$};
+    \end{tikzpicture}
+\end{figure}
+
+In order to do that we have to:
+\begin{itemize}
+    \item collect a dataset for training (supervised method): can be with or without design of the experiment
+    \item choose a model domain (linear static/non-linear static/linear dynamic/non-linear dynamic), using \gls{gb} or \gls{bb} approach
+    \item choose an estimation framework: constructive (4SID), parametric (\gls{pem} or \gls{sem}) or filtering (state extension of \gls{kf})
+\end{itemize}
+
+\begin{rem}[Final question]
+    For system identification and SW-sensing is better \acrlong{bb} or \acrlong{wb}?
+
+    It depends on the goals and type of applications:
+
+    \begin{itemize}
+        \item \gls{bb} is very general and very flexible, make maximum use of data and no or little need of domain know-how 
+        \item \gls{wb} is very useful when you are the system-designer (not only the control algorithm designer): it can provide more insight in the system.
+        \item \gls{gb} can sometimes be obtained by hybrid systems (part is black-box and part is white-box).
+    \end{itemize}
+\end{rem}
