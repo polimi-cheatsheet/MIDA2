@@ -57,13 +57,13 @@ Repeating the experiment and pre-processing for the $H$ experiments we can compu
 
 where each $\frac{\hat{B}_i}{A_i} e^{j\hat{\phi}_i}$ is a complex number that is the estimated point at frequency $\omega_i$ of the frequency response of the transfer function $W(z)$ from the input $u(t)$ to the output $y(t)$ of the system.
 
-\begin{recall}[Frequency Response Theorem for LTI systems]
+\begin{rem}[Frequency Response Theorem for LTI systems]
     If for a LTI system characterized by a \gls{tf} $W(z)$ the input is $A_i \sin (\omega_i t)$ and the output is $\hat{B}_i \sin (\omega_i t + \hat{\phi}_i)$, then 
     \[ W(z=e^{j \omega_i}) = |W(e^{j \omega_i})| e^{j \angle W(e^{j \omega_i})} = \frac{\hat{B}_i}{A_i} e^{j\hat{\phi}_i} \]
      is the corresponding frequency response of the system at that frequency ($\omega_i$).
     
     In particular, $\frac{\hat{B}_i}{A_i}$ is the ratio between the output and input amplitude and $\hat{\phi}_i$ is the phase shift.
-\end{recall}
+\end{rem}
 
 We can now plot these H point in a classical \emph{Bode plot} exploiting that $|W(e^{j \omega_i})| = \frac{\hat{B}_i}{A_i}$ and that $\angle W(e^{j \omega_i}) = \hat{\phi}_i$.
 
@@ -94,10 +94,10 @@ At the end of \emph{step 1} we have a frequency-domain dataset ($H$ values) repr
     \end{bmatrix}
 \]
 
-\begin{obs}[Model order selection]
+\begin{rem}[Model order selection]
     In this case the order is composed by 2 parameters $n$ and $p$:
     use cross-validation approach (or visual fitting in the Bode diagram) for finding the best choice of these parameters.
-\end{obs}
+\end{rem}
 
 \paragraph{Step 3} New performance index: variance of the error in frequency domain.
 
@@ -122,7 +122,7 @@ Usually $J_H(\theta)$ is a \emph{non-quadratic} and \emph{non-convex function}; 
 \]
 
 
-\begin{remark}[Frequency bandwidth selection $\omega_H =\; ?$]
+\begin{rem}[Frequency bandwidth selection $\omega_H =\; ?$]
     Theoretically the standard best solution should be $H$ points distributed uniformly from 0 to $\omega_N$ (Nyquist freq.).
 
     In practice it's better to concentrate the experimental effort in a smaller and more focused bandwidth.
@@ -143,9 +143,9 @@ Usually $J_H(\theta)$ is a \emph{non-quadratic} and \emph{non-convex function}; 
     \textbf{Rule of thumb} $\omega_H \approx 3\omega_c$
 
     \paragraph{Example} The Electronic Stability Control (ESC) system has an expected bandwidth of $\omega_c \approx 4 \text{Hz}$, so $\omega_H \approx 12\text{Hz}$.
-\end{remark}
+\end{rem}
 
-\begin{remark}[Emphasis on special frequency range]
+\begin{rem}[Emphasis on special frequency range]
     In some cases, between $\omega_1$ and $\omega_H$, we want to be more accurate in system identification in some frequency regions (typically around cut-off-frequency or around resonances).
     
     %TODO: replace this img with tikz figure
@@ -185,9 +185,9 @@ Usually $J_H(\theta)$ is a \emph{non-quadratic} and \emph{non-convex function}; 
     \]
 
     Another \textbf{trick}: more dense $\omega_i$ spacing in the frequency region of special interest (not really used).
-\end{remark}
+\end{rem}
 
-\begin{remark}[Single experiment]
+\begin{rem}[Single experiment]
     Sometimes the set of $H$ independent single-sinusoid experiments can be replaced by a long single ``sine-sweep'' experiment, that is to measure the frequency response of the system when the input is sinusoid that starts with frequency $\omega_1$ and amplitude $A_1$ and ends with frequency $\omega_H$ and amplitude $A_H$. 
 
     \begin{figure}[H]
@@ -217,15 +217,15 @@ Usually $J_H(\theta)$ is a \emph{non-quadratic} and \emph{non-convex function}; 
     where, similarly, $W(e^{j\omega_i}; \theta)$ is the modeled frequency response and $\hat{W}(e^{j \omega_i})$ is the measured frequency response.
     
     This experiment is quicker but has usually a lower signal-to-noise-ration.
-\end{remark}
+\end{rem}
 
-\begin{remark}[Experiment on unstable system]
+\begin{rem}[Experiment on unstable system]
     What happen if the system is \emph{open-loop} unstable? We have to stop the experiment because of the instability of the output (which of course diverges).
     
     \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=1.5cm,auto,>=latex']
-        \node[block] (sys) {$\Sys$};
+        \node[block] (sys) {$\Sc$};
         \node[left of=sys, node distance=3cm] (in) {};
         \node[left of=in] (in2) {};
         \node[right of=sys, node distance=2.5cm] (out) {};
@@ -245,7 +245,7 @@ Usually $J_H(\theta)$ is a \emph{non-quadratic} and \emph{non-convex function}; 
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
             \node [block,align=center] (stab) {stability\\controller};
-            \node [block] (sys) [right of=sum, node distance=2cm]{$\Sys$};
+            \node [block] (sys) [right of=sum, node distance=2cm]{$\Sc$};
             \node [coordinate] (split) [right of=sys, node distance=1cm]{};
             \node [] (end) [right of=split, node distance=3cm]{$y(t)$};
             \node [] (in) [left of=stab, node distance =4cm]{$\bar{y}(t)$};
@@ -270,7 +270,7 @@ Usually $J_H(\theta)$ is a \emph{non-quadratic} and \emph{non-convex function}; 
     \textbf{Note} that the model identified using that dataset will be a model of an unstable system.
     
     This is just a trick to collect data from an unstable system.
-\end{remark}
+\end{rem}
 
 
 
@@ -308,7 +308,7 @@ where we assume that the system model is given (typically obtained in a white-bo
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-        \node [block, align=center] (sys) {$\Sys$ \\ \vspace{10pt} \qquad \\ \qquad$x(t)$};
+        \node [block, align=center] (sys) {$\Sc$ \\ \vspace{10pt} \qquad \\ \qquad$x(t)$};
         \node (in) [left of=sys, node distance=2cm] {$u(t)$};
         \node (out) [right of=sys, node distance=2cm]{$y(t)$};
         \node (wn1) [above of=sys, node distance=1.5cm, xshift=-1cm] {$v_1(t)$};

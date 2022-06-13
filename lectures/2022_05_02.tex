@@ -2,7 +2,7 @@
 
 \externaldocument{2022_04_27}
 
-\begin{example}
+\begin{exa}
     \[
         S: \begin{cases}
             x(t+1) = \frac{1}{2}x(t) + v_1(t) \quad& v_1 \sim WN(0, \frac{19}{20}) \\
@@ -263,23 +263,23 @@
     \[
         \hat{x}(t|t) = F^{-1}\hat{x}(t+1|t) = \frac{2}{5} \frac{ 1 }{1-\frac{1}{10}z^{-1}}y(t)
     \]
-\end{example}
+\end{exa}
 
 
-\begin{remark}[White noise]
+\begin{rem}[White noise]
     In the formulas of Kalman Filter there is a requirement that $v_1(t)$ and $v_2(t)$ must be white noises.
     In many practical applications this assumption can be too demanding.
 
     We need a workaround to deal with practical applications where this assumption is not valid.
-    The workaround is a simple trick called \emph{state extension} and it consists on extending the model of $\Sys$ to incorporate the \emph{noise dynamics}.
+    The workaround is a simple trick called \emph{state extension} and it consists on extending the model of $\Sc$ to incorporate the \emph{noise dynamics}.
 
     Let's see how it works with a numerical example.
 
     \paragraph{Example}
 
-    Given a system $\Sys$ of order $n=1$
+    Given a system $\Sc$ of order $n=1$
     \[
-        \Sys:
+        \Sc:
         \begin{cases}
             x(t+1) = ax(t) + \eta(t) \qquad & \eta(t) \text{ is not a white noise}\\
             y(t) = bx(t) + v_2(t) \qquad & v_2(t) \sim \WN(0,1)
@@ -305,10 +305,10 @@
         \eta(t) \mapsto x_2(t)
     \end{align*}
 
-    Now $n=2$ and $\Sys$ becomes $\Sys'$
+    Now $n=2$ and $\Sc$ becomes $\Sc'$
 
     \[
-        \Sys':
+        \Sc':
         \begin{cases}
             x_1(t+1) = ax_1(t) + x_2(t) \\
             x_2(t+1) = cx_2(t) + v(t) \\
@@ -336,7 +336,7 @@
     \]
 
     Now we can apply \gls{kf} solution equations (\ref{subsec:KF-basic_sol}) to this system.
-\end{remark}
+\end{rem}
 
 \subsection{Extension to Non-Linear systems}\label{subsec:KF_non-lin_ext}
 Coming back to extensions of the \gls{kf} for the basic system (section \ref{sec:KF-extensions}), we consider a system with non-linear dynamics:
@@ -426,9 +426,9 @@ and $P(t)$ can be computed from the \gls{dre}:
     P(t+1) = \left( F(t)P(t)F(t)^T+V_1 \right) - \left( F(t)P(t)H(t)^T + V_{12}\right)\left( H(t)P(t)H(t)^T + V_2\right)^{-1}\left( F(t)P(t)H(t)^T + V_{12}\right)^T
 \]
 
-\begin{obs}
+\begin{rem}
     Equations of $K$ and \gls{dre} are the usual formulas of \gls{kf} (\ref{subsec:KF-basic_sol}) with the introduction of time-varying parameters (as said in \ref{subsec:time-varying_extension}).
-\end{obs}
+\end{rem}
 
 \paragraph{Linearization of the system}
 We linearize $f$ and $h$ by computing at each sampling time, respectively, $F(t)$ and $H(t)$ as:
@@ -449,7 +449,7 @@ Procedure to implement EKF at time $t$:
     \item compute $\hat{x}(t+1|t)$
 \end{enumerate}
 
-\begin{remark}
+\begin{rem}
     Main issues of EKF (same of LTV \gls{kf}):
     \begin{itemize}
         \item Very difficult (almost impossible) to have a theoretical guarantee of EKF stability (in practice extensive empirical testing is used).
@@ -461,9 +461,9 @@ Procedure to implement EKF at time $t$:
         \item safety-critical applications
         \item mission-critical applications
     \end{itemize}
-\end{remark}
+\end{rem}
 
-\begin{example}[\gls{kf} full procedure]\label{ex:KF_full-proc}
+\begin{exa}[\gls{kf} full procedure]\label{ex:KF_full-proc}
 
 Suspended seat in the cabin of an off-highway vehicle (agriculture tractor, earth-moving machine, etc\dots).
 
@@ -622,7 +622,7 @@ Suspended seat in the cabin of an off-highway vehicle (agriculture tractor, eart
     The discretized system with noises is:
 
     \[  
-        \Sys:
+        \Sc:
         \begin{cases}
             x_1(t+1) = x_1(t) + \Delta x_2(t) + v_{11}(t) \\
             x_2(t+1) = -\frac{\Delta K}{M} x_1(t) + \left( -\frac{\Delta C}{M} + 1 \right)x_2(t) + \frac{\Delta K}{M} x_3(t) + \frac{\Delta C}{M} x_4(t) + v_{12}(t) \\
@@ -634,7 +634,7 @@ Suspended seat in the cabin of an off-highway vehicle (agriculture tractor, eart
 
     This is normal state-space in discrete time:
     \[  
-        \Sys:
+        \Sc:
         \begin{cases}
             x(t+1) = Fx(t) + Gu(t) \\
             y(t) = Hx(t) + \cancelto{0}{D}u(t)
@@ -770,4 +770,4 @@ Suspended seat in the cabin of an off-highway vehicle (agriculture tractor, eart
 
     \gls{kf} at this point can be applied.
     Theorem \ref{th:1KF_as} and \ref{th:2KF_as} are applicable, thus we can directly jump to ARE solution.
-\end{example}    
+\end{exa}    

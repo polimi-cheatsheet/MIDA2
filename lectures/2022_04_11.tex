@@ -35,14 +35,14 @@ Before moving to the topic of \emph{4SID method}, a recall of the \emph{observab
 \section{Fundamental concepts of Observability and Controllability}
 
 \[
-    \Sys: 
+    \Sc: 
     \begin{cases}
         x(t+1) = Fx(t) + Gu(t) \\
         y(t) = Hx(t)
     \end{cases}
 \]
 
-\begin{definition}[Fully Observable]
+\begin{defn}[Fully Observable]
 The system is fully observable (from the output) if and only if the \textbf{observability matrix} $O$ is full rank:
 \[
     O = \begin{bmatrix}
@@ -55,14 +55,14 @@ The system is fully observable (from the output) if and only if the \textbf{obse
     \rank (O) = n
 \]
 where $n$ is the order of the system.
-\end{definition}
+\end{defn}
 
-\begin{obs}[Observability]
+\begin{rem}[Observability]
 Observability is a property of the system: by observing the output $y(t)$ it's possible to observe the state $x(t)$.\\
 \textbf{Note}: It refers only to state and output (i.e. $F$ and $H$).
-\end{obs}
+\end{rem}
 
-\begin{definition}[Fully Controllable]
+\begin{defn}[Fully Controllable]
 The system is fully controllable (from the input) if and only if the \textbf{controllability matrix} $R$ is full rank:
 \[
     R = \begin{bmatrix}
@@ -73,17 +73,17 @@ The system is fully controllable (from the input) if and only if the \textbf{con
 \]
 where, again, $n$ is the order of the system.\\
 $R$ is also called \emph{reachability} matrix.
-\end{definition}
+\end{defn}
 
-\begin{obs}[Controllability]
+\begin{rem}[Controllability]
 Controllability is a property of the system: by driving (or move) the input $u(t)$ it's possible to control the state $x(t)$.\\
 \textbf{Note}: It refers only to input and state (i.e. $F$ and $G$).\\
 \textbf{Note}: Controllability and Reachability are synonyms.
-\end{obs}
+\end{rem}
 
-\begin{example}[SISO system of order $n=2$]
+\begin{exa}[SISO system of order $n=2$]
     \begin{align*}
-    \Sys: 
+    \Sc: 
         \begin{cases}
             x_1(t+1) = \frac{1}{2} x_1(t) + u(t) \\
             x_2(t+1) = \frac{1}{3}x_2(t) \\
@@ -129,7 +129,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         \rank (R) = 1 < n = 2
         \quad\implies\quad \text{not fully controllable}
     \]
-    If $\Sys$ becomes 
+    If $\Sc$ becomes 
     \begin{align*}
     \mathcal{S'}: 
         \begin{cases}
@@ -203,11 +203,11 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         \end{tikzpicture}
     \end{figure}
     From this block scheme it can be seen that $x_1$ is \emph{directly} observable and reachable; $x_2$ becomes only \emph{indirectly} observable through $x_1(t)$ with the introduction of the blue block that correspond to the term $\color{blue}\frac{1}{6} x_2(t)$ in $\mathcal{S'}$.
-\end{example}
+\end{exa}
 
-\begin{example}[SISO system of order $n=2$]
+\begin{exa}[SISO system of order $n=2$]
     \begin{align*}
-    \Sys: 
+    \Sc: 
         \begin{cases}
             x_1(t+1) = \frac{1}{2} x_1(t)\\
             x_2(t+1) = \frac{1}{3}x_2(t) + u(t)\\
@@ -254,7 +254,7 @@ Controllability is a property of the system: by driving (or move) the input $u(t
         \quad\implies\quad \text{not fully controllable}
     \]
     
-    If $\Sys$ becomes 
+    If $\Sc$ becomes 
     \begin{align*}
     \mathcal{S'}: 
         \begin{cases}
@@ -344,9 +344,9 @@ Controllability is a property of the system: by driving (or move) the input $u(t
     
     It can be noticed that $x_1(t)$ is \emph{directly} observable but not reachable and $x_2(t)$ is \emph{directly} controllable. In $\mathcal{S}'$, with the introduction of the same blue block, the system becomes fully observable and controllable; in particular, $x_2(t)$ becomes also \emph{indirectly} observable and $x_1(t)$ becomes also \emph{indirectly} controllable.
     
-\end{example}
+\end{exa}
 
-\begin{remark}[4 sub-systems]
+\begin{rem}[4 sub-systems]
 \hfill \break
     Any \acrlong{ss} system can be \textbf{internally} seen as 4 sub-systems as follows:
 
@@ -405,11 +405,11 @@ Controllability is a property of the system: by driving (or move) the input $u(t
     \vspace{-15pt}
     
     Hence, this is a graphic proof of the fact that the I/O representation of a system through the \acrlong{tf} can only represent the \emph{observable} and \emph{controllable} part of the system; all the other sub-systems remains \textbf{hidden} with this representation. For this reason, the \gls{ss} representation is "more complete" than the \gls{tf} one when the system is not fully observable or not fully controllable.
-\end{remark}
+\end{rem}
 
 Another final definition is needed before presenting the 4SID algorithm.
 
-\begin{definition}[Hankel matrix of order n]
+\begin{defn}[Hankel matrix of order n]
     Starting from the \gls{ir} $\omega(t) = \{\omega(1), \omega(2), \ldots, \omega(N)\}$ we can build the Hankel matrix of order $n$ as follows:
 
 \[
@@ -457,7 +457,7 @@ Another final definition is needed before presenting the 4SID algorithm.
     % \]
     
     Therefore, $H_n = O \cdot R$, where $O$ is the observability matrix and $R$ is the reachability matrix.
-\end{definition}
+\end{defn}
 
 
 
@@ -506,12 +506,12 @@ We will see the solution of the problem with two different assumptions:
         $\eta(t)$ is the measurement noise (e.g. \gls{wn}). Described in \ref{4sid-noise}.
 \end{description}
 
-\begin{remark}
+\begin{rem}
     We will see in detail only the original version of 4SID, that is that the experiment is an impulse-experiment.
     However 4SID can be extended to any generic input signal $\left\{ u(1), u(2), \cdots, u(N) \right\}$ that is sufficiently exciting.
-\end{remark}
+\end{rem}
 
-\begin{remark}[Unstable System]
+\begin{rem}[Unstable System]
     In case of an unstable system the measurements must be collected in a closed-loop experiment.
     Indeed, if the experiment was open-loop, the experiment would be unfeasible.
 
@@ -537,7 +537,7 @@ We will see the solution of the problem with two different assumptions:
         %\vspace{3pt}
         %\caption*{Closed Loop System}
     \end{figure}
-\end{remark}
+\end{rem}
 
 \section{4SID procedure (noise-free)} \label{sec:4SID-NF}
 
@@ -622,9 +622,9 @@ In practice $n \ll N$, where, again, $n$ is the order of the system and $N$ the 
 
 \[ \left\{\hat{H}, \hat{G}, \hat{F}\right\} = \left\{O_{n+1}(\texttt{1;:}), R_{n+1}(\texttt{:;1}), (O')^{-1}O'' \right\}\]
 
-\begin{remark}
+\begin{rem}
     If the measurement is noisy all this process is \textbf{useless}. Also, if $n$ is unknown, \nameref{4SID-NF:step1} could never stop.
-\end{remark}
+\end{rem}
 
 \clearpage
 

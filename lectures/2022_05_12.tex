@@ -2,7 +2,7 @@
 
 \externaldocument{2022_05_09}
 
-\begin{remark}
+\begin{rem}
     The closed-loop behavior is very simple. Visually:
 
     \begin{figure}[H]
@@ -55,7 +55,7 @@
 
     MVC \emph{pushes} all the system poles into the non-observable and/or non-controllable parts of the system (it makes internal cancellations). However,
     this is something wanted and therefore it is not a problem since we verified it's internally asymptotically stable.
-\end{remark}
+\end{rem}
 
 \section{Main limitations of MVC}
 
@@ -81,15 +81,15 @@ where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
     \item $Q(z) u(z)$ is used to penalize the usage of control action, which has to be moderated since it's expensive in terms of energy, power, aging, ...
 \end{itemize}
 
-\begin{obs}
+\begin{rem}
 	The performance index $J$ of the MVC is just a special case of the GMVC's one, where $P(z) = 1$ and $Q(z) = 0$.
-\end{obs}
+\end{rem}
 
-\begin{remark}[Another important difference w.r.t. MVC]
+\begin{rem}[Another important difference w.r.t. MVC]
 	GMVC can be applied also to non-minimum phase systems.
-\end{remark}
+\end{rem}
 
-\begin{remark}[Reference behavior $P(t)$]
+\begin{rem}[Reference behavior $P(t)$]
 	In a generic feedback control system
     \begin{figure}[H]
         \centering
@@ -109,9 +109,9 @@ where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
     \[
     	y(t) = P(z)y^0(t)
     \]
-\end{remark}
+\end{rem}
 
-\begin{example}[Cruise control in a car]
+\begin{exa}[Cruise control in a car]
 	Cruise control is a typical example of \emph{reference model}'s usage.
     \begin{figure}[H]
         \centering
@@ -168,7 +168,9 @@ where $P(z)$ and $Q(z)$ are \gls{tf}s designed by engineers; in particular:
     \end{figure}
 
     In this scenario it is intuitive that a very aggressive tracking (i.e. $P(z) = 1$) is unwanted since it is uncomfortable and dangerous. A smoother reference behavior is preferred (i.e. $P(z)$ is a low-pass filter).
-\end{example}
+\end{exa}
+
+\appendix
 
 \begin{appendices}
 
@@ -289,19 +291,19 @@ If $\Delta T$ is sufficiently small, the step-wise analog signal is very similar
         \draw[<-] (ADC) -- (ADC-|sys.west);
 
         \draw[dashed,red] (1.7,-1.5) rectangle (7.5,1.5) 
-        	node[above=0.3cm of u_t] {\color{red} $\Sys$:};
+        	node[above=0.3cm of u_t] {\color{red} $\Sc$:};
         \node[below] at (4.6,-1.5) {\footnotesize System from a digital perspective};
     \end{tikzpicture}
 \end{figure}
 
 \textbf{Note} Both $u(t)$ and $y(t)$ are digital signal.
 
-We can obtain a discrete-time model from $u(t)$ to $y(t)$ for the system \textcolor{red}{$\Sys$}
+We can obtain a discrete-time model from $u(t)$ to $y(t)$ for the system \textcolor{red}{$\Sc$}
 
 \begin{figure}[H]
 	\centering 
 	\begin{tikzpicture}[node distance=2cm,auto,>=latex']
-		\node[block, red] (s) {$\Sys$};
+		\node[block, red] (s) {$\Sc$};
 
 		\draw[<-] (s) --++ (-1,0) node[left] {$u(t)$}; 
 		\draw[->] (s) --++ (1,0) node[right] {$y(t)$}; 
@@ -325,7 +327,7 @@ We introduce two methods for discretize a physical \gls{wb} model.
 The most used approach is the \emph{\acrlong{ss} Transformation}.
 
 \[
-    \Sys: \begin{cases}
+    \Sc: \begin{cases}
         \dot{x} = Ax + Bu \\
         y = Cx + (Du) \\
         \qquad \text{($A$, $B$, $C$, $D$ cont. time)}
@@ -333,7 +335,7 @@ The most used approach is the \emph{\acrlong{ss} Transformation}.
     \quad
     \xRightarrow[\Delta T]{\text{discretization}}
     \quad
-    \Sys: \begin{cases}
+    \Sc: \begin{cases}
         x(t+1) = Fx(t) + Gu(t) \\
         y(t) = Hu(t) + (Du(t)) \\
         \qquad \text{($F$, $G$, $H$, $D$ discrete time)}
@@ -347,7 +349,7 @@ Discretization is done via those transformation formulas:
     H &= C 
 \end{align*}
 
-\begin{recall}[$s$-domain] Let's recall the transformation from the $s$-domain to the $z$-domain.
+\begin{rem}[$s$-domain] Let's recall the transformation from the $s$-domain to the $z$-domain.
 	
 	\paragraph{Poles}
     How the poles of the continuous time system are transformed?
@@ -403,7 +405,7 @@ Discretization is done via those transformation formulas:
     Unfortunately these hidden zeros are frequently outside the unit circle, which means that $G(z)$ is not minimum phase even if $G(s)$ is minimum phase.
 
     Therefore, we need for instance GMVC to design the control system.
-\end{recall}
+\end{rem}
 
 \paragraph{2) Time-derivative discretization}
 
@@ -432,7 +434,7 @@ The critical choice is $\Delta T$ (sampling time).
 \paragraph{Simple idea}
 The general intuitive rule is: the smaller $\Delta T$, the better.
 
-\begin{recall}[Sampling and Nyquist frequency] If $\Delta T$ is sampling time, then
+\begin{rem}[Sampling and Nyquist frequency] If $\Delta T$ is sampling time, then
     \paragraph{Notation} 
     \[
         f_S = \frac{1}{\Delta T} [\text{Hz}] \qquad \omega_S = \frac{2\pi}{\Delta T} [\text{rad/s}] \qquad f_N = \frac{1}{2} f_S [\text{Hz}] \qquad \omega_N = \frac{1}{2} \omega_S [\text{rad/s}]
@@ -441,7 +443,7 @@ The general intuitive rule is: the smaller $\Delta T$, the better.
 
     \paragraph{Spectrum of a discretized signal}
     For a discretized signal its spectrum is limited and it ranges over $[0, \omega_N]$; as a result, the fitting between the spectrum of the discretized signal and the one of the original signal is very close at low frequencies and becomes more inaccurate as we approach $\omega_N$.
-\end{recall}
+\end{rem}
 
 If $\Delta T$ is large, $f_S$ is small (and accordingly,  $f_N$ too):
 \vspace{-5pt}
@@ -590,9 +592,9 @@ Usually, the bandwidth of interest is the one of the closed-loop control system.
 \paragraph{Aliasing problem}
 Another problem is managing the \emph{aliasing} problem, which is a big and critical problem in the A/D step. 
 
-\begin{theorem}[Nyquist–Shannon sampling theorem]\label{th:shannon}
+\begin{thm}[Nyquist–Shannon sampling theorem]\label{th:shannon}
     The maximum frequency content of a signal $f_{MAX}$ to be sampled should be such that $f_{MAX} \le f_N$.
-\end{theorem}
+\end{thm}
 
 
 When we want measure a signal $x$ we capture also the measurement noise; indeed, what we really obtain is $\tilde{x}(t) = x(t) + e(t)$, where $e$ is the noise. 
@@ -623,11 +625,11 @@ For example, suppose that the frequency content of $x(t)$ is contained in the ra
 
 \subparagraph{Analog solution} The classical way to deal with aliasing is to use anti-alias analog filters. 
 
-\begin{recall}[Anti-Aliasing Filter (AAF)]
+\begin{rem}[Anti-Aliasing Filter (AAF)]
     An \emph{anti-aliasing filter (AAF)} is a filter used before a signal sampler to restrict the bandwidth of a signal to satisfy the Nyquist–Shannon sampling theorem (\ref{th:shannon}) over the band of interest.
     
     In practice, it is an analog low-pass filter with a cut frequency $f_{cut} \le \frac{1}{2} f_S = f_N$. 
-\end{recall}
+\end{rem}
 
 \begin{figure}[H]
     \centering
@@ -693,6 +695,5 @@ In this way the signal $\tilde{x}$ is ready to be sampled: aliasing is avoided (
 \end{figure}
 
 With this approach we consider the bandwidth of the noisy signal $\tilde x(t)$ ($f_{MAX} = 2$ KHz) and we sample it at $f_S = 2 f_{MAX} = 4$ KHz. Then we cut-off all the frequency components introduced by the noise with a digital low-pass filter ($f_{MAX} \rightarrow f'_{MAX} = 0.5$ KHz). Last, since now the bandwidth of the signal is $f'_{MAX} = 0.5$ KHz, we can re-sample the signal at $f'_S = 2 f'_{MAX} = 1$ KHz: this is \emph{under-sampling (1:4)} (because $f'_S = \frac{1}{4} f_S$) which in practice means to take one sample every out of four.
-
 
 \end{appendices}

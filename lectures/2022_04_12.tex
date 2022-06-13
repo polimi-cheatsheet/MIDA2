@@ -16,7 +16,7 @@ $\tilde{H}_{qd}$ is a $q\times d$ matrix.\\
 \textbf{Note} $q+d-1$ must equal to $N$ so that we use all the dataset.
 
 
-\begin{remark}[Choice of $q$ and $d$]
+\begin{rem}[Choice of $q$ and $d$]
     Hypothesis: $q<d$ so that $q+d-1=N \Rightarrow q=N+1-d$.
     \begin{figure}[H]
         \centering
@@ -43,7 +43,7 @@ $\tilde{H}_{qd}$ is a $q\times d$ matrix.\\
     If $q \ll d$ it's computationally less intensive but has the worst accuracy.
 
     \textbf{Rule of thumb} If $ q > \frac{d}{2}$ we get to a good enough result.
-\end{remark}
+\end{rem}
 
 \paragraph{Step 2} \emph{Singular Value Decomposition (SVD)} of $\tilde{H}_{qd}$
 
@@ -65,25 +65,25 @@ where $\tilde{U}$ and $\tilde{V}$ are \emph{square} and \emph{unitary} matrices 
 where $\sigma_1$, $\sigma_2$, $\ldots$, $\sigma_q$ are the \emph{singular values} of $\tilde{H}_{qd}$.
 Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_q$).
 
-\begin{definition}[Unitary matrix]
+\begin{defn}[Unitary matrix]
     A matrix $M$ is \emph{unitary} if:
     \begin{itemize}
         \item $\det (M) = 1$ \quad (this implies that $M$ is invertible)
         \item $M^{-1} = M\transpose$
     \end{itemize}
-\end{definition}
+\end{defn}
 
-\begin{obs}
+\begin{rem}
     The singular values of a rectangular matrix are a \emph{sort of eigenvalues} of a square matrix.\\
     SVD is a \emph{sort of diagonalization} of a rectangular matrix.
-\end{obs}
+\end{rem}
 
-\begin{recall}[Eigenvalues and Singular Values]
+\begin{rem}[Eigenvalues and Singular Values]
     For a square matrix $A$, $\text{eig}(A) = \text{roots}(\det(A-\lambda I))$. \\
     If a matrix $M$ is rectangular, $SV(M) = \sqrt{\text{eig}(MM\transpose)}$ (for non zero eigenvalues).
-\end{recall}
+\end{rem}
 
-\begin{remark}[How to compute SVD]
+\begin{rem}[How to compute SVD]
     The optimal numerical computation is not trivial. 
 
     Theoretical method for SVD computation is to make 2 diagonalization steps:
@@ -95,7 +95,7 @@ Those are real, positive numbers, sorted in decreasing order (i.e. $\sigma_1 \ge
     \]
     
     Instead, use \texttt{svd(M)} in Matlab.
-\end{remark}
+\end{rem}
 
 \paragraph{Step 3} Plot the singular values and separate (cut-off) the system from noise.
 
@@ -241,16 +241,16 @@ Using the \emph{shift-invariance} property we have that $\hat{O'} \hat{F} = \hat
 To avoid this problem we can use the approximate \emph{least-squares} solution.
 
 
-\begin{recall}[Solution of Linear Systems]
+\begin{rem}[Solution of Linear Systems]
     Consider a generic system $Ax = B$ with dimension  $(h\times n) \cdot (n \times 1) = (h \times 1)$. We have 3 different cases:
     \begin{enumerate}
         \item $h < n$. We have less equations than variables: the system is \emph{under determined} and we have infinite solutions.
         \item $h = n$. We have one and only one solution if $A$ is invertible.
         \item $h > n$. We have more equations than variables: the system is \emph{over determined} and it's impossible (no solutions).
     \end{enumerate}
-\end{recall}
+\end{rem}
 
-\begin{remark}[Least-Squares Method]
+\begin{rem}[Least-Squares Method]
     In case we have more equations than variable (i.e. $h>n$) we can use an approximate solution using the least-squares method, which for a generic system is as follows:
     \begin{align*}
         Ax &= B \\
@@ -259,7 +259,7 @@ To avoid this problem we can use the approximate \emph{least-squares} solution.
     \end{align*}
     
     $A^+$ is called \emph{pseudo-inverse}, which is ``surrogate inverse'' when $A$ is rectangular.
-\end{remark}
+\end{rem}
 
 
 Applying the least-square method to $\hat{O'} \hat{F} = \hat{O''}$ we have
@@ -273,25 +273,25 @@ Applying the least-square method to $\hat{O'} \hat{F} = \hat{O''}$ we have
 \paragraph{Conclusions} Starting from a noisy \gls{ir} $\widetilde{\omega}(t) = \{\widetilde{\omega}(1), \widetilde{\omega}(2), \ldots, \widetilde{\omega}(N)\}$ we have estimated a model $\{\hat{F}, \hat{G}, \hat{H}\}$ in a non-parametric and constructive way.
 \[ \left\{\hat{H}, \hat{G}, \hat{F} \right\} = \left \{\hat{O}(\texttt{1;:}), \hat{R}(\texttt{:;1}), \left((\hat{O'})\transpose\hat{O'}\right)^{-1} (\hat{O'})\transpose\hat{O''} \right \}\]
 
-\begin{obs}
+\begin{rem}
     This method can be extended also to the case where the input signal is generic (i.e. not an impulse).
-\end{obs}
+\end{rem}
 
-\begin{remark}[Optimality of 4SID]
+\begin{rem}[Optimality of 4SID]
     The method is \emph{optimal} in the sense that it makes the best possible rank reduction of $\tilde{H}_{qd}$, that is from $q$ to $n$.
     
     However, notice that in general there are infinite ways to make a rank reduction.
-\end{remark}
+\end{rem}
 
-\begin{remark}[Rank Reduction]
+\begin{rem}[Rank Reduction]
     Our goal is to obtain the desired rank reduction by discarding the minimum amount of information contained in the original matrix.
     SVD makes exactly this: $H_{res,qd}$ has the minimum possible size in the sense of the \emph{Frobenius norm}:
     \[
         \left\Vert H_{res,qd} \right\Vert_\text{F} = \sqrt{\sum_{ij} \left(H_{res,qd}^{(ij)} \right)^2}
     \]   
-\end{remark}
+\end{rem}
 
-\begin{example}[Rank Reduction]
+\begin{exa}[Rank Reduction]
     
     If we reduce a matrix $M$ as follows: 
     \[
@@ -319,18 +319,18 @@ Applying the least-square method to $\hat{O'} \hat{F} = \hat{O''}$ we have
     \[ \rank(M) = 3 \qquad \rank(\hat{M}) = 2 \qquad \rank(M_{res}) = 3 \]
 
     this is not the optimal rank reduction, since it factors out the matrix $\hat{M}$ with lower rank but a lot of information of the original matrix $M$ is lost in the residual matrix $M_{res}$.
-\end{example}
+\end{exa}
 
 
-\begin{remark}
+\begin{rem}
     4SID is a constructive method that can be implemented in a fully-automatic way, except for these steps:
     \begin{itemize}
         \item $q$ and $d$ selection (not critical)
         \item choice of $n$ (typically supervised by the designer). It can be made automatic using a cross-validation method.
     \end{itemize}
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
     SVD was an historical turning point in machine learning algorithms because it allows:
     \begin{itemize}
         \item very efficient compression of information.
@@ -338,4 +338,4 @@ Applying the least-square method to $\hat{O'} \hat{F} = \hat{O''}$ we have
         \item order reduction of a model.
     \end{itemize}
     Notice that those are 3 different prospective of the same general problem.
-\end{remark}
+\end{rem}

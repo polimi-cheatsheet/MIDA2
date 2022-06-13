@@ -14,7 +14,7 @@ However we can use it also for gray-box system identification (\emph{side benefi
 
 \paragraph{Problem definition} We have a model, typically built as a \gls{kf} model using first principles (mathematical equations are known):
 \[
-    \Sys: \begin{cases}
+    \Sc: \begin{cases}
         x(t+1) = f(x(t), u(t); \theta) + v_1(t) \\
         y(t) = h(x(t); \theta) + v_2(t)
     \end{cases}
@@ -31,7 +31,7 @@ The problem is to estimate $\hat{\theta}$ from a dataset.
 \subparagraph{Trick} State extension
 
 \[
-    \Sys: \begin{cases}
+    \Sc: \begin{cases}
         x(t+1) = f(x(t), u(t); \theta(t)) + v_1(t) \\
         \theta(t+1) = \theta(t) + v_\theta(t) \\
         y(t) = h(x(t), \theta(t)) + v_2(t)
@@ -41,7 +41,7 @@ The problem is to estimate $\hat{\theta}$ from a dataset.
 The new extended state vector is $x_E = \begin{bmatrix} x(t) \\ \theta(t) \end{bmatrix}$.
 The unknown parameters are transformed in unknown variables.
 
-\begin{remark}[New state equation for $\theta$ estimation]
+\begin{rem}[New state equation for $\theta$ estimation]
     The new equation we created
     \[
         \theta(t+1) = \theta(t) + v_\theta(t)
@@ -56,7 +56,7 @@ The unknown parameters are transformed in unknown variables.
 
     Notice that this equation is not of an asymptotic stable system but a simply-stable system.
     It's not a problem because \gls{kf} can deal with non-asymptotically stable systems.
-\end{remark}
+\end{rem}
 
 \subparagraph{Design choice} The critical point is, as for any \gls{kf} problem, the choice of the covariance matrix of $v_\theta(t) \sim WN(0, V_\theta)$. 
 
@@ -123,7 +123,7 @@ $\lambda_\theta^2$ is selected according to the best compromise for your specifi
 \textbf{Note} This trick can work in principle with any number of unknown parameters (e.g. 3 sensors, 10 states and 20 parameters).
 In practice it works well only on a limited number of parameters (e.g. 3 sensors, 5 states and 2 parameters).
 
-\begin{example}
+\begin{exa}
     Mass linked to the wall with a spring (stiffness $K$) and with a pulling (or pushing) force $F(t)$.
     \begin{figure}[H]
         \centering
@@ -215,7 +215,7 @@ In practice it works well only on a limited number of parameters (e.g. 3 sensors
     The system is ready for \gls{kf} application: we get at the same time $\hat{x}(t)$ and $\hat{c}(t)$.
 
     \textbf{Note} We need the Extended Kalman Filter: even if the original system was linear, state extension moved it to a non-linear system (due to the multiplication of $x_3(t)$ and $x_2(t)$ in the second state equation). This is something that happens most of the times when doing the state extension.
-\end{example}
+\end{exa}
 
 
 \section{\gls{gb} system identification using Simulation Error Method}
@@ -226,7 +226,7 @@ A commonly (and intuitive) used method is parametric identification approach bas
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[block, align=center] at (0,0) (sys) {Physical model\\of $\Sys$\\with some\\unknown parameters ($\theta$)};
+        \node[block, align=center] at (0,0) (sys) {Physical model\\of $\Sc$\\with some\\unknown parameters ($\theta$)};
         \draw[<-] (sys.west) -- ++(-1,0) node[left] {$u(t)$};
         \draw[->] (sys.east) -- ++(1,0) node[right] {$y(t)$};
     \end{tikzpicture}
@@ -275,7 +275,7 @@ We can represent what we've just seen with the following scheme:
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
         \draw (0,2) rectangle ++(2,2);
-        \node[align=center] at (1,3) {True system\\$\Sys$};
+        \node[align=center] at (1,3) {True system\\$\Sc$};
         \node[draw, ellipse, align=center] at (1,0) (m) {Simulator\\$\mathcal{M}(\theta)$};
         \node[sum] at (4,0) (sum) {};
         \node[block] at (4,-1.5) (J) {$J_N(\theta)$};
@@ -298,7 +298,7 @@ In the \gls{bb} approach, we have seen something very similar but:
 \end{itemize}    
 
 The general framework is similar, but with \gls{sem} we need the model of the system a-priori.
-\begin{example}
+\begin{exa}
     We collect data $\{ \tilde{u}(1), \tilde{u}(2), \dots, \tilde{u}(N) \}$ and $\{ \tilde{y}(1), \tilde{y}(2), \dots, \tilde{y}(N) \}$, we want to estimate from data the I/O model.
 
     \[
@@ -378,7 +378,7 @@ The general framework is similar, but with \gls{sem} we need the model of the sy
     \end{align*}
 
     Notice that it's non-linear with respect to $\theta$.
-\end{example}
+\end{exa}
 
 \gls{pem} approach looks much better, but do not forget the noise! \gls{pem} is much less robust w.r.t. noise: we must include a model of the noise in the estimated model.
 We use \gls{armax} models.
@@ -411,11 +411,11 @@ This is a wrong model due to the fact that the recursive part of the model is us
 
 \section{Summary of system identification methods for I/O systems}
 
-The problem is to estimate the model of a system $\Sys$ that, in general, could be non-linear and dynamic.
+The problem is to estimate the model of a system $\Sc$ that, in general, could be non-linear and dynamic.
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[block, dashed border, minimum width=1.5cm, minimum height=1.5cm] at (0,0) (sys) {$\Sys$};
+        \node[block, dashed border, minimum width=1.5cm, minimum height=1.5cm] at (0,0) (sys) {$\Sc$};
         \draw[<-] (sys) -- ++(-1.5,0) node[left] {$u(t)$};
         \draw[->] (sys) -- ++(1.5,0) node[right] {$y(t)$};
     \end{tikzpicture}
@@ -428,7 +428,7 @@ In order to do that we have to:
     \item choose an estimation framework: constructive (4SID), parametric (\gls{pem} or \gls{sem}) or filtering (state extension of \gls{kf})
 \end{itemize}
 
-\begin{remark}[Final question]
+\begin{rem}[Final question]
     For system identification and SW-sensing is better \acrlong{bb} or \acrlong{wb}?
 
     It depends on the goals and type of applications:
@@ -438,4 +438,4 @@ In order to do that we have to:
         \item \gls{wb} is very useful when you are the system-designer (not only the control algorithm designer): it can provide more insight in the system.
         \item \gls{gb} can sometimes be obtained by hybrid systems (part is black-box and part is white-box).
     \end{itemize}
-\end{remark}
+\end{rem}

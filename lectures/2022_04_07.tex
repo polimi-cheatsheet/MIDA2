@@ -7,21 +7,21 @@
 \]
 \vspace{1pt}
 \[
-     \Sys: y(t) = W(z)u(t)
+     \Sc: y(t) = W(z)u(t)
 \]     
 
 The \gls{tf} $W(z)$ is a rational function of \emph{z}: it's a \emph{digital filter}.\\
 
-\begin{recall}[$z$ operator]
+\begin{rem}[$z$ operator]
     The linear $z$ operator is such that $z^{-1}[x(t)]=x(t-1)$ and $z[x(t)]=x(t+1)$.\\
     From now on the "$[\cdot]$" will be \textbf{omitted} for simplicity.
-\end{recall}
+\end{rem}
 
 %Now it's trivial to move from T.F. representation to a time domain description of the system.
 
-\begin{example}
+\begin{exa}
     \begin{align*}
-    \Sys: \quad
+    \Sc: \quad
         & y(t) = \underbrace{\begin{bmatrix}
             \frac{1+\frac{1}{2}z^{-1}}{2+\frac{1}{3}z^{-1}+\frac{1}{4}z^{-2}} z^{-1}
         \end{bmatrix}}_{W(z)} u(t) \\
@@ -29,14 +29,14 @@ The \gls{tf} $W(z)$ is a rational function of \emph{z}: it's a \emph{digital fil
         & y(t) = \underbrace{-\frac{1}{6}y(t-1) - \frac{1}{8}y(t-2)}_\text{recursive part} + \underbrace{\frac{1}{2}u(t-1) + \frac{1}{4}u(t-2)}_\text{past inputs}
     \end{align*}
 
-\end{example}
-\begin{remark}[IRR and FIR filters]
+\end{exa}
+\begin{rem}[IRR and FIR filters]
 \hfill \break 
     $\displaystyle W(z) = \frac{z^{-1}}{1 + \frac{1}{3}z^{-1}}$ is an IIR (\emph{Infinite Impulse Response}) filter since it has the recursive part because of the presence of \emph{poles} in $W(z)$.\\
     $\displaystyle W(z) = z^{-1} + \frac{1}{2}z^{-2} + \frac{1}{4}z^{-3}$ is a FIR (\emph{Finite Impulse Response}) filter since it depends only on a \emph{finite} sequence of past inputs.
-\end{remark}
+\end{rem}
 
-\begin{remark}[Strictly proper systems]
+\begin{rem}[Strictly proper systems]
     Notice that for strictly proper systems the delay of $W(z)$ is $k \ge 1$, or, equivalently, the order of the numerator of $W(z)$ is strictly smaller than the order of the denominator of $W(z)$.
     \begin{figure}[H]
         \begin{minipage}[t]{0.5\textwidth}
@@ -69,16 +69,16 @@ The \gls{tf} $W(z)$ is a rational function of \emph{z}: it's a \emph{digital fil
             \end{tikzpicture}
         \end{minipage}
     \end{figure}
-\end{remark}
+\end{rem}
 
 \subsection{Representation \#3: Convolution of the input with the \acrfull{ir}}
 The third way to represent a system is through the \emph{convolution} of the input with the \emph{\acrfull{ir}}.\\
-\begin{definition}[\acrlong{ir}]
+\begin{defn}[\acrlong{ir}]
     In the discrete time domain, the \acrlong{ir} $\omega(t)$ of a filter $W(z)$ is $y(t) = W(z)u(t)$ where the input is the impulse (i.e. $u(t)=0$ everywhere except from $t=0$ where $u(t=0)=1$).
     \[
     \omega(t)=\{\omega(0), \omega(1), \omega(2), \cdots\}
     \]
-\end{definition}
+\end{defn}
 
 \begin{figure}[H]
     \begin{minipage}[t]{0.5\textwidth}
@@ -141,7 +141,7 @@ It is possible translate each representation into another one. Therefore, there 
 \subsection{\acrlong{ss} to \acrlong{tf}}
 Consider a strictly proper system with the following \gls{ss} representation:
 \[
-\Sys: 
+\Sc: 
 \begin{cases}
     x(t+1) = F x(t) + G u(t)\\
     y(t) = H x(t) + \cancelto{0}{D u(t)}\\
@@ -160,7 +160,7 @@ Thus, the \acrlong{tf} is
     \nameeq{W(z) = H(zI - F) ^ {-1} G}{\gls{ss}\textrightarrow\gls{tf}}\label{t1}
 \end{flalign}
 
-\begin{example}{Consider the following SISO system of order $n=2$:}
+\begin{exa}{Consider the following SISO system of order $n=2$:}
 \begin{align*}
     F = \begin{bmatrix}
         1 & 0\\
@@ -238,7 +238,7 @@ W(z) &=
 Notice that, due to \textbf{cancellation of singularities}, in this case we only have one pole, but the system is of order two; this comes from the fact that part of the system is \emph{non observable}.\\
 Alternatively, it could be noted that $\{F, G, H, D\}$ corresponds to the following system:
     \[
-    \Sys: 
+    \Sc: 
         \begin{cases}
             x_1(t+1) = x_1(t) + u(t) \\
             x_2(t+1) = \frac{1}{2} x_1(t) + 2x_2(t) + u(t) \\
@@ -253,7 +253,7 @@ Alternatively, it could be noted that $\{F, G, H, D\}$ corresponds to the follow
     \]
 From the first equation we have that $x_{1}(t)=\frac{1}{z-1}u(t)$ and substituting it to the third one we obtain the same result: $y(t)=x_{1}(t)=\frac{1}{z-1}u(t) \Rightarrow W(z)=\frac{1}{1-z^{-1}} z^{-1}$     
 
-\end{example}
+\end{exa}
 
 \subsection{\acrlong{tf} to \acrlong{ss}}
 This conversion is not very used in practice and it is called the \emph{realization} of a \acrlong{tf} into a \acrlong{ss} system.
@@ -291,7 +291,7 @@ The formula for the control realization of $W(z)$ is
     D = 0
     }{\gls{tf}\textrightarrow\gls{ss}}\label{t2}
 \end{flalign}
-\begin{example}
+\begin{exa}
     Consider the following \acrlong{tf}:
     \[ W(z) = \frac{2z^2 + \frac{1}{2}z + \frac{1}{4}}{z^3 + \frac{1}{4}z^2 + \frac{1}{3}z + \frac{1}{5}} \]
     Applying the transformation \ref{t2}, the control realization is:
@@ -314,7 +314,7 @@ The formula for the control realization of $W(z)$ is
         &&
         D = 0
     \end{align*}
-\end{example}
+\end{exa}
 
 \subsection{\acrlong{tf} to \acrlong{ir}}
 To get the \gls{ir} from a \acrlong{tf} $W(z)$ is sufficient to make the $\infty$-long division between the numerator and denominator of $W(z)$.
@@ -332,7 +332,7 @@ To get the \gls{ir} from a \acrlong{tf} $W(z)$ is sufficient to make the $\infty
 
 This can be simply proven remembering the \emph{convolution} of the \gls{ir} of $W(z)$ with the input $u(t)$.
 
-\begin{example}
+\begin{exa}
     Consider the following \acrlong{tf}:
     \[ W(z) = \frac{1}{z-\frac{1}{2}} = \frac{z^{-1}}{1-\frac{1}{2}z^{-1}}
         \stackrel{\text{$\infty$-long div.}}{=} 0 z^{-0} + 1 z^{-1} + \frac{1}{2}z^{-2} + \frac{1}{4}z^{-3} + \cdots \]
@@ -348,29 +348,29 @@ This can be simply proven remembering the \emph{convolution} of the \gls{ir} of 
     Remembering that for \emph{geometric series} we have \[ \sum_{k = 0}^{\infty} a^k = \frac{1}{1-a} \text{ if } |a| < 1 \]
     we can rewrite $y(t)$ as follows
     \[ y(t) = \left( z^{-1} \sum_{k=0}^{\infty} \left( \frac{1}{2} z^{-1} \right)^{k} \right) u(t) = \left( 0 + 1 z^{-1} + \frac{1}{2}z^{-2} + \frac{1}{4}z^{-3} + \cdots \right) u(t) \]
-\end{example}
+\end{exa}
 
 \subsection{\acrlong{ir} to \acrlong{tf}}
-\begin{definition}[$\mathcal{Z}$-transform]
+\begin{defn}[$\mathcal{Z}$-transform]
     Given a discrete-time signal $s(t)$ such that $\forall t < 0: s(t) = 0$, its \emph{$\mathcal{Z}$-transform} is defined as
     \[ \mathcal{Z} \left( s(t) \right) = \sum_{t = 0}^{\infty} s(t) z^{-t} \]
-\end{definition}
+\end{defn}
 Given this, it can be proven that
 \begin{flalign}
 \nameeq{W(z) = \mathcal{Z}\left( \omega(t) \right) = \sum_{t = 0}^{\infty} \omega(t) z^{-t}}{\gls{tf}\textrightarrow\gls{ir}}\label{t4}
 \end{flalign}
 This means that the \acrlong{tf} of a system is the $\mathcal{Z}$-transform of a special signal, $\omega(t)$, that is the \acrlong{ir} of the system.
 
-\begin{remark}
+\begin{rem}
     This formula cannot be used in practice to transform an \gls{ir} representation to a \gls{tf} representation.
     This is because we need infinite points of the \acrlong{ir}, and it must be available \emph{noise-free}.
     Thus, this transformation is only theoretical.
-\end{remark}
+\end{rem}
 
 \subsection{\acrlong{ss} to \acrlong{ir}}
 Consider the following \acrlong{ss} model, with initial conditions $x(0) = 0$ and $y(0) = 0$
 \[
-    \Sys: 
+    \Sc: 
     \begin{cases}
         x(t+1) = F x(t) + G u(t)\\
         y(t) = H x(t)\\

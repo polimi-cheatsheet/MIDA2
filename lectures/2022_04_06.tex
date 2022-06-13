@@ -83,9 +83,9 @@ Models used in MIDA1:
 We've used a \acrlong{bb} model identification method to find the model of the real system. The model is indicated as $\Mc(\theta)$ where $\theta$ is the parameter vector, which contains the coefficients of $A(z)$, $B(z)$, $C(z)$.
 
 In particular, we've seen the \textbf{\acrfull{pem}} method, a \emph{parametric approach} based on the minimization of the \emph{performance index} defined as:
-\begin{definition}[\gls{pem} cost function]
+\begin{defn}[\gls{pem} cost function]
     $J_{N}(\theta) = \frac{1}{N} \sum_{t=1}^N \left(y(t) - \hat{y}(t|t-1, \theta)\right)^2$
-\end{definition}
+\end{defn}
 
 which is the variance of the \emph{prediction error} $\epsilon(t)$ made by the model. The optimal $\theta$ is $\hat{\theta}_N = \argmin_\theta J_{N}(\theta)$
 
@@ -184,14 +184,14 @@ The system can be seen as a chain of components:
 
 It's simply deducible that such system is really difficult to model.
 
-\begin{recall}[\acrfull{wb} vs. \acrfull{bb}]
+\begin{rem}[\acrfull{wb} vs. \acrfull{bb}]
     \hfill \break
     \begin{itemize}
 	   \item \gls{wb} modelling: write the physical equations from \emph{first principles}.
 	   \item \gls{bb} modelling: experiment $\rightarrow$ collect data $\rightarrow$ build model.
         Using only I/O measured data we can \emph{learn} a mathematical model of the I/O behavior of the system.
     \end{itemize}
-\end{recall}
+\end{rem}
 
 In order to estimate the variable $v(t)$ (and so also $\lambda(t)$) we use an SW-sensing algorithm which takes as inputs other measurable variables (e.g. angular velocities of all the wheels). \\
 Thus, the scheme of a general control system becomes something like this: 
@@ -234,7 +234,7 @@ where $\Phi(t)$ are the available (measurable) variables of the system and $\hat
 \end{figure}
 
 
-\begin{recall}[General path of a Parametric Identification Method]
+\begin{rem}[General path of a Parametric Identification Method]
 \hfill \break
     \begin{enumerate}
         \item Collect data: inputs: $\left\{u(1), u(2), \ldots, u(N)\right\}$, outputs: $\left\{y(1), y(2), \ldots, y(N)\right\}$
@@ -247,7 +247,7 @@ where $\Phi(t)$ are the available (measurable) variables of the system and $\hat
     
     \textbf{Note}: $\Mc(\theta)$ can be sorted, that is $\Mc(\theta_1)$ is better than $\Mc(\theta_2)$ if $J(\theta_1) < J(\theta_2)$.
 
-\end{recall}
+\end{rem}
 
 In this chapter we are presenting a totally different system identification approach, the \textbf{non-parametric} one, which means:
 \begin{itemize}
@@ -264,7 +264,7 @@ Before entering in this system identification algorithm we need to recall the th
 \subsection{Representation \#1: \acrfull{ss}}
 
 \[
-\Sys: 
+\Sc: 
 \begin{cases}
     x(t+1) = F x(t) + G u(t) & \qquad \text{state equations} \\
     y(t) = H x(t) + D u(t) & \qquad \text{output equation}
@@ -300,17 +300,17 @@ where $F$, $G$, $H$ and $D$ are matrices defined a follows:
 
 In this case we have 1 input and 1 output (i.e. \emph{SISO} system), but those \emph{difference equations} can be extended for multiple inputs and outputs systems. Usually $D=0$ since we can say that the majority of real systems have this property. 
 
-\begin{definition} [Strictly-proper system]
+\begin{defn} [Strictly-proper system]
 A system is called \emph{strictly-proper} when the output of the system doesn't directly depend on the input (i.e. $D=0$). 
-\end{definition}
+\end{defn}
 
-\begin{obs}
+\begin{rem}
 $n$ is the \emph{order} of the system.
-\end{obs}
+\end{rem}
 
-\begin{example}[SISO system of order $n=2$]
+\begin{exa}[SISO system of order $n=2$]
     \[
-    \Sys: 
+    \Sc: 
         \begin{cases}
             x_1(t+1) = \frac{1}{2} x_1(t) + 2u(t) \\
             x_2(t+1) = x_1(t) + 2x_2(t) + u(t) \\
@@ -338,9 +338,9 @@ $n$ is the \emph{order} of the system.
         & \qquad
         D = 0
     \end{align*}
-\end{example}
+\end{exa}
 
 
-\begin{remark}[\acrlong{ss} representation is not unique]
+\begin{rem}[\acrlong{ss} representation is not unique]
     Let $F_1 = TFT^{-1}$, $G_1 = TG$, $H_1 = HT^{-1}$, $D_1 = D$ for any invertible $(n\times n)$ matrix $T$. Then, the system $\{F, G, H, D\}$ is equivalent to $\{F_1, G_1, H_1, D_1\}$.
-\end{remark}
+\end{rem}

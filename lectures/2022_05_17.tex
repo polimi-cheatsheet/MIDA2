@@ -7,11 +7,11 @@ In chapter 3 we have seen classical technology of software-sensing based on \acr
     \centering
     \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
         \node[left] at (0,4) (u) {$u(t)$};
-        \node[block] at (2,4) (sys) {$\Sys$};
+        \node[block] at (2,4) (sys) {$\Sc$};
         \node[block] at (2,2.3) (k) {$\bar{K}$};
         \node[sum] at (4,2.3) (sum) {};
         \node[right] at (6,4) (y) {$y(t)$};
-        \node[block, align=center] at (2,1) (model) {model of \\ $\Sys$};
+        \node[block, align=center] at (2,1) (model) {model of \\ $\Sc$};
         \node[above] at (2,5) (dist) {disturbances};
 
         \draw[->] (dist) -- (sys);
@@ -113,9 +113,9 @@ In case the system is non-linear, we can use the same idea used in the LTI case 
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm,auto,>=latex']
-        \node[block,dashed border,align=center] at (2,4) (n1) {$\Sys_{NL}$};
+        \node[block,dashed border,align=center] at (2,4) (n1) {$\Sc_{NL}$};
         \node[block,double border,align=center] at (2,2) (n2) {$f_{NL}$};
-        \node[block,dashed border,align=center] at (2,0) (n3) {model of\\ $\Sys_{NL}$};
+        \node[block,dashed border,align=center] at (2,0) (n3) {model of\\ $\Sc_{NL}$};
         \node[sum] at (4,2) (sum) {};
         \node[left] at (0,4) (u) {$u(t)$};
         \node[left] at (6,4) (y) {$y(t)$};
@@ -134,7 +134,7 @@ In case the system is non-linear, we can use the same idea used in the LTI case 
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}[Block scheme notation for non-linear system] 
+\begin{rem}[Block scheme notation for non-linear system] 
 	Notation used from now on to represent non-linear systems:
 	\begin{figure}[H]
 	    \centering
@@ -143,11 +143,11 @@ In case the system is non-linear, we can use the same idea used in the LTI case 
 	        \node[block,dashed border,align=center, right, right=3cm of n1](n2) {non-lin.\\\textbf{dynamic}\\system};
 	    \end{tikzpicture}
 	\end{figure}
-\end{remark}
+\end{rem}
 
-% \begin{remark}
+% \begin{rem}
 %     In \gls{kf} the E.K.F. extension uses the trick of a time-varying linear gain $K(t)$ but the obvious choice is a non-linear gain (static nonlinear function).
-% \end{remark}
+% \end{rem}
 
 The content of the box (non-linear SW-sensor) is:
 
@@ -281,15 +281,15 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
     \end{tikzpicture}
 \end{figure}
 
-\begin{remark}[Pros]
+\begin{rem}[Pros]
 	Some pros about this architecture:
 	\begin{itemize}
 		\item Training (supervised) done only to the non-linear static part of the SW-sensor (much simpler than the estimation of an RNN).
 		\item Stability is guaranteed by construction since it is a static FIR architecture.
 	\end{itemize}	
-\end{remark}
+\end{rem}
 
-\begin{remark}[Cons]
+\begin{rem}[Cons]
     In case of a MIMO system with
     \begin{align*}
         m \text{ inputs: } u(t) = \begin{bmatrix}
@@ -312,7 +312,7 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
         f(\cdot; \theta): \RR^{m\times n_u + p \times (n_y + 1)} \rightarrow \RR^n
     \]    
     Therefore, the I/O size of this non-linear parametric function can be very large.
-\end{remark}
+\end{rem}
 
 \paragraph{Architecture \#3} Like architecture \#2, we split the SW-sensor into a static non-linear system and a linear dynamic system but, this time, with a recursive IIR scheme.
 
@@ -365,7 +365,7 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
     \caption*{Architecture \#3 during training phase}
 \end{figure}
 
-\begin{remark}[Pros \& Cons]
+\begin{rem}[Pros \& Cons]
 	The advantage is that usually in IIR architecture $n_u$ and $n_y$ are much smaller (thanks to recursion): lower computation 
 	effort. 
 
@@ -425,7 +425,7 @@ Using an RNN with dynamic neurons is the most general approach but it is also pr
     \end{tikzpicture}
     \caption*{Architecture \#3 during production phase}
 \end{figure}
-\end{remark}
+\end{rem}
 
 \paragraph{Architecture \#4} Modification with a-priori signal processing of architectures \#1, \#2 and \#3. The idea is to split the SW-sensor in two stages:
 \begin{itemize}
@@ -460,23 +460,25 @@ The best is to gain some insight into the system and build some \emph{smart} reg
 
 \section{Comparison between \gls{kf} and \gls{bb} software sensing}
 
-\begin{center}
-	\begin{minipage}{\textwidth}
-	\renewcommand{\arraystretch}{1.5}
-	    \begin{tabular}{l|c|c}
-	        & \textbf{\gls{kf}} & \textbf{\gls{bb}} \\
-	        \hline\hline 
-	        Need of (\gls{wb}) physical model of the system & \color{red} Yes & \color{green} No \\ \hline 
-	        Need of a training dataset & \color{green} No {\color{black} \footnote{In practice some tuning through data is needed.}} & \color{red} Yes \\ \hline 
-	        Interpretability of the obtained SW-sensor & \color{green} Yes & \color{red} No \\ \hline 
-	        Easy retuning for a similar (different) system & \color{green} Yes & \color{red} No \\ \hline 
-	        Accuracy of the obtained SW-sensor & \color{green} Good & \color{green} Very Good \\ \hline 
-	        Can be used also in case of un-measurable states & \color{green} Yes & \color{red} No \\ \hline\hline 
-	    \end{tabular}
-    \end{minipage}
-\end{center}
+\begin{table}[htpb]
+    \centering
+    \bgroup
+    \def\arraystretch{1.5}
+    \begin{tabular}{l|c|c}
+        & \textbf{\gls{kf}} & \textbf{\gls{bb}} \\
+        \hline\hline 
+        Need of (\gls{wb}) physical model of the system & \color{red} Yes & \color{green} No \\ \hline 
+        Need of a training dataset & \color{green} No {\color{black} \footnote{In practice some tuning through data is needed.}} & \color{red} Yes \\ \hline 
+        Interpretability of the obtained SW-sensor & \color{green} Yes & \color{red} No \\ \hline 
+        Easy retuning for a similar (different) system & \color{green} Yes & \color{red} No \\ \hline 
+        Accuracy of the obtained SW-sensor & \color{green} Good & \color{green} Very Good \\ \hline 
+        Can be used also in case of un-measurable states & \color{green} Yes & \color{red} No \\ \hline\hline 
+    \end{tabular}
+    \egroup
+\end{table}
+\FloatBarrier
 
-\begin{example}[Example \ref{ex:KF_full-proc} continued]
+\begin{exa}[Example \ref{ex:KF_full-proc} continued]
     Model (key equation) of the system:
     \[
         M\ddot{z} = -c(t)(\dot{z}-\dot{z}_d) - K(z-z_d)
@@ -552,4 +554,4 @@ The best is to gain some insight into the system and build some \emph{smart} reg
             \draw[->] (f) -- (9.5,2.5) node[right] {$\hat{\dot{z}}$};
         \end{tikzpicture}
     \end{figure}
-\end{example}
+\end{exa}

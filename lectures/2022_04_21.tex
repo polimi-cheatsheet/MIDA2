@@ -44,7 +44,7 @@ This problem can be solved with \emph{software sensing (SW-sensing)} (also calle
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
-        \node [block, align=center] (sys) {$\Sys$\\\qquad$x(t)$};
+        \node [block, align=center] (sys) {$\Sc$\\\qquad$x(t)$};
         \node (in1) [left of=sys, node distance=2cm, yshift=0.7cm] {};
         \node (in2) [left of=sys, node distance=2.3cm] {$u(t)$};
         \node (in3) [left of=sys, node distance=2cm, yshift=-0.7cm] {};
@@ -110,7 +110,7 @@ Anyway, in some cases we might use both physical and software sensing for redund
     \item If feasible, check if the level of noise (error) of the estimated variable is acceptable.
 \end{itemize}
 
-\begin{example}[Slip estimation for ABS/traction control]
+\begin{exa}[Slip estimation for ABS/traction control]
 Now we go back to the ABS example (described in \ref{abs_ex}) where we realized that SW-sensing is needed for the estimation of $v$, the horizontal velocity of the car, since it cannot be measured with a physical sensor.
     \begin{figure}[H]
         \centering
@@ -226,9 +226,9 @@ Now we go back to the ABS example (described in \ref{abs_ex}) where we realized 
             \draw[->] (algo) -- (algoout);
         \end{tikzpicture}
     \end{figure}
-\end{example}
+\end{exa}
 
-\begin{example}[State of charge estimation of a battery]
+\begin{exa}[State of charge estimation of a battery]
     \begin{figure}[H]
         \centering
         \begin{tikzpicture}[node distance=2.5cm,auto,>=latex']
@@ -255,7 +255,7 @@ Now we go back to the ABS example (described in \ref{abs_ex}) where we realized 
     \]
     Where $I$ is the total amount of \emph{current} that can be extracted by the user of the battery.
     This solution is not feasible since it integrates the noise on $i(t)$.
-\end{example}
+\end{exa}
 
 \section{Kalman Filter on Basic Systems}
 
@@ -280,7 +280,7 @@ After that, we will make the extensions to more general systems:
 The basic system we initially consider is a MIMO system with $n$ states, ($m$ inputs) and $p$ outputs.
 
 \[
-    \Sys: \begin{cases}
+    \Sc: \begin{cases}
         x(t+1) = Fx(t) + \cancel{Gu(t)} + v_1(t) & \text{state equation}\\
         y(t) = Hx(t) + \cancel{Du(t)} + v_2(t) & \text{output equation}
     \end{cases}
@@ -327,9 +327,9 @@ The basic system we initially consider is a MIMO system with $n$ states, ($m$ in
     
     \textbf{Properties of $v_1(t)$}:
     \begin{enumerate}
-        \item $\E[v_1(t)] = \vec{0}$
-        \item $\E[v_1(t) \cdot v_1\transpose(t)] = V_1$, where $V_1$ is an $n\times n$ covariance matrix (square, symmetric and semi-definite positive by definition)
-        \item $\E[v_1(t) \cdot v_1\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
+        \item $\EE[v_1(t)] = \vec{0}$
+        \item $\EE[v_1(t) \cdot v_1\transpose(t)] = V_1$, where $V_1$ is an $n\times n$ covariance matrix (square, symmetric and semi-definite positive by definition)
+        \item $\EE[v_1(t) \cdot v_1\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
     \end{enumerate}
     
     \vspace{15pt}
@@ -348,16 +348,16 @@ The basic system we initially consider is a MIMO system with $n$ states, ($m$ in
     
     \textbf{Properties of $v_2(t)$}:
     \begin{enumerate}
-        \item $\E[v_2(t)] = \vec{0}$
-        \item $\E[v_2(t) \cdot v_2\transpose(t)] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (square, symmetric and semi-definite positive\footnote{We make the \textbf{assumption that $V_2$ is definite positive} (i.e. $V_2 > [0]_{n \times p}$) because we will need this property in the Riccati equation.} by definition)
-        \item $\E[v_2(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
+        \item $\EE[v_2(t)] = \vec{0}$
+        \item $\EE[v_2(t) \cdot v_2\transpose(t)] = V_2$, where $V_2$ is a $p\times p$ covariance matrix (square, symmetric and semi-definite positive\footnote{We make the \textbf{assumption that $V_2$ is definite positive} (i.e. $V_2 > [0]_{n \times p}$) because we will need this property in the Riccati equation.} by definition)
+        \item $\EE[v_2(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times n} \quad \forall t \quad \forall \tau \ne 0$ (\emph{whiteness} property)
     \end{enumerate}
 
 \end{description}
 
 \textbf{Assumptions} about the relationships between $v_1(t)$ and $v_2(t)$:
 \[
-    \E[v_1(t) \cdot v_2\transpose(t-\tau)] = \begin{cases} \label{sys:corrV12} \tag*{$\clubsuit$}
+    \EE[v_1(t) \cdot v_2\transpose(t-\tau)] = \begin{cases} \label{sys:corrV12} \tag*{$\clubsuit$}
         [0]_{n \times p} & \text{if } \tau \ne 0 \\
         V_{12} & \text{if } \tau = 0
     \end{cases}
@@ -367,11 +367,11 @@ where $V_{12}$ is a cross-correlation matrix of size $n\times p$.
 
 The system \eqref{sys:corrV12} means that $v_1$ and $v_2$ can be correlated only at the same time, but, in practice, $V_{12}=0$ is the most common assumption. Thus, in practice
 
-\[\E[v_1(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times p} \quad \forall t \forall \tau  \qquad \qquad \text{($1^{st}$ assumption)} \]
+\[\EE[v_1(t) \cdot v_2\transpose(t-\tau)] = [0]_{n \times p} \quad \forall t \forall \tau  \qquad \qquad \text{($1^{st}$ assumption)} \]
 
-Since the system $\Sys$ is dynamic we need to define the (in this case, probabilistic) initial conditions:
+Since the system $\Sc$ is dynamic we need to define the (in this case, probabilistic) initial conditions:
 \[
-    \E[x(1)] = \underbrace{X_0}_{n\times 1} \qquad \E[\left(x(1) - X_0)\right)\left(x(1)-X_0\right)\transpose] = \underbrace{P_0}_{n\times n} \ge [0]_{n \times n}
+    \EE[x(1)] = \underbrace{X_0}_{n\times 1} \qquad \EE[\left(x(1) - X_0)\right)\left(x(1)-X_0\right)\transpose] = \underbrace{P_0}_{n\times n} \ge [0]_{n \times n}
 \]
 
 If the covariance matrix $P_0 = [0]_{n \times n}$ the initial state is perfectly known.
@@ -419,24 +419,24 @@ Finally we assume that the two noises $v_1(t)$ and $v_2(t)$ are uncorrelated wit
 Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial conditions are needed:
 
 \begin{flalign}\label{eq:KF-initCond-state}    
-    \nameeq{\hat{x}(1|0) = \E[x(1)] = X_0}{Init. condition for \ref{eq:KF-state}}
+    \nameeq{\hat{x}(1|0) = \EE[x(1)] = X_0}{Init. condition for \ref{eq:KF-state}}
 \end{flalign}  
 
 \begin{flalign}\label{eq:KF-initCond-DRE}    
     \nameeq{P(1) = \text{var}[x(1)] = P_0}{Init. condition for \ref{eq:KF-DRE}}
 \end{flalign}  
 
-\begin{definition}[Difference Riccati Equation (DRE)]
+\begin{defn}[Difference Riccati Equation (DRE)]
     The equation \ref{eq:KF-DRE} is called \emph{\acrfull{dre}} and it is a special type of non-linear matrix difference equation. 
     
     \quad \textbf{Note} The \gls{dre} is an autonomous (i.e. there are no inputs), non-linear, discrete time, multi-variable system, described by a non-linear difference matrix equation
     \[
          P(t+1) = f_{NL}(P(t)) \qquad P(1) = P_0
     \]
-\end{definition}
+\end{defn}
 
 
-\begin{remark}[Structure or $K(t)$ and \gls{dre}]
+\begin{rem}[Structure or $K(t)$ and \gls{dre}]
     Notice that $K(t)$ and the \gls{dre} have  a \emph{block-structure} having this form: 
     
     \[ AP(t)B\transpose+N  \qquad \text{where $N$ is a noise matrix}\]
@@ -453,27 +453,27 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
         \text{\ref{eq:KF-gain} becomes:} \qquad& K(t) \equiv (\texttt{mix})(\texttt{output})^{-1} \\
         \text{\ref{eq:KF-DRE} becomes:} \qquad& P(t+1) \equiv (\texttt{state}) - (\texttt{mix})(\texttt{output})^{-1}(\texttt{mix})\transpose
     \end{align*}
-\end{remark}
+\end{rem}
 
 
-\begin{remark}[Existance of the \gls{dre}]
+\begin{rem}[Existance of the \gls{dre}]
     In order to guarantee the existance of the \gls{dre} for all time instant $t$, the only critical part is the inversion of the \texttt{output} block:
     \[
         \underbrace{(\underbrace{HP(t)H\transpose}_{\ge 0} + \underbrace{V_2}_{>0}}_{>0})^{-1} \qquad \text{thanks to $V_2>0$,  \texttt{output} is always invertible}
     \]
-\end{remark}
+\end{rem}
 
-\begin{remark}[Meaning of $P(t)$]
+\begin{rem}[Meaning of $P(t)$]
     The symmetric $n \times n$ matrix $P(t)$ has a very important meaning, indeed
 
     \begin{align*}
-        P(t) = \E[(x(t) - \hat{x}(t|t-1))(x(t) - \hat{x}(t|t-1))\transpose] 
+        P(t) = \EE[(x(t) - \hat{x}(t|t-1))(x(t) - \hat{x}(t|t-1))\transpose] 
         &= \text{Var}[x(t) - \hat{x}(t|t-1)] \\
         &= \text{Var}[e_x(t)]     
     \end{align*}
 
     Therefore, $P(t)$ is the covariance matrix of the 1-step prediction error of the state $x(t)$.
-\end{remark}
+\end{rem}
 
 
 \subsection{Block-scheme representation of the Kalman Filter}
@@ -521,7 +521,7 @@ Since \ref{eq:KF-state} and \ref{eq:KF-DRE} are dynamical equations, two initial
         \draw[->] (F2) -- (xhat);
         
         \draw[dashed] ($(sum3) + (-0.5, -1.5)$) rectangle ($(v2) + (0.5, 0.5)$)
-            node[left=0.5cm of v1] {$\Sys$:};
+            node[left=0.5cm of v1] {$\Sc$:};
         
         \draw[dashed, blue] ($(sum4) + (-0.5, -1.5)$) rectangle ($(sum2) + (0.5, 0.8)$)
             node[left=2.7cm of K] {$\mathcal{KF}$:};    
@@ -536,10 +536,10 @@ The idea behind Kalman Filter is simple and intuitive:
     \item we extract the state estimation $\hat{x}(t|t-1)$ from the digital twin
 \end{itemize}
 
-\begin{obs}
+\begin{rem}
     Kalman Filter is a feedback system.
     Feedback here is not used for control, but for estimation.
-\end{obs}
+\end{rem}
 
 This general structure was known since $'30$ (before Kalman Filter development) and was called \emph{state observer}.
 Fundamental contribution of Kalman was to find the \textbf{optimal gain $K(t)$}.

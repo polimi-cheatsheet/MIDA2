@@ -22,7 +22,7 @@ Why we dedicate a chapter on \emph{control}?
 
 \paragraph{Setup of the problem} Consider a generic \gls{armax} model
 
-\begin{recall}[\gls{armax} system]
+\begin{rem}[\gls{armax} system]
 	\[
 	    y(t) = \frac{B(z)}{A(z)}u(t-k) + \frac{C(z)}{A(z)}e(t) \qquad e(t) \sim WN(0, \lambda^2)
 	\]
@@ -33,7 +33,7 @@ Why we dedicate a chapter on \emph{control}?
 	\end{align*}
 
 	\textbf{Note} The input is $u(t)$ and the output is $y(t)$. The noise $e(t)$ is a non-measurable input that models the uncertainty of the system.  
-\end{recall}
+\end{rem}
 
 \subparagraph{Assumptions}
 \begin{itemize}
@@ -42,7 +42,7 @@ Why we dedicate a chapter on \emph{control}?
     \item $\frac{B(z)}{A(z)}$ is \emph{minimum phase}
 \end{itemize}
 
-\begin{recall}[Transfer function in canonical form]
+\begin{rem}[Transfer function in canonical form]
     A transfer function $W(z) = \frac{C(z)}{A(z)}$ is in \emph{canonical form} if 
     \begin{enumerate}
         \item $C(z)$ and $A(z)$ are monic (i.e. the coefficients of the maximum degree terms of $C(z)$ and $A(z)$ are equal to 1);
@@ -51,13 +51,13 @@ Why we dedicate a chapter on \emph{control}?
         \item[4a.]the poles of $W(z)$ are such that $|z| < 1$;
         \item[4b.]the zeros of $W(z)$ are such that $|z| < 1$. (more stringent condition than the one we saw in MIDA1)
     \end{enumerate}
-\end{recall}
+\end{rem}
 
-\begin{recall}[Minimum Phase filter]
+\begin{rem}[Minimum Phase filter]
     A filter described by a \gls{tf} $\frac{B(z)}{A(z)}$ is said to be \emph{minimum phase} if all the roots of $B(z)$ are strictly inside the unit circle.
-\end{recall}
+\end{rem}
 
-\begin{remark}[Minimum Phase filter in practice]
+\begin{rem}[Minimum Phase filter in practice]
     What does it means in practice? 
 
     \begin{figure}[H]
@@ -86,7 +86,7 @@ Why we dedicate a chapter on \emph{control}?
     Also for human it's difficult, for example \emph{steer to roll} dynamics in a bicycle: if you want to steer left, you must first steer a little to the right and then turn left.
 
     Design of controller for non-minimum phase is difficult and requires special design techniques (no MVC but \emph{generalized MVC (GMVC)}, described in \ref{subsec:GMVC}).
-\end{remark}
+\end{rem}
 
 \paragraph{Goal of the problem} 
 The problem we wish to solve is the optimal tracking of the desired behavior of the output (which is the classical goal of control systems):
@@ -128,20 +128,20 @@ The main trick is to split $y(t)$ into $\hat{y}(t|t-k)$, the \emph{predictor}, a
 
 Now we can write $J$ as 
 \begin{align*}
-	J =& \E \left[ \left( \hat{y}(t|t-k) + \epsilon(t) - y^0(t) \right)^2 \right] \\
-	  =& \E \left[ \left( (\hat{y}(t|t-k) - y^0(t)) + \epsilon(t) \right)^2 \right] \\
-	  =& \E \left[ \left( (\hat{y}(t|t-k) - y^0(t) \right)^2 \right] + \E [\epsilon(t)^2 ] + 2 \E \left[ \epsilon(t) \left( \hat{y}(t|t-k) - y^0(t) \right) \right] 
+	J =& \EE\left[ \left( \hat{y}(t|t-k) + \epsilon(t) - y^0(t) \right)^2 \right] \\
+	  =& \EE\left[ \left( (\hat{y}(t|t-k) - y^0(t)) + \epsilon(t) \right)^2 \right] \\
+	  =& \EE\left[ \left( (\hat{y}(t|t-k) - y^0(t) \right)^2 \right] + \EE[\epsilon(t)^2 ] + 2 \EE\left[ \epsilon(t) \left( \hat{y}(t|t-k) - y^0(t) \right) \right] 
 \end{align*}
 
 where we note that
 
 \begin{itemize}
-	\item $\E [\epsilon(t)^2 ]$ doesn't depend on $u(t)$: it's not subject to minimization, since it's just a constant number.
-	\item $\E [ \epsilon(t) y^0(t) ] = 0$, since $\epsilon(t) = f(e(t), e(t-1), \dots) $ and, by assumption, $y^0 \perp e$.
-	\item $\E [ \epsilon(t) \hat{y}(t|t-k) ] = 0$, since by construction $\epsilon(t) \perp \hat{y}(t|t-k)$ (otherwise $\hat{y}(t|t-k)$ wouldn't be the optimal predictor).
+	\item $\EE[\epsilon(t)^2 ]$ doesn't depend on $u(t)$: it's not subject to minimization, since it's just a constant number.
+	\item $\EE[ \epsilon(t) y^0(t) ] = 0$, since $\epsilon(t) = f(e(t), e(t-1), \dots) $ and, by assumption, $y^0 \perp e$.
+	\item $\EE[ \epsilon(t) \hat{y}(t|t-k) ] = 0$, since by construction $\epsilon(t) \perp \hat{y}(t|t-k)$ (otherwise $\hat{y}(t|t-k)$ wouldn't be the optimal predictor).
 \end{itemize}
 
-Therefore, minimizing $J$ is equivalent to minimizing  $\E \left[ \left( (\hat{y}(t|t-k) - y^0(t) \right)^2 \right]$, which is minimized if
+Therefore, minimizing $J$ is equivalent to minimizing  $\EE\left[ \left( (\hat{y}(t|t-k) - y^0(t) \right)^2 \right]$, which is minimized if
 
 \begin{align}\label{eq:min_J_condition}
 	\hat{y}(t|t-k) = y^0(t)
@@ -157,7 +157,7 @@ Therefore, the condition \ref{eq:min_J_condition} becomes
 	\hat{y}(t+k|t) = y^0(t)
 \end{align}
 
-\begin{recall}[$k$-step predictor of an \gls{armax} system]
+\begin{rem}[$k$-step predictor of an \gls{armax} system]
 
 	\[
 		\hat{y}(t+k|t) = \frac{B(z) E(z)}{C(z)} u(t) + \frac{\tilde{R}(z)}{C(z)} y(t)
@@ -165,7 +165,7 @@ Therefore, the condition \ref{eq:min_J_condition} becomes
 
 	where $E(z)$ is the $result$ and $R(z) = \tilde{R}(z) z^{-k}$ is the $residual$ of the $k$-step long division between $C(z)$ and $A(z)$.
 
-\end{recall}
+\end{rem}
 
 By plugging in the $k$-step predictor of an \gls{armax} system formula in the equation \ref{eq:new_min_J_condition} we obtain
 
@@ -217,7 +217,7 @@ The block scheme representation of the MVC system is
 
 \subsection{Stability of the MVC System}\label{subsec:MVC_stability}
 
-\begin{recall}
+\begin{rem}
     For stability let's recall a result of \emph{negative feedback system}:
     \begin{figure}[H]
         \centering
@@ -240,7 +240,7 @@ The block scheme representation of the MVC system is
         \item build the \emph{characteristic polynomial} $\chi(z) = L_N(z) + L_D(z)$ (sum of the numerator and the denominator of $L(z)$)
         \item find the roots of $\chi(z)$: closed loop system is asymptotically stable if and only if all the roots of $\chi(z)$ are strictly inside the unit circle
     \end{itemize}
-\end{recall}
+\end{rem}
 
 Check the stability of the MVC system represented in figure \ref{fig:MVC_sys}
 
@@ -270,7 +270,7 @@ The system can be rewritten as follows considering the two inputs: $y^0(t)$ and 
 	y(t) = F_{y^0y}(z) y^0(t) + F_{ey}(z) e(t)
 \]
 
-\begin{recall}
+\begin{rem}
     The transfer function from the input to the output of a \emph{negative feedback system} can be computed with:
     \begin{figure}[H]
         \centering
@@ -292,7 +292,7 @@ The system can be rewritten as follows considering the two inputs: $y^0(t)$ and 
     \]
     where we recall that $F_1(z) F_2(z)$ is the loop-function $L(z)$
  	and $F_1(z)$ is the direct line from the input to the output.
-\end{recall}
+\end{rem}
 
 Therefore, looking at the figure \ref{fig:MVC_sys}, the \gls{tf} from $y^0(t)$ to $y(t)$ is
 \begin{align*}
@@ -319,7 +319,7 @@ Thus we can say that
  
 which is the very simple closed-loop relationship between input and output in a MVC system.
 
-% \begin{remark}
+% \begin{rem}
 %     There are 2 sub-classes of control problems:
 %     \begin{itemize}
 %         \item When $y^0(t)$ is constant or step-wise (regulation problem)
@@ -373,7 +373,7 @@ which is the very simple closed-loop relationship between input and output in a 
 %             \caption*{Tracking problem}
 %         \end{minipage}
 %     \end{figure}
-% \end{remark}
+% \end{rem}
 
 % Bottom-up way of presenting M.V.C.
 

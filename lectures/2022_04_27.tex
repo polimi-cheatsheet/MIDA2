@@ -90,7 +90,7 @@ Assuming that $\hat{x}(t+1|t)$ is known from the basic solution, we can simply o
 This formula can be used only if $F$ is invertible.
 If $F$ is not invertible, the filter can be obtained with a specific \emph{filter} formulation of \gls{kf}
 
-\begin{definition}[Kalman Filter in Filter Form] \label{KF-Filter_Form_sol}
+\begin{defn}[Kalman Filter in Filter Form] \label{KF-Filter_Form_sol}
     Reformulation of the equations described in \ref{subsec:KF-basic_sol}.\\
     State equation (\ref{eq:KF-DRE}) and Gain equation (\ref{eq:KF-gain}) becomes  
     \begin{align*}
@@ -103,13 +103,13 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
     \begin{align*}
         \hat{x}(1|1) &= X_0 
     \end{align*}
-\end{definition}
+\end{defn}
 
-\begin{remark}
+\begin{rem}
     These equations are valid under the (legit) assumption $V_{12} = 0$.
-\end{remark}
+\end{rem}
 
-\begin{obs}
+\begin{rem}
     Gain of \gls{kf} in prediction form (eq. \ref{eq:KF-gain} assuming $V_{12}=0$):
     \[
         K(t) = \left( FP(t)H\transpose \right) \left( HP(t)H\transpose+V_2 \right)^{-1}
@@ -121,7 +121,7 @@ If $F$ is not invertible, the filter can be obtained with a specific \emph{filte
     \]
 
     Therefore, the only difference is the elimination of $F$.
-\end{obs}
+\end{rem}
 
 
 \subsection{Time-varying systems}\label{subsec:time-varying_extension}
@@ -134,15 +134,15 @@ In case of time-varying systems we have to perform the following substitutions:
 
 Therefore
 \[
-    \Sys: \begin{cases}
+    \Sc: \begin{cases}
         x(t+1) = F(t)x(t) + G(t)u(t) + v_1(t) \\
         y(t) = H(t)x(t) + v_2(t)
     \end{cases}
 \]
 
-\begin{definition} [Linear Time Varying (LTV) system]
-    The system $\Sys$ is a \emph{Linear Time Varying (LTV)} system, since its parameters ($F,G,H$) depends on the time instant $t$.
-\end{definition}
+\begin{defn} [Linear Time Varying (LTV) system]
+    The system $\Sc$ is a \emph{Linear Time Varying (LTV)} system, since its parameters ($F,G,H$) depends on the time instant $t$.
+\end{defn}
 
 Kalman Filter equations remain of the same form as the ones described in \ref{subsec:KF-basic_sol}: we just need to replace the parameter matrices ($F,G,H$) with the time-varying ones ($F(t),G(t),H(t)$).
 
@@ -152,9 +152,9 @@ This extensions is much more complicated. We will see Extended Kalman Filter (EK
 
 \section{Asymptotic Solution of Kalman Filter}
 
-\begin{obs} 
-    Even when the system $\Sys$ is an LTI, the Kalman Filter is not itself an LTI system: it is an LTV system, since it depends on the gain $K(t)$ which is time-varying.
-\end{obs}
+\begin{rem} 
+    Even when the system $\Sc$ is an LTI, the Kalman Filter is not itself an LTI system: it is an LTV system, since it depends on the gain $K(t)$ which is time-varying.
+\end{rem}
 
 
 The fact that \gls{kf} is an LTV system is the source of 2 problems:
@@ -163,7 +163,7 @@ The fact that \gls{kf} is an LTV system is the source of 2 problems:
     \item Computational problem: $K(t)$ must be computed at each sampling time (e.g. every 5ms), including the inversion of $HP(t)H\transpose+V_2$ ($p\times p$ matrix) and the computation of $P(t)$ using the \gls{dre}.
 \end{itemize}
 
-\begin{recall}[Asymptotic Stability of a system]
+\begin{rem}[Asymptotic Stability of a system]
 
     If the system is: 
     \begin{itemize}
@@ -175,7 +175,7 @@ The fact that \gls{kf} is an LTV system is the source of 2 problems:
         In practice it is, if the time-variations are \emph{slow} (e.g. aging).
     \end{itemize}
 
-\end{recall}
+\end{rem}
 
 Because of those problems in real/practical applications the asymptotic version of \gls{kf} is preferred.
 
@@ -221,11 +221,11 @@ Let's analyze the asymptotic stability of the State equation (eq. \ref{eq:KF-sta
 
  If $\bar{K}$ exists, the \gls{kf} is asymptotically stable if and only if all the eigenvalues of $F-\bar{K}H$ are strictly inside the unit circle.
 
-\begin{obs}
-    The stability of the system $\Sys$ is related to matrix $F$, whereas the stability of \gls{kf} is related to matrix $F-\bar{K}H$.
+\begin{rem}
+    The stability of the system $\Sc$ is related to matrix $F$, whereas the stability of \gls{kf} is related to matrix $F-\bar{K}H$.
 
     Therefore, \gls{kf} can be asymptotically stable even if the system is unstable.
-\end{obs}
+\end{rem}
 
 \paragraph{Existance of $\bar{K}$}
 Starting from the equation \ref{eq:KF-gain}, if exists $P(t)$ such that $P(t) = \bar{P}$ then $K(t)$ becomes
@@ -238,7 +238,7 @@ Thus, $\bar{K}$ exists if $\bar{P}$ exists.\\
 
 In order to check that, we need to check the converge properties of \gls{dre}
 
-\begin{recall}[Stability of a dynamical autonomous system]
+\begin{rem}[Stability of a dynamical autonomous system]
     How to find the equilibrium points of a dynamical autonomous system?
     \begin{center}
         \begin{tabular}{c|c}
@@ -251,16 +251,16 @@ In order to check that, we need to check the converge properties of \gls{dre}
             $f(\bar{x}) = 0$ & $f(\bar{x}) = \bar{x}$ \\
         \end{tabular}
     \end{center}
-\end{recall}
+\end{rem}
 \gls{dre} is an autonomous discrete time system, thus we impose $\bar{P} = f(\bar{P})$, where $f(\bar{P})$ is the \gls{dre} (eq. \ref{eq:KF-DRE}) evaluated in $\bar{P}$:
 
 \begin{flalign}\label{eq:KF-ARE}
     \nameeq{\bar{P} = \left( F\bar{P}F\transpose + V_1 \right)-\left(F\bar{P}H\transpose + V_{12}\right)\left(H\bar{P}H\transpose + V_2\right)^{-1}\left(F\bar{P}H\transpose+V_{12}\right)\transpose}{\acrshort{are}}
 \end{flalign}
 
-\begin{definition}[Algebraic Riccati Equation (ARE)]
+\begin{defn}[Algebraic Riccati Equation (ARE)]
     The equation \ref{eq:KF-ARE} is a non-linear, matrix, static algebraic equation, known as \emph{\acrfull{are}}.
-\end{definition}
+\end{defn}
 
 If a steady state $\bar{P}$ solution of \gls{dre} (eq. \ref{eq:KF-DRE}) does exists, it must be a solution of ARE (eq. \ref{eq:KF-ARE}).
 There remains 3 questions:
@@ -276,7 +276,7 @@ To answer those questions we need two fundamental theorems (\gls{kf} asymptotic 
 \subsection{Asymptotic Kalman Filter Theorems}
 The two Asymptotic Kalman Filter Theorems that we are going to introduce provide \emph{sufficient} conditions only.
 
-\begin{theorem}[First Asymptotic \gls{kf} Theorem]\label{th:1KF_as}
+\begin{thm}[First Asymptotic \gls{kf} Theorem]\label{th:1KF_as}
     Assumptions: $V_{12} = 0$ and the system is asymptotically stable (i.e. all eigenvalues of $F$ are strictly inside the unit circle).
     Then:
     \begin{enumerate}
@@ -284,9 +284,9 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
         \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
         \item The corresponding $\bar{K}$ is s.t. the \gls{kf} is asymptotically stable (i.e. all the eigenvalues of $F-\bar{K}H$ have absolute value less than $1$).
     \end{enumerate}
-\end{theorem}
+\end{thm}
 
-\begin{recall}[Observability and Controllability]
+\begin{rem}[Observability and Controllability]
     Recall on Observability and Controllability needed for the introduction of the Second Asymptotic \gls{kf} Theorem (\ref{th:2KF_as}). 
 
     \paragraph{Observability of the state through the output} 
@@ -328,10 +328,10 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
         \qquad
         \text{is full rank}
     \]
-\end{recall}
+\end{rem}
 
 
-\begin{theorem}[Second Asymptotic \gls{kf} Theorem]\label{th:2KF_as}
+\begin{thm}[Second Asymptotic \gls{kf} Theorem]\label{th:2KF_as}
     Assumptions: $V_{12} = 0$, $(F, H)$ is observable and $(F, \Gamma)$ is controllable.
     Then:
     \begin{enumerate}
@@ -339,11 +339,11 @@ The two Asymptotic Kalman Filter Theorems that we are going to introduce provide
         \item \gls{dre} converges to $\bar{P}$, $\forall P_0 \ge 0$ ($P_0$: initial semi-definite positive condition).
         \item The corresponding $\bar{K}$ is such that the \gls{kf} is asymptotically stable (i.e. all the eigenvalues of $F-\bar{K}H$ have absolute value less than $1$).
     \end{enumerate}
-\end{theorem}
+\end{thm}
 
-\begin{obs}
+\begin{rem}
     The difference between theorems \ref{th:1KF_as} and \ref{th:2KF_as} is that the first one ensures that $\bar{P} \ge 0$ while the second one ensures that $\bar{P} > 0$. 
-\end{obs}
+\end{rem}
 
 These two theorems are very useful in practice because we can fully avoid the (very difficult) direct convergence analysis of \gls{dre}.
 
