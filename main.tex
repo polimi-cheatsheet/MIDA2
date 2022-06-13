@@ -1,44 +1,23 @@
-\documentclass[10pt,a4paper,oneside,openright]{book}
-
-% TODO
-% among us
+\documentclass[10pt,a4paper,twoside]{book}
 
 \input{style}
 
-%\usepackage[nomarginpar,margin=1in]{geometry}
+\usepackage[
+  left=2.5cm, % inner
+  right=2.5cm, % outer
+  top=2.5cm,
+  bottom=3cm,
+  %showframe,
+  ]{geometry}
 
 \usepackage{xr} % cross-referencing 
-
-\usepackage[paperwidth=215mm,
-            paperheight=315mm,
-            left=1in,
-            %top=50pt,
-            textwidth=405pt,
-            marginparsep=25pt,
-            marginparwidth=1in,
-            %textheight=692pt,
-            footskip=40pt
-            ]
-           {geometry}
-
-\usepackage[toc,page]{appendix} 
-
-% \usepackage{tablefootnote}
+\makenoidxglossaries
 
 % Comandi pratici
 
-
-\newcommand{\RR}{\mathbb{R}}
-
 % d nell'integrale e i rispettivi usi
-\newcommand{\de}{\,\mathrm d}
-\newcommand{\dx}{\de x}
-\newcommand{\dy}{\de y}
 \newcommand{\dl}{\de l}
 \newcommand{\dr}{\de r}
-\newcommand{\ds}{\de s}
-\newcommand{\dt}{\de t}
-\newcommand{\dv}{\de v}
 \newcommand{\dxi}{\de \xi}
 \newcommand{\drho}{\de \rho}
 
@@ -49,9 +28,7 @@
 
 \allowdisplaybreaks[4] % Consente di rompere equazioni su più pagine
 
-\makenoidxglossaries
-
-%MIDA1 acronym
+% MIDA1 acronym
 \newacronym{sp}{SP}{Stochastic Process}
 \newacronym{ssp}{SSP}{Stationary Stochastic Process}
 \newacronym{ma}{MA}{Moving Average}
@@ -63,7 +40,7 @@
 \newacronym{wn}{WN}{White Noise}
 \newacronym{pem}{PEM}{Prediction Error Minimization}
 
-%MIDA2 acronym
+% MIDA2 acronym
 \newacronym{tf}{TF}{Transfer Function}
 \newacronym{ss}{SS}{State-Space}
 \newacronym{ir}{IR}{Impulse Response}
@@ -75,101 +52,102 @@
 \newacronym{are}{ARE}{Algebraic Riccati Equation}
 \newacronym{sem}{SEM}{Simulation Error Method}
 
-%common used operator
+%c ommon used operator
 \DeclareMathOperator{\WN}{WN}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\rank}{rank}
-\DeclareMathOperator*{\eig}{eig}
-
-% \usepackage{xifthen}
-% 1 parametro necessario, con valore "nullo" di default (le due quadre vuote)
-% non mettere le seconde quadre equivale a dire che è obbligatorio
-% \newcommand{\ar}[1][]{\ifthenelse{\isempty{#1}}{AR}{AR($#1$)}}
-% \newcommand{\ma}[1][]{\ifthenelse{\isempty{#1}}{MA}{MA($#1$)}}
-% \newcommand{\arma}[1][]{\ifthenelse{\isempty{#1}}{ARMA}{ARMA($#1$)}}
-% \newcommand{\arx}[1][]{\ifthenelse{\isempty{#1}}{ARX}{ARX($#1$)}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \frontmatter
+
 \pagestyle{empty}
+
+% TITLE PAGE
+
+\hypertarget{mytitlepage}{} % set the hypertarget
+\bookmark[dest=mytitlepage,level=chapter]{Title Page} % add the bookmark
+
 \vspace*{\fill}
 \begin{center}
 	{\large \textsc{Lecture Notes of}}\\
+	
+  \vspace*{0.4cm}
+	
+  {\Huge
+  \textsc{Model Identification}\\
 	\vspace*{0.4cm}
-	{\Huge \textsc{Model Identification}}\\
+	\textsc{and Data Analysis}}\\
 	\vspace*{0.4cm}
-	{\Huge \textsc{and Data Analysis}}\\
-	\vspace{0.6cm}
-	{\Huge \textsc{Part 2}}\\
-	\vspace*{1cm}
-	{\large {From Professor Sergio Savaresi's lectures}}\\
-	\vspace*{0.4cm}
-	{\large {Authors and Contributors: \textsc{Edoardo Morassutto}, \textsc{Marco Donadoni}, \textsc{Cosimo Russo}, \textsc{Federico Cazzola}}}\\
-  \vspace{20pt}
-	{{Reviewed and updated for the 2022 edition of the course by \\ \textsc{Andrea Bosisio}}}\\
-	\vspace*{3cm}
-	Politecnico di Milano\\A.Y. 2021/2022
+	{\huge \textsc{Part 2}}\\
+	
+  \vspace*{1cm}
+	
+  {\large {From Professor Sergio Savaresi's lectures}}\\
+	
+  \vspace*{1cm}
+	
+  {\large
+  Author\\
+  \vspace*{0.1cm}
+  \textsc{Edoardo Morassutto}\\
+  
+  \vspace*{0.4cm}
+  
+  Contributors\\
+  \vspace*{0.1cm}
+  \textsc{Marco Donadoni}\\
+  \textsc{Cosimo Russo}\\
+  \textsc{Federico Cazzola}\\
+  
+  \vspace*{0.4cm}
+	
+  Reviewed for the 2022 edition of the course by\\
+  \vspace*{0.1cm}
+  \textsc{Andrea Bosisio}\\
+
+  \vspace*{0.4cm}
+  
+  Document formatting by\\
+  \vspace*{0.1cm}
+  \textsc{Teo Bucci}}\\
+	
+  \vspace*{1cm}
+	
+  Politecnico di Milano\\A.Y. 2021/2022
 \end{center}
 \vspace*{\fill}
-\newpage
+\clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COPYRIGHT PAGE
 
-{\Large \textit{Lecture Notes of Model Identification and Data Analysis - Part 2}}
+\hypertarget{mycopyright}{} % set the hypertarget
+\bookmark[dest=mycopyright,level=chapter]{Copyright Page} % add the bookmark
+\input{firstpages/copyright}
+\clearpage
 
-\vspace*{\fill}
+% PREFACE
 
-\input{licenza}
+% \hypertarget{mypreface}{} % set the hypertarget
+% \bookmark[dest=mypreface,level=chapter]{Preface} % add the bookmark
+% \input{firstpages/preface}
+% \clearpage
 
-\vspace*{1cm}
+% CONTENTS
 
-Revision of \today
-
-%\textbf{Prefazione}
-
-Please notify errors or changes through an email or a pull request.
-
-Contact:\\
-Andrea Bosisio - \texttt{andrea2.bosisio@mail.polimi.it}\\ 
-
-\newpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% INDICE
-\addtocontents{toc}{\protect\thispagestyle{empty}}
+\cleardoublepage
+\pagestyle{toc}
+\hypertarget{mytoc}{} % set the hypertarget
+\bookmark[dest=mytoc,level=chapter]{\contentsname} % add the bookmark
 \tableofcontents
-%\newpage
+\cleardoublepage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAIN MATTER
 
-% PAGINA VUOTA PER FAR PARTIRE IL CAPITOLO IN UNA PAGINA DISPARI
-%\myNewEmptyPage
-
-\AtEndDocument{\cleardoublepage}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\pagestyle{fancy}
 \mainmatter
-\pagestyle{fancy} % Riswitcha per riavere il numero pagina
-%\setcounter{page}{1} % Fa ripartire il contatore pagina da 1
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%TIKZ
+
+\usetikzlibrary{matrix,shapes.geometric}
 
 \tikzstyle{block}      = [draw, rectangle, inner sep=6pt]
 \tikzstyle{every node} = [font=\small]
@@ -287,8 +265,6 @@ decorate}}
 %\tikzstyle{output} = [coordinate]
 %\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
 
-% \part{MIDA 2}
-
 \input{lectures/2022_04_06}
 \input{lectures/2022_04_07}
 \input{lectures/2022_04_11}
@@ -301,7 +277,8 @@ decorate}}
 \input{lectures/2022_05_09}
 \input{lectures/2022_05_12}
 
-\clearpage
 \glsaddall
-\printnoidxglossary[type=\acronymtype,title=Acronyms, nonumberlist]
+\printnoidxglossary[type=\acronymtype,title=Glossary, toctitle=Glossary, nonumberlist]
+\cleardoublepage
+
 \end{document}
