@@ -498,12 +498,12 @@ Since the goal of the method is to identify an \gls{ss} model $\left\{ \hat{F}, 
 
 We will see the solution of the problem with two different assumptions:
 \begin{description}
-    \item [Basic problem] \gls{ir} measurement is assumed to be \textbf{noise-free}. Easier and not realistic problem. Described in \ref{4sid-noisefree}.
-    \item [Real problem] \gls{ir} is measured with noise, that is:5
+    \item [Basic problem] \gls{ir} measurement is assumed to be \textbf{noise-free}. Easier and not realistic problem. Described in \ref{sec:4SID-NF}.
+    \item [Real problem] \gls{ir} is measured with noise, that is:
     \[ \widetilde{\omega}(t) = \omega(t) + \eta(t) \quad t = 0, 1,\dots, N \] where
         $\widetilde{\omega}(t)$ is the measured noisy \gls{ir},
         $\omega(t)$ is the ``true'' noise-free \gls{ir} and
-        $\eta(t)$ is the measurement noise (e.g. \gls{wn}). Described in \ref{4sid-noise}.
+        $\eta(t)$ is the measurement noise (e.g. \gls{wn}). Described in \ref{sec:4SID-N}.
 \end{description}
 
 \begin{rem}
@@ -625,8 +625,6 @@ In practice $n \ll N$, where, again, $n$ is the order of the system and $N$ the 
 \begin{rem}
     If the measurement is noisy all this process is \textbf{useless}. Also, if $n$ is unknown, \nameref{4SID-NF:step1} could never stop.
 \end{rem}
-
-\clearpage
 
 \section{4SID procedure (with Noise)} \label{sec:4SID-N}
 
