@@ -561,7 +561,7 @@ We will see the solution of the problem with two different assumptions:
 \]
 
 Suppose that $\rank (H_i) = i \quad \forall i \in \{1, \dots, n\}$ \quad and $\rank (H_{n+1}) = n$.\\
-If this happens, it means that we found the first Hankel matrix which in not full rank and it also means that we have estimated (found) the order of the system.
+If this happens, it means that we found the first Hankel matrix which is not full rank and it also means that we have estimated (found) the order of the system.
 
 \paragraph{Step 2} Take $H_{n+1}$ (\textbf{recall}: $\rank (H_{n+1}) = n$) and factorize it in two rectangular matrices of size $(n+1) \times n$ and $n \times (n+1)$.
 
@@ -623,7 +623,7 @@ In practice $n \ll N$, where, again, $n$ is the order of the system and $N$ the 
 \[ \left\{\hat{H}, \hat{G}, \hat{F}\right\} = \left\{O_{n+1}(\texttt{1;:}), R_{n+1}(\texttt{:;1}), (O')^{-1}O'' \right\}\]
 
 \begin{rem}
-    If the measurement is noisy all this process is \textbf{useless}. Also, if $n$ is unknown, \nameref{4SID-NF:step1} could never stop.
+    In practice measurements are always noisy and since this simple process is very sensitive to noise, it is \textbf{useless}. This is because using noisy \gls{ir} \nameref{4SID-NF:step1} could never stop, and, also if $n$ is known in advance, the estimated model would be badly wrong.
 \end{rem}
 
 \section{4SID procedure (with Noise)} \label{sec:4SID-N}
