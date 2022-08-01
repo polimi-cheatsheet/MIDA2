@@ -243,7 +243,7 @@ Following the classical 4 steps of a supervised parametric method for system ide
 
 \paragraph{Step 2} Define model structure
 \[
-    y(t) = \mathcal{M}(u(t); \bar{\theta}, \theta)
+    \hat{y}(t) = \mathcal{M}(\tilde{u}(t); \bar{\theta}, \theta)
 \]
 Mathematical model (linear or non-linear) usually written from first principle equations. $\bar{\theta}$ is the set of \textbf{known parameters} (mass, resistance, \dots), $\theta$ is the set of \textbf{unknown parameters} (possibly with bounds).
 
@@ -284,7 +284,8 @@ We can represent what we've just seen with the following scheme:
         \draw[->] (m) -- (sum) node[pos=0.9] {$+$} node[pos=0.5] {$\hat{y}(t; \theta)$};
         \draw[->] (4,3) -- (sum) node[pos=0.9] {$-$};
         \draw[->] (sum) -- (J) node[pos=0.5, right] {\footnotesize simulation error};
-        \draw[->] (J) -| (m);
+        \draw[->] (J) -- ++(-4,0) -- ($(m) + (0.5, 1)$) 
+            node[pos=0.9] {$\theta^*$};
 
         \draw[<-] (0,3) -- (-1,3) node[left] {$\tilde{u}(t)$};
         \draw[->] (2,3) -- (5,3) node[right] {$\tilde{y}(t)$};
@@ -311,7 +312,7 @@ The general framework is similar, but with \gls{sem} we need the model of the sy
 
     Using \gls{pem}
     \[
-        \hat{y}(t|t-1) = -a_1\hat{y}(t-1)-a_2\hat{y}(t-2)+b_0\hat{u}(t-1)+b_1\hat{u}(t-2)
+        \hat{y}(t|t-1) = -a_1\tilde{y}(t-1)-a_2\tilde{y}(t-2)+b_0\tilde{u}(t-1)+b_1\tilde{u}(t-2)
     \]
     \begin{align*}
         J_N(\theta) &= \frac{1}{N}\sum_{t=1}^N \left( \tilde{y}(t) - \hat{y}(t|t-1, \theta) \right)^2 \\

@@ -108,7 +108,7 @@ The problem we wish to solve is the optimal tracking of the desired behavior of 
         \draw[->] (5.5,0) -- (5.5,-1.5) -- (-1,-1.5) -- (cont);
     \end{tikzpicture}
 \end{figure}
-where $y^0(t)$ os the desired output value, called \emph{reference}.
+where $y^0(t)$ is the desired output value, called \emph{reference}.
 
 Some additional (small) technical \textbf{assumptions}:
 \begin{itemize}
@@ -118,7 +118,7 @@ Some additional (small) technical \textbf{assumptions}:
 
 In a more formal way MVC is an optimization control problem that tries to find $u(t)$ that minimize this performance index:
 \[
-    J = E\left[ (y(t) - y^0(t))^2 \right]
+    J = \EE \left[ (y(t) - y^0(t))^2 \right]
 \]
 
 where $J$ is the variance of the tracking error: that's why it's called Minimum Variance Control.
@@ -158,7 +158,7 @@ Therefore, the condition \ref{eq:min_J_condition} becomes
 \end{align}
 
 \begin{rem}[$k$-step predictor of an \gls{armax} system]
-
+    Assuming the delay of the input $d$ is equal to $k$ we have
 	\[
 		\hat{y}(t+k|t) = \frac{B(z) E(z)}{C(z)} u(t) + \frac{\tilde{R}(z)}{C(z)} y(t)
 	\] 

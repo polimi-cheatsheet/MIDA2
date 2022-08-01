@@ -431,6 +431,10 @@ We consider three special cases:
 
 The critical choice is $\Delta T$ (sampling time).
 
+\begin{thm}[Nyquist–Shannon sampling theorem]\label{th:shannon}
+    The maximum frequency content $f_{MAX}$ of a signal to be sampled should be such that $f_{MAX} \le f_N$.
+\end{thm}
+
 \paragraph{Simple idea}
 The general intuitive rule is: the smaller $\Delta T$, the better.
 
@@ -442,7 +446,7 @@ The general intuitive rule is: the smaller $\Delta T$, the better.
     where $f_S$ is the \emph{sampling frequency} and $f_N$ is the \emph{Nyquist frequency}.
 
     \paragraph{Spectrum of a discretized signal}
-    For a discretized signal its spectrum is limited and it ranges over $[0, \omega_N]$; as a result, the fitting between the spectrum of the discretized signal and the one of the original signal is very close at low frequencies and becomes more inaccurate as we approach $\omega_N$.
+    For a discretized signal its spectrum is limited and it ranges over $[0, \omega_N]$ (\nameref{th:shannon}); as a result, the fitting between the spectrum of the discretized signal and the one of the original signal is very close at low frequencies and becomes more inaccurate as we approach $\omega_N$.
 \end{rem}
 
 If $\Delta T$ is large, $f_S$ is small (and accordingly,  $f_N$ too):
@@ -592,11 +596,6 @@ Usually, the bandwidth of interest is the one of the closed-loop control system.
 \paragraph{Aliasing problem}
 Another problem is managing the \emph{aliasing} problem, which is a big and critical problem in the A/D step. 
 
-\begin{thm}[Nyquist–Shannon sampling theorem]\label{th:shannon}
-    The maximum frequency content of a signal $f_{MAX}$ to be sampled should be such that $f_{MAX} \le f_N$.
-\end{thm}
-
-
 When we want measure a signal $x$ we capture also the measurement noise; indeed, what we really obtain is $\tilde{x}(t) = x(t) + e(t)$, where $e$ is the noise. 
 Hence, the spectrum of the measured signal will also be composed by the spectrum of the original signal $x$ and the spectrum of the noise.
 
@@ -621,7 +620,7 @@ Hence, the spectrum of the measured signal will also be composed by the spectrum
 \end{figure}
 
 Therefore, if we want to sample the measured signal, and for example, $f_{MAX} = 2 \text{KHz}$, then we need $f_N \ge 2 \text{KHz} \implies f_S \ge 4 \text{KHz}$. On the other hand, we know that the bandwidth of the original signal $x(t)$ will be much smaller due to the presence of the noise. 
-For example, suppose that the frequency content of $x(t)$ is contained in the range $[0, 0.5]$ KHz: we can therefore sample with an A/D that samples at $f_S = 1$ KHz.
+For example, suppose that the frequency content of $x(t)$ is contained in the range $[0, 0.5]$ KHz $\implies f'_{MAX} = 0.5$ KHz: we can therefore sample with an A/D that samples at $f_S = 2 f'_{MAX} = 1$ KHz.
 
 \subparagraph{Analog solution} The classical way to deal with aliasing is to use anti-alias analog filters. 
 
